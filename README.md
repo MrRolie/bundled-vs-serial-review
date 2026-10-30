@@ -359,6 +359,5 @@ present. Details:
   [`LICENSE-CC-BY-4.0.txt`](LICENSE-CC-BY-4.0.txt), offered to the extent
   copyright subsists. Model-written items, answers and verdicts may carry no
   copyright; where none subsists, treat them as public domain.
-- **Proposed repository name:** `bundled-vs-serial-review`.
 
 Built with Claude Code under my direction (Mikael Hillman-Pépin).
