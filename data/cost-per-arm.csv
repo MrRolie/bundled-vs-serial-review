@@ -1,0 +1,9 @@
+tier,arm,units,dispatches,true_catches,realized_usd,cache_cold_usd,usd_per_true_catch_realized,usd_per_true_catch_cold,tokens_per_true_catch
+claude-haiku-4-5-20251001,P,240,240,105,11.2238,10.6803,0.1069,0.1017,23592.2
+claude-haiku-4-5-20251001,S,1200,1200,120,38.0498,35.7315,0.3171,0.2978,71284.4
+claude-haiku-4-5-20251001,Sq,240,1200,122,34.4468,40.3852,0.2824,0.331,157388.6
+claude-sonnet-5,P,132,132,80,4.8584,4.3648,0.0607,0.0546,6501.5
+claude-sonnet-5,S,660,660,75,9.7519,9.2097,0.13,0.1228,20454.6
+claude-sonnet-5,Sq,132,660,70,7.1463,10.7193,0.1021,0.1531,33068.8
+claude-opus-5,P,176,176,68,10.1911,9.3521,0.1499,0.1375,9994.1
+claude-opus-5,S,880,880,75,25.2026,25.1299,0.336,0.3351,29760.2

@@ -1,0 +1,78 @@
+{
+ "haiku": {
+  "model": "claude-haiku-4-5-20251001",
+  "n_per_item": 30,
+  "trials": 2400,
+  "bin_counts": {
+   "ceiling": 16,
+   "easy": 14,
+   "floor": 11,
+   "hard": 7,
+   "medium": 12,
+   "unplaceable": 0
+  },
+  "clean_fa_by_item_class": {
+   "multi_file": {
+    "fa_rate": 0.4797297297297297,
+    "false_alarms": 142,
+    "parseable": 296,
+    "trials": 300,
+    "wilson_ci": [
+     0.42344111224730013,
+     0.5365377377516387
+    ]
+   },
+   "single_function": {
+    "fa_rate": 0.14,
+    "false_alarms": 42,
+    "parseable": 300,
+    "trials": 300,
+    "wilson_ci": [
+     0.10527132693072412,
+     0.18383161235094903
+    ]
+   }
+  }
+ },
+ "strong_tiers": {
+  "models": {
+   "opus": "claude-opus-4-8",
+   "fable": "claude-fable-5"
+  },
+  "n_per_item": 10,
+  "subsample": [
+   "sf-exception-06",
+   "sf-sign-04",
+   "mf-boundary-05",
+   "mf-comparison-03",
+   "sf-comparison-06",
+   "sf-boundary-03",
+   "sf-sign-05",
+   "mf-comparison-02",
+   "mf-exception-04",
+   "sf-boundary-04",
+   "mf-units-03",
+   "mf-exception-01",
+   "mf-sign-05",
+   "mf-boundary-03",
+   "sf-comparison-02",
+   "sf-boundary-06",
+   "sf-sign-02",
+   "sf-boundary-05",
+   "sf-units-05",
+   "sf-sign-01"
+  ],
+  "clean_wing": [
+   "clean-mf-01",
+   "clean-mf-02",
+   "clean-mf-03",
+   "clean-sf-01",
+   "clean-sf-02"
+  ],
+  "h_a3": {
+   "interior_at_fable": 13,
+   "threshold": 5,
+   "fires": true
+  }
+ }
+}

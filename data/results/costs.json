@@ -1,0 +1,151 @@
+{
+ "table": {
+  "claude-haiku-4-5-20251001/P": {
+   "units": 240,
+   "dispatches": 240,
+   "true_catches": 105,
+   "total_tokens": 2477181,
+   "realized_usd": 11.2238,
+   "cache_cold_usd": 10.6803,
+   "cache_grouped_usd": 11.2238,
+   "usd_per_true_catch": {
+    "realized": 0.1069,
+    "cache_cold": 0.1017,
+    "cache_grouped": 0.1069
+   },
+   "tokens_per_true_catch": 23592.2
+  },
+  "claude-haiku-4-5-20251001/S": {
+   "units": 1200,
+   "dispatches": 1200,
+   "true_catches": 120,
+   "total_tokens": 8554126,
+   "realized_usd": 38.0498,
+   "cache_cold_usd": 35.7315,
+   "cache_grouped_usd": 38.0498,
+   "usd_per_true_catch": {
+    "realized": 0.3171,
+    "cache_cold": 0.2978,
+    "cache_grouped": 0.3171
+   },
+   "tokens_per_true_catch": 71284.4
+  },
+  "claude-haiku-4-5-20251001/Sq": {
+   "units": 240,
+   "dispatches": 1200,
+   "true_catches": 122,
+   "total_tokens": 19201411,
+   "realized_usd": 34.4468,
+   "cache_cold_usd": 40.3852,
+   "cache_grouped_usd": 34.4468,
+   "usd_per_true_catch": {
+    "realized": 0.2824,
+    "cache_cold": 0.331,
+    "cache_grouped": 0.2824
+   },
+   "tokens_per_true_catch": 157388.6
+  },
+  "claude-opus-5/P": {
+   "units": 176,
+   "dispatches": 176,
+   "true_catches": 68,
+   "total_tokens": 679596,
+   "realized_usd": 10.1911,
+   "cache_cold_usd": 9.3521,
+   "cache_grouped_usd": 10.1911,
+   "usd_per_true_catch": {
+    "realized": 0.1499,
+    "cache_cold": 0.1375,
+    "cache_grouped": 0.1499
+   },
+   "tokens_per_true_catch": 9994.1
+  },
+  "claude-opus-5/S": {
+   "units": 880,
+   "dispatches": 880,
+   "true_catches": 75,
+   "total_tokens": 2232016,
+   "realized_usd": 25.2026,
+   "cache_cold_usd": 25.1299,
+   "cache_grouped_usd": 25.2026,
+   "usd_per_true_catch": {
+    "realized": 0.336,
+    "cache_cold": 0.3351,
+    "cache_grouped": 0.336
+   },
+   "tokens_per_true_catch": 29760.2
+  },
+  "claude-sonnet-5/P": {
+   "units": 132,
+   "dispatches": 132,
+   "true_catches": 80,
+   "total_tokens": 520119,
+   "realized_usd": 4.8584,
+   "cache_cold_usd": 4.3648,
+   "cache_grouped_usd": 4.8584,
+   "usd_per_true_catch": {
+    "realized": 0.0607,
+    "cache_cold": 0.0546,
+    "cache_grouped": 0.0607
+   },
+   "tokens_per_true_catch": 6501.5
+  },
+  "claude-sonnet-5/S": {
+   "units": 660,
+   "dispatches": 660,
+   "true_catches": 75,
+   "total_tokens": 1534095,
+   "realized_usd": 9.7519,
+   "cache_cold_usd": 9.2097,
+   "cache_grouped_usd": 9.7519,
+   "usd_per_true_catch": {
+    "realized": 0.13,
+    "cache_cold": 0.1228,
+    "cache_grouped": 0.13
+   },
+   "tokens_per_true_catch": 20454.6
+  },
+  "claude-sonnet-5/Sq": {
+   "units": 132,
+   "dispatches": 660,
+   "true_catches": 70,
+   "total_tokens": 2314815,
+   "realized_usd": 7.1463,
+   "cache_cold_usd": 10.7193,
+   "cache_grouped_usd": 7.1463,
+   "usd_per_true_catch": {
+    "realized": 0.1021,
+    "cache_cold": 0.1531,
+    "cache_grouped": 0.1021
+   },
+   "tokens_per_true_catch": 33068.8
+  }
+ },
+ "list_prices_usd_per_mtok": {
+  "claude-haiku-4-5-20251001": {
+   "in": 1.0,
+   "out": 5.0
+  },
+  "claude-sonnet-5": {
+   "in": 3.0,
+   "out": 15.0
+  },
+  "claude-opus-5": {
+   "in": 5.0,
+   "out": 25.0
+  }
+ },
+ "cache_grouped_anchor": {
+  "probe_cache_reads": {
+   "claude-haiku-4-5-20251001": 0,
+   "claude-sonnet-5": 0,
+   "claude-opus-5": 0
+  },
+  "statement": "grouped-order probes measured zero cache reads at every tier; the anchored cache-grouped estimate equals realized (no discount); haiku additionally engaged no cache at all (0 writes, payload below the cache minimum \u2014 the bank-calibration pilot's 0/400 replicated)"
+ },
+ "disclosures": [
+  "recorded input_tokens undercount billed input (CLI scaffolding); cache-cold is a floor on true cold cost, direction stated",
+  "tokens_per_true_catch uses total tokens across all four fields",
+  "$/true-catch UNDEFINED (null) at zero catches, never imputed"
+ ]
+}

@@ -1,0 +1,174 @@
+{
+  "meta": {
+    "seed": 20260817,
+    "n_boot": 10000,
+    "n_sim": 2000,
+    "sigma_item": 0.2,
+    "alpha": 0.05,
+    "m_holm": 4,
+    "note": "nested Monte Carlo; N_BOOT=10,000 (full registered per-dataset bootstrap count) x N_SIM=2,000 outer reps; every named quantity independently content-addressed-seeded (see _reseed)"
+  },
+  "task1_ci_halfwidths": {
+    "haiku_Delta_n60_r3": {
+      "0.3": 0.08559621527777776,
+      "0.5": 0.09333649305555554,
+      "0.7": 0.08550315972222222
+    },
+    "sonnet_Delta_n24_r3": {
+      "0.3": 0.13265876736111107,
+      "0.5": 0.14489192708333332,
+      "0.7": 0.13203029513888886
+    },
+    "opus_Delta_n24_r3": {
+      "0.3": 0.13296510416666665,
+      "0.5": 0.1448121527777778,
+      "0.7": 0.13197508680555553
+    },
+    "opus_Delta_n24_r2": {
+      "0.3": 0.16207669270833333,
+      "0.5": 0.17716523437499995,
+      "0.7": 0.16242031249999997
+    },
+    "HB3_interaction_opusR3": {
+      "0.3": 0.1870658854166666,
+      "0.5": 0.20510894097222218,
+      "0.7": 0.18688263888888884
+    },
+    "HB3_interaction_opusR2": {
+      "0.3": 0.20952730034722217,
+      "0.5": 0.2292532118055555,
+      "0.7": 0.20844262152777773
+    }
+  },
+  "task2_holm_power": {
+    "HB1_onesided": {
+      "0.1": 0.4175,
+      "0.15": 0.811,
+      "0.2": 0.9715
+    },
+    "HB2_onesided": {
+      "0.15": 0.394,
+      "0.2": 0.6185,
+      "0.25": 0.848
+    },
+    "HB3_onesided": {
+      "0.15": 0.2275,
+      "0.2": 0.3555,
+      "0.25": 0.531
+    },
+    "HB1_twosided_sensitivity": {
+      "0.1": 0.332,
+      "0.15": 0.7,
+      "0.2": 0.94
+    },
+    "HB3_twosided_sensitivity": {
+      "0.15": 0.178,
+      "0.2": 0.268,
+      "0.25": 0.444
+    }
+  },
+  "task3_ttflat_reach_probability": {
+    "r3": 0.518,
+    "r2": 0.194
+  },
+  "task4_fa_precision_halfwidth": {
+    "0.02": {
+      "median_hw": 0.0,
+      "p10_hw": 0.0,
+      "p90_hw": 0.125,
+      "frac_degenerate_both_arms_zero": 0.6105,
+      "frac_resolved_inbound_true_delta0": 0.7855,
+      "frac_correctly_flags_breach_true_delta0.20_over_bound": 0.089
+    },
+    "0.05": {
+      "median_hw": 0.125,
+      "p10_hw": 0.0,
+      "p90_hw": 0.25,
+      "frac_degenerate_both_arms_zero": 0.2775,
+      "frac_resolved_inbound_true_delta0": 0.5795,
+      "frac_correctly_flags_breach_true_delta0.20_over_bound": 0.124
+    },
+    "0.1": {
+      "median_hw": 0.16666666666666666,
+      "p10_hw": 0.0,
+      "p90_hw": 0.25,
+      "frac_degenerate_both_arms_zero": 0.0815,
+      "frac_resolved_inbound_true_delta0": 0.4075,
+      "frac_correctly_flags_breach_true_delta0.20_over_bound": 0.1155
+    }
+  },
+  "rev2": {
+    "meta": {
+      "prereg_commit": "fa4cf1e",
+      "pool": "C44 (36 defective + 8 clean)",
+      "seed": 20260817,
+      "n_boot": 10000,
+      "n_sim": 2000,
+      "sigma_item": 0.2,
+      "alpha": 0.05,
+      "m_holm": 4,
+      "note": "H-B1/H-B4 unchanged (haiku n=60, r=3); H-B2 and both H-B3 legs now ride C44's 36 items; opus r=3 registered / r=2 floor / r=4 flagged lock option; TTFLAT band read now the 90% CI (TOST @ alpha=0.05), same +/-0.20 band.",
+      "runtime_sec_rev2_block": 444.3
+    },
+    "ci_halfwidths_n36": {
+      "sonnet_Delta_n36_r3": {
+        "0.3": 0.10945185185185183,
+        "0.5": 0.11991249999999998,
+        "0.7": 0.10980271990740739
+      },
+      "opus_Delta_n36_r3": {
+        "0.3": 0.1092450810185185,
+        "0.5": 0.11980810185185184,
+        "0.7": 0.11014184027777776
+      },
+      "opus_Delta_n36_r2": {
+        "0.3": 0.13399227430555555,
+        "0.5": 0.1475698784722222,
+        "0.7": 0.1338322048611111
+      },
+      "opus_Delta_n36_r4": {
+        "0.3": 0.09470234374999999,
+        "0.5": 0.10390703124999999,
+        "0.7": 0.09532539062499998
+      },
+      "HB3_interaction_n36_opusR2": {
+        "0.3": 0.17295978009259255,
+        "0.5": 0.18955086805555552,
+        "0.7": 0.17337740162037035
+      },
+      "HB3_interaction_n36_opusR3": {
+        "0.3": 0.15485543981481475,
+        "0.5": 0.16980017361111105,
+        "0.7": 0.15509890046296296
+      },
+      "HB3_interaction_n36_opusR4": {
+        "0.3": 0.1443108796296296,
+        "0.5": 0.1583997685185185,
+        "0.7": 0.14502012442129625
+      }
+    },
+    "holm_power_n36": {
+      "HB2_onesided_r3": {
+        "0.15": 0.535,
+        "0.2": 0.8105,
+        "0.25": 0.9615
+      },
+      "HB3_onesided_opusR3": {
+        "0.15": 0.308,
+        "0.2": 0.515,
+        "0.25": 0.698
+      },
+      "HB3_onesided_opusR4": {
+        "0.15": 0.344,
+        "0.2": 0.593,
+        "0.25": 0.789
+      }
+    },
+    "ttflat_reach_90ci_n36": {
+      "r2": 0.7025,
+      "r3": 0.8805,
+      "r4": 0.953
+    }
+  },
+  "runtime_sec": 444.3
+}

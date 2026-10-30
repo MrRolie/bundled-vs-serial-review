@@ -1,0 +1,436 @@
+{
+ "labels": "\u00a711.3 descriptive/exploratory \u2014 CI only, never Holm'd",
+ "catch_decomposition": {
+  "claude-haiku-4-5-20251001/P": {
+   "unconditional": {
+    "catches": 105,
+    "n": 180
+   },
+   "conditional_on_well_formed": {
+    "catches": 80,
+    "n": 130
+   }
+  },
+  "claude-haiku-4-5-20251001/S": {
+   "unconditional": {
+    "catches": 120,
+    "n": 180
+   },
+   "conditional_on_well_formed": {
+    "catches": 83,
+    "n": 120
+   }
+  },
+  "claude-haiku-4-5-20251001/Sq": {
+   "unconditional": {
+    "catches": 122,
+    "n": 180
+   },
+   "conditional_on_well_formed": {
+    "catches": 42,
+    "n": 67
+   }
+  },
+  "claude-sonnet-5/P": {
+   "unconditional": {
+    "catches": 80,
+    "n": 108
+   },
+   "conditional_on_well_formed": {
+    "catches": 80,
+    "n": 108
+   }
+  },
+  "claude-sonnet-5/S": {
+   "unconditional": {
+    "catches": 75,
+    "n": 108
+   },
+   "conditional_on_well_formed": {
+    "catches": 74,
+    "n": 105
+   }
+  },
+  "claude-sonnet-5/Sq": {
+   "unconditional": {
+    "catches": 70,
+    "n": 108
+   },
+   "conditional_on_well_formed": {
+    "catches": 62,
+    "n": 97
+   }
+  },
+  "claude-opus-5/P": {
+   "unconditional": {
+    "catches": 68,
+    "n": 144
+   },
+   "conditional_on_well_formed": {
+    "catches": 68,
+    "n": 144
+   }
+  },
+  "claude-opus-5/S": {
+   "unconditional": {
+    "catches": 75,
+    "n": 144
+   },
+   "conditional_on_well_formed": {
+    "catches": 74,
+    "n": 143
+   }
+  }
+ },
+ "s_minus_sq": {
+  "label": "the COMPOUND (repetition \u2212 self-anchoring), never 'the repetition component' (D-1)",
+  "haiku": {
+   "delta": -0.011111111111111183,
+   "n_items": 60,
+   "ci95": [
+    -0.09444444444444444,
+    0.07222222222222219
+   ],
+   "ci90": [
+    -0.08333333333333326,
+    0.05555555555555558
+   ],
+   "p_one_sided": 0.6323,
+   "p_two_sided_sensitivity": 0.8358,
+   "n_boot": 10000,
+   "seed": 1512
+  },
+  "sonnet": {
+   "delta": 0.04629629629629628,
+   "n_items": 36,
+   "ci95": [
+    -0.05555555555555558,
+    0.14814814814814814
+   ],
+   "ci90": [
+    -0.03703703703703709,
+    0.12962962962962965
+   ],
+   "p_one_sided": 0.2112,
+   "p_two_sided_sensitivity": 0.4224,
+   "n_boot": 10000,
+   "seed": 1512
+  }
+ },
+ "sq_minus_p_sonnet": {
+  "delta": -0.09259259259259256,
+  "n_items": 36,
+  "ci95": [
+   -0.20370370370370372,
+   0.01851851851851849
+  ],
+  "ci90": [
+   -0.18518518518518523,
+   0.0
+  ],
+  "p_one_sided": 0.9586,
+  "p_two_sided_sensitivity": 0.117,
+  "n_boot": 10000,
+  "seed": 1512
+ },
+ "gradient_sonnet_minus_opus": {
+  "label": "(S\u2212P)_sonnet \u2212 (S\u2212P)_opus over C44, shared item draw",
+  "delta": -0.09490740740740744,
+  "n_items": 36,
+  "ci95": [
+   -0.23611111111111116,
+   0.04861111111111116
+  ],
+  "ci90": [
+   -0.21527777777777768,
+   0.02546296296296291
+  ],
+  "p_one_sided": 0.9051,
+  "p_two_sided_sensitivity": 0.1984,
+  "n_boot": 10000,
+  "seed": 1512
+ },
+ "turn1_anchor_check": {
+  "claude-haiku-4-5-20251001": {
+   "sq_target_at_turn1": {
+    "catches": 22,
+    "n": 35
+   },
+   "s_all": {
+    "catches": 120,
+    "n": 180
+   }
+  },
+  "claude-sonnet-5": {
+   "sq_target_at_turn1": {
+    "catches": 18,
+    "n": 23
+   },
+   "s_all": {
+    "catches": 75,
+    "n": 108
+   }
+  }
+ },
+ "p_position_slope": {
+  "claude-haiku-4-5-20251001": {
+   "1": {
+    "catches": 21,
+    "n": 36
+   },
+   "2": {
+    "catches": 26,
+    "n": 32
+   },
+   "3": {
+    "catches": 21,
+    "n": 45
+   },
+   "4": {
+    "catches": 15,
+    "n": 29
+   },
+   "5": {
+    "catches": 22,
+    "n": 38
+   }
+  },
+  "claude-sonnet-5": {
+   "1": {
+    "catches": 16,
+    "n": 21
+   },
+   "2": {
+    "catches": 18,
+    "n": 21
+   },
+   "3": {
+    "catches": 16,
+    "n": 28
+   },
+   "4": {
+    "catches": 12,
+    "n": 15
+   },
+   "5": {
+    "catches": 18,
+    "n": 23
+   }
+  },
+  "claude-opus-5": {
+   "1": {
+    "catches": 7,
+    "n": 25
+   },
+   "2": {
+    "catches": 20,
+    "n": 32
+   },
+   "3": {
+    "catches": 13,
+    "n": 34
+   },
+   "4": {
+    "catches": 16,
+    "n": 25
+   },
+   "5": {
+    "catches": 12,
+    "n": 28
+   }
+  }
+ },
+ "flag_count_distribution": {
+  "note": "FLAG verdicts per (item, rep) response set across its five question-rows (S: five dispatches; Sq: five turns); verdict = strict, else loose, else adjudicated",
+  "cells": {
+   "claude-haiku-4-5-20251001/P": {
+    "0": 43,
+    "1": 160,
+    "2": 35,
+    "3": 2
+   },
+   "claude-haiku-4-5-20251001/S": {
+    "0": 101,
+    "1": 104,
+    "2": 26,
+    "3": 9
+   },
+   "claude-haiku-4-5-20251001/Sq": {
+    "0": 37,
+    "1": 97,
+    "2": 73,
+    "3": 29,
+    "4": 4
+   },
+   "claude-sonnet-5/P": {
+    "0": 24,
+    "1": 105,
+    "2": 3
+   },
+   "claude-sonnet-5/S": {
+    "0": 94,
+    "1": 38
+   },
+   "claude-sonnet-5/Sq": {
+    "0": 26,
+    "1": 88,
+    "2": 18
+   },
+   "claude-opus-5/P": {
+    "0": 30,
+    "1": 133,
+    "2": 13
+   },
+   "claude-opus-5/S": {
+    "0": 137,
+    "1": 39
+   }
+  }
+ },
+ "hit_alt": {
+  "claude-haiku-4-5-20251001/P": 0,
+  "claude-haiku-4-5-20251001/S": 1,
+  "claude-haiku-4-5-20251001/Sq": 1,
+  "claude-sonnet-5/P": 0,
+  "claude-sonnet-5/S": 1,
+  "claude-sonnet-5/Sq": 1,
+  "claude-opus-5/P": 0,
+  "claude-opus-5/S": 0,
+  "claude-opus-5/Sq": 0
+ },
+ "haiku_family_heterogeneity": {
+  "boundary": {
+   "P": {
+    "catches": 22,
+    "n": 36
+   },
+   "S": {
+    "catches": 26,
+    "n": 36
+   },
+   "Sq": {
+    "catches": 31,
+    "n": 36
+   }
+  },
+  "comparison": {
+   "P": {
+    "catches": 15,
+    "n": 36
+   },
+   "S": {
+    "catches": 17,
+    "n": 36
+   },
+   "Sq": {
+    "catches": 21,
+    "n": 36
+   }
+  },
+  "exception": {
+   "P": {
+    "catches": 15,
+    "n": 36
+   },
+   "S": {
+    "catches": 21,
+    "n": 36
+   },
+   "Sq": {
+    "catches": 18,
+    "n": 36
+   }
+  },
+  "sign": {
+   "P": {
+    "catches": 27,
+    "n": 36
+   },
+   "S": {
+    "catches": 31,
+    "n": 36
+   },
+   "Sq": {
+    "catches": 30,
+    "n": 36
+   }
+  },
+  "units": {
+   "P": {
+    "catches": 26,
+    "n": 36
+   },
+   "S": {
+    "catches": 25,
+    "n": 36
+   },
+   "Sq": {
+    "catches": 22,
+    "n": 36
+   }
+  }
+ },
+ "within_response_error_phi": {
+  "operationalization": "mean pairwise Pearson phi between question-level error indicators (target non-catch / off-family or clean FA) within a five-question response set",
+  "cells": {
+   "claude-haiku-4-5-20251001/P": -0.0308,
+   "claude-haiku-4-5-20251001/Sq": -0.0142,
+   "claude-sonnet-5/P": -0.0147,
+   "claude-sonnet-5/Sq": -0.0014,
+   "claude-opus-5/P": -0.0661
+  }
+ },
+ "equal_dollars_read": {
+  "claude-haiku-4-5-20251001": {
+   "delta_catch_per_delta_usd_S_over_P": 0.5592,
+   "p_catches_per_usd": 9.3551,
+   "note": "same \u0394$ spent on more P reps buys ~251.0 additional catches (linear in reps)"
+  },
+  "claude-sonnet-5": {
+   "delta_catch_per_delta_usd_S_over_P": -1.0218,
+   "p_catches_per_usd": 16.4663,
+   "note": "same \u0394$ spent on more P reps buys ~80.6 additional catches (linear in reps)"
+  },
+  "claude-opus-5": {
+   "delta_catch_per_delta_usd_S_over_P": 0.4663,
+   "p_catches_per_usd": 6.6725,
+   "note": "same \u0394$ spent on more P reps buys ~100.2 additional catches (linear in reps)"
+  }
+ },
+ "equal_dollars_read_costs_source": "costs.json",
+ "output_token_association": {
+  "label": "DESCRIPTIVE ASSOCIATION only (D-2): output tokens are post-treatment; no cell keys on this read",
+  "cells": {
+   "claude-haiku-4-5-20251001/S": {
+    "point_biserial_r": -0.1489,
+    "n": 180,
+    "mean_output_tokens": 3423.1
+   },
+   "claude-haiku-4-5-20251001/P": {
+    "point_biserial_r": -0.0971,
+    "n": 180,
+    "mean_output_tokens": 7735.8
+   },
+   "claude-sonnet-5/S": {
+    "point_biserial_r": 0.0437,
+    "n": 108,
+    "mean_output_tokens": 601.0
+   },
+   "claude-sonnet-5/P": {
+    "point_biserial_r": -0.0136,
+    "n": 108,
+    "mean_output_tokens": 1634.0
+   },
+   "claude-opus-5/S": {
+    "point_biserial_r": -0.0983,
+    "n": 144,
+    "mean_output_tokens": 661.5
+   },
+   "claude-opus-5/P": {
+    "point_biserial_r": -0.123,
+    "n": 144,
+    "mean_output_tokens": 1528.8
+   }
+  }
+ }
+}

@@ -1,0 +1,38 @@
+{
+ "note": "non-registered MC-stability sensitivity (descriptive): registered instrument is n_boot=10,000 seed 1512",
+ "n_boot": 1000000,
+ "p_one_sided_seed1512": {
+  "H-B1": 0.011446,
+  "H-B2": 0.813288,
+  "H-B3": 0.320767,
+  "H-B4": 0.016236
+ },
+ "holm_fired_seed1512": {
+  "H-B1": true,
+  "H-B2": false,
+  "H-B3": false,
+  "H-B4": true
+ },
+ "p_seed7": {
+  "H-B1": 0.011507,
+  "H-B4": 0.016511
+ },
+ "seed_sweep_10k": {
+  "seeds": "1..40",
+  "H-B1_fires": 33,
+  "H-B4_fires": 17,
+  "joint": {
+   "(F,N)": 16,
+   "(N,N)": 7,
+   "(F,F)": 17
+  },
+  "H-B1_p_range": [
+   0.0098,
+   0.0139
+  ],
+  "H-B4_p_range": [
+   0.0141,
+   0.0189
+  ]
+ }
+}

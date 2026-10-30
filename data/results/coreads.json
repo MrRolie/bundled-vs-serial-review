@@ -1,0 +1,2915 @@
+{
+ "registered_variants": [
+  "V2_p_maximal_key_scope",
+  "V3_label_respecting_punitive"
+ ],
+ "results": {
+  "V1_primary": {
+   "relabeled_rows": 0,
+   "deltas": {
+    "H-B1": 0.0833,
+    "H-B2": -0.0463,
+    "H-B3": 0.0255,
+    "H-B4": 0.0944
+   },
+   "ci95": {
+    "H-B1": [
+     0.0167,
+     0.15
+    ],
+    "H-B2": [
+     -0.1574,
+     0.0648
+    ],
+    "H-B3": [
+     -0.0787,
+     0.1319
+    ],
+    "H-B4": [
+     0.0111,
+     0.1833
+    ]
+   },
+   "p_one_sided": {
+    "H-B1": 0.0111,
+    "H-B2": 0.814,
+    "H-B3": 0.3219,
+    "H-B4": 0.0169
+   },
+   "holm_fired": {
+    "H-B1": true,
+    "H-B2": false,
+    "H-B3": false,
+    "H-B4": false
+   },
+   "member_states": {
+    "H-B1": "F",
+    "H-B2": "N",
+    "H-B3": "N",
+    "H-B4": "N"
+   },
+   "composite_cell": "C-B2",
+   "c_b5_sub_read": null,
+   "hits_ci_above_0": {
+    "claude-haiku-4-5-20251001": true,
+    "claude-sonnet-5": false,
+    "claude-opus-5": false
+   },
+   "pooled_rates": {
+    "H-B1": {
+     "S": 0.6666666666666666,
+     "P": 0.5833333333333334
+    },
+    "H-B4": {
+     "Sq": 0.6777777777777778,
+     "P": 0.5833333333333334
+    },
+    "H-B2": {
+     "S": 0.6944444444444444,
+     "P": 0.7407407407407407
+    },
+    "H-B3": {
+     "S_haiku": 0.7037037037037037,
+     "P_haiku": 0.6296296296296297,
+     "S_opus": 0.5208333333333334,
+     "P_opus": 0.4722222222222222
+    }
+   },
+   "fa": {
+    "claude-haiku-4-5-20251001": {
+     "class1_clean_anyflag": {
+      "mf": {
+       "state": "UNRESOLVED",
+       "fa_hi": 0.7666666666666667,
+       "fa_lo": 0.43333333333333335,
+       "diff": 0.33333333333333337,
+       "bound": 0.15,
+       "ratio_clause": true,
+       "delta": 0.33333333333333337,
+       "n_items": 10,
+       "ci95": [
+        0.09999999999999998,
+        0.6000000000000001
+       ],
+       "ci90": [
+        0.1333333333333333,
+        0.5333333333333334
+       ],
+       "p_one_sided": 0.0012,
+       "p_two_sided_sensitivity": 0.0024,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.6666666666666666,
+       "fa_lo": 0.36666666666666664,
+       "diff": 0.3,
+       "bound": 0.15,
+       "ratio_clause": true,
+       "delta": 0.3,
+       "n_items": 10,
+       "ci95": [
+        0.16666666666666663,
+        0.4333333333333334
+       ],
+       "ci90": [
+        0.16666666666666669,
+        0.4333333333333333
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class2_off_family_fa": {
+      "mf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.2853107344632768,
+       "fa_lo": 0.05367231638418079,
+       "diff": 0.23163841807909602,
+       "bound": 0.15,
+       "ratio_clause": false,
+       "delta": 0.23163841807909602,
+       "n_items": 30,
+       "ci95": [
+        0.18055555555555555,
+        0.2833333333333333
+       ],
+       "ci90": [
+        0.18840579710144928,
+        0.27635327635327633
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.2937853107344633,
+       "fa_lo": 0.05367231638418079,
+       "diff": 0.2401129943502825,
+       "bound": 0.15,
+       "ratio_clause": false,
+       "delta": 0.2401129943502825,
+       "n_items": 30,
+       "ci95": [
+        0.1851851851851852,
+        0.2963041431261769
+       ],
+       "ci90": [
+        0.19373219373219372,
+        0.28735632183908044
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.0480225988700565,
+       "fa_lo": 0.0,
+       "diff": 0.0480225988700565,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.0480225988700565,
+       "n_items": 30,
+       "ci95": [
+        0.022598870056497175,
+        0.07692307692307693
+       ],
+       "ci90": [
+        0.02564102564102564,
+        0.07222222222222222
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.04519774011299435,
+       "fa_lo": 0.002824858757062147,
+       "diff": 0.0423728813559322,
+       "bound": 0.15,
+       "ratio_clause": false,
+       "delta": 0.0423728813559322,
+       "n_items": 30,
+       "ci95": [
+        0.022222222222222223,
+        0.06722689075630253
+       ],
+       "ci90": [
+        0.025,
+        0.06267806267806268
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     }
+    },
+    "claude-sonnet-5": {
+     "class1_clean_anyflag": {
+      "mf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.0,
+       "fa_lo": 0.0,
+       "diff": 0.0,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.0,
+       "n_items": 4,
+       "ci95": [
+        0.0,
+        0.0
+       ],
+       "ci90": [
+        0.0,
+        0.0
+       ],
+       "p_one_sided": 1.0,
+       "p_two_sided_sensitivity": 1.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "UNRESOLVED",
+       "fa_hi": 0.16666666666666666,
+       "fa_lo": 0.0,
+       "diff": 0.16666666666666666,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.16666666666666666,
+       "n_items": 4,
+       "ci95": [
+        0.0,
+        0.5
+       ],
+       "ci90": [
+        0.0,
+        0.5
+       ],
+       "p_one_sided": 0.3104,
+       "p_two_sided_sensitivity": 0.6208,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class2_off_family_fa": {
+      "mf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.07555555555555556,
+       "fa_lo": 0.0,
+       "diff": 0.07555555555555556,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.07555555555555556,
+       "n_items": 19,
+       "ci95": [
+        0.03508771929824561,
+        0.12162162162162163
+       ],
+       "ci90": [
+        0.04,
+        0.11403508771929824
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.03482587064676617,
+       "fa_lo": 0.009950248756218905,
+       "diff": 0.024875621890547265,
+       "bound": 0.15,
+       "ratio_clause": false,
+       "delta": 0.024875621890547265,
+       "n_items": 17,
+       "ci95": [
+        0.0,
+        0.054726368159203974
+       ],
+       "ci90": [
+        0.004901960784313725,
+        0.04975124378109452
+       ],
+       "p_one_sided": 0.0383,
+       "p_two_sided_sensitivity": 0.0766,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.013333333333333334,
+       "fa_lo": 0.0,
+       "diff": 0.013333333333333334,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.013333333333333334,
+       "n_items": 19,
+       "ci95": [
+        0.0,
+        0.03508771929824561
+       ],
+       "ci90": [
+        0.0,
+        0.03111111111111111
+       ],
+       "p_one_sided": 0.1208,
+       "p_two_sided_sensitivity": 0.2416,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.004975124378109453,
+       "fa_lo": 0.0,
+       "diff": 0.004975124378109453,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.004975124378109453,
+       "n_items": 17,
+       "ci95": [
+        0.0,
+        0.015151515151515152
+       ],
+       "ci90": [
+        0.0,
+        0.014925373134328358
+       ],
+       "p_one_sided": 0.3635,
+       "p_two_sided_sensitivity": 0.727,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     }
+    },
+    "claude-opus-5": {
+     "class1_clean_anyflag": {
+      "mf": {
+       "state": "UNRESOLVED",
+       "fa_hi": 0.0625,
+       "fa_lo": 0.0,
+       "diff": 0.0625,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.0625,
+       "n_items": 4,
+       "ci95": [
+        0.0,
+        0.1875
+       ],
+       "ci90": [
+        0.0,
+        0.1875
+       ],
+       "p_one_sided": 0.3183,
+       "p_two_sided_sensitivity": 0.6366,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "UNRESOLVED",
+       "fa_hi": 0.25,
+       "fa_lo": 0.125,
+       "diff": 0.125,
+       "bound": 0.15,
+       "ratio_clause": true,
+       "delta": 0.125,
+       "n_items": 4,
+       "ci95": [
+        0.0,
+        0.375
+       ],
+       "ci90": [
+        0.0,
+        0.375
+       ],
+       "p_one_sided": 0.3104,
+       "p_two_sided_sensitivity": 0.6208,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class2_off_family_fa": {
+      "mf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.09333333333333334,
+       "fa_lo": 0.03,
+       "diff": 0.06333333333333334,
+       "bound": 0.15,
+       "ratio_clause": false,
+       "delta": 0.06333333333333334,
+       "n_items": 19,
+       "ci95": [
+        0.030405405405405407,
+        0.09666666666666666
+       ],
+       "ci90": [
+        0.03618421052631579,
+        0.09210526315789473
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.014925373134328358,
+       "fa_lo": 0.007462686567164179,
+       "diff": 0.007462686567164179,
+       "bound": 0.15,
+       "ratio_clause": true,
+       "delta": 0.007462686567164179,
+       "n_items": 17,
+       "ci95": [
+        0.0,
+        0.022727272727272728
+       ],
+       "ci90": [
+        0.0,
+        0.022388059701492536
+       ],
+       "p_one_sided": 0.3502,
+       "p_two_sided_sensitivity": 0.7004,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.0,
+       "fa_lo": 0.0,
+       "diff": 0.0,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.0,
+       "n_items": 19,
+       "ci95": [
+        0.0,
+        0.0
+       ],
+       "ci90": [
+        0.0,
+        0.0
+       ],
+       "p_one_sided": 1.0,
+       "p_two_sided_sensitivity": 1.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.0,
+       "fa_lo": 0.0,
+       "diff": 0.0,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.0,
+       "n_items": 17,
+       "ci95": [
+        0.0,
+        0.0
+       ],
+       "ci90": [
+        0.0,
+        0.0
+       ],
+       "p_one_sided": 1.0,
+       "p_two_sided_sensitivity": 1.0,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     }
+    }
+   },
+   "criterion_shift_stamp": {
+    "claude-haiku-4-5-20251001": {
+     "stamped": true,
+     "hits_ci_above_0": true,
+     "any_fa_ci_above_0": true
+    },
+    "claude-sonnet-5": {
+     "stamped": false,
+     "hits_ci_above_0": false,
+     "any_fa_ci_above_0": true
+    },
+    "claude-opus-5": {
+     "stamped": false,
+     "hits_ci_above_0": false,
+     "any_fa_ci_above_0": true
+    }
+   }
+  },
+  "V2_p_maximal_key_scope": {
+   "relabeled_rows": 33,
+   "deltas": {
+    "H-B1": 0.0667,
+    "H-B2": -0.0556,
+    "H-B3": 0.0231,
+    "H-B4": 0.0778
+   },
+   "ci95": {
+    "H-B1": [
+     0.0,
+     0.1333
+    ],
+    "H-B2": [
+     -0.1667,
+     0.0556
+    ],
+    "H-B3": [
+     -0.0764,
+     0.1273
+    ],
+    "H-B4": [
+     -0.0056,
+     0.1667
+    ]
+   },
+   "p_one_sided": {
+    "H-B1": 0.0354,
+    "H-B2": 0.8507,
+    "H-B3": 0.3397,
+    "H-B4": 0.0423
+   },
+   "holm_fired": {
+    "H-B1": false,
+    "H-B2": false,
+    "H-B3": false,
+    "H-B4": false
+   },
+   "member_states": {
+    "H-B1": "N",
+    "H-B2": "N",
+    "H-B3": "N",
+    "H-B4": "N"
+   },
+   "composite_cell": "C-B5",
+   "c_b5_sub_read": "INCONCLUSIVE",
+   "hits_ci_above_0": {
+    "claude-haiku-4-5-20251001": false,
+    "claude-sonnet-5": false,
+    "claude-opus-5": false
+   },
+   "pooled_rates": {
+    "H-B1": {
+     "S": 0.6666666666666666,
+     "P": 0.6
+    },
+    "H-B4": {
+     "Sq": 0.6777777777777778,
+     "P": 0.6
+    },
+    "H-B2": {
+     "S": 0.6944444444444444,
+     "P": 0.75
+    },
+    "H-B3": {
+     "S_haiku": 0.7037037037037037,
+     "P_haiku": 0.6388888888888888,
+     "S_opus": 0.5208333333333334,
+     "P_opus": 0.4791666666666667
+    }
+   },
+   "fa": {
+    "claude-haiku-4-5-20251001": {
+     "class1_clean_anyflag": {
+      "mf": {
+       "state": "UNRESOLVED",
+       "fa_hi": 0.7666666666666667,
+       "fa_lo": 0.43333333333333335,
+       "diff": 0.33333333333333337,
+       "bound": 0.15,
+       "ratio_clause": true,
+       "delta": 0.33333333333333337,
+       "n_items": 10,
+       "ci95": [
+        0.09999999999999998,
+        0.6000000000000001
+       ],
+       "ci90": [
+        0.1333333333333333,
+        0.5333333333333334
+       ],
+       "p_one_sided": 0.0012,
+       "p_two_sided_sensitivity": 0.0024,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.6666666666666666,
+       "fa_lo": 0.36666666666666664,
+       "diff": 0.3,
+       "bound": 0.15,
+       "ratio_clause": true,
+       "delta": 0.3,
+       "n_items": 10,
+       "ci95": [
+        0.16666666666666663,
+        0.4333333333333334
+       ],
+       "ci90": [
+        0.16666666666666669,
+        0.4333333333333333
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class2_off_family_fa": {
+      "mf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.2853107344632768,
+       "fa_lo": 0.05367231638418079,
+       "diff": 0.23163841807909602,
+       "bound": 0.15,
+       "ratio_clause": false,
+       "delta": 0.23163841807909602,
+       "n_items": 30,
+       "ci95": [
+        0.18055555555555555,
+        0.2833333333333333
+       ],
+       "ci90": [
+        0.18840579710144928,
+        0.27635327635327633
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.2937853107344633,
+       "fa_lo": 0.05367231638418079,
+       "diff": 0.2401129943502825,
+       "bound": 0.15,
+       "ratio_clause": false,
+       "delta": 0.2401129943502825,
+       "n_items": 30,
+       "ci95": [
+        0.1851851851851852,
+        0.2963041431261769
+       ],
+       "ci90": [
+        0.19373219373219372,
+        0.28735632183908044
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.0480225988700565,
+       "fa_lo": 0.03954802259887006,
+       "diff": 0.008474576271186439,
+       "bound": 0.15,
+       "ratio_clause": true,
+       "delta": 0.008474576271186439,
+       "n_items": 30,
+       "ci95": [
+        -0.019774011299435026,
+        0.0392156862745098
+       ],
+       "ci90": [
+        -0.01436781609195402,
+        0.03389830508474576
+       ],
+       "p_one_sided": 0.3233,
+       "p_two_sided_sensitivity": 0.6466,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.04519774011299435,
+       "fa_lo": 0.022598870056497175,
+       "diff": 0.022598870056497175,
+       "bound": 0.15,
+       "ratio_clause": true,
+       "delta": 0.022598870056497175,
+       "n_items": 30,
+       "ci95": [
+        -0.0028248587570621486,
+        0.05084745762711865
+       ],
+       "ci90": [
+        0.0,
+        0.04597701149425288
+       ],
+       "p_one_sided": 0.0548,
+       "p_two_sided_sensitivity": 0.1096,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     }
+    },
+    "claude-sonnet-5": {
+     "class1_clean_anyflag": {
+      "mf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.0,
+       "fa_lo": 0.0,
+       "diff": 0.0,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.0,
+       "n_items": 4,
+       "ci95": [
+        0.0,
+        0.0
+       ],
+       "ci90": [
+        0.0,
+        0.0
+       ],
+       "p_one_sided": 1.0,
+       "p_two_sided_sensitivity": 1.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "UNRESOLVED",
+       "fa_hi": 0.16666666666666666,
+       "fa_lo": 0.0,
+       "diff": 0.16666666666666666,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.16666666666666666,
+       "n_items": 4,
+       "ci95": [
+        0.0,
+        0.5
+       ],
+       "ci90": [
+        0.0,
+        0.5
+       ],
+       "p_one_sided": 0.3104,
+       "p_two_sided_sensitivity": 0.6208,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class2_off_family_fa": {
+      "mf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.07555555555555556,
+       "fa_lo": 0.0,
+       "diff": 0.07555555555555556,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.07555555555555556,
+       "n_items": 19,
+       "ci95": [
+        0.03508771929824561,
+        0.12162162162162163
+       ],
+       "ci90": [
+        0.04,
+        0.11403508771929824
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.03482587064676617,
+       "fa_lo": 0.009950248756218905,
+       "diff": 0.024875621890547265,
+       "bound": 0.15,
+       "ratio_clause": false,
+       "delta": 0.024875621890547265,
+       "n_items": 17,
+       "ci95": [
+        0.0,
+        0.054726368159203974
+       ],
+       "ci90": [
+        0.004901960784313725,
+        0.04975124378109452
+       ],
+       "p_one_sided": 0.0383,
+       "p_two_sided_sensitivity": 0.0766,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.013333333333333334,
+       "fa_lo": 0.0,
+       "diff": 0.013333333333333334,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.013333333333333334,
+       "n_items": 19,
+       "ci95": [
+        0.0,
+        0.03508771929824561
+       ],
+       "ci90": [
+        0.0,
+        0.03111111111111111
+       ],
+       "p_one_sided": 0.1208,
+       "p_two_sided_sensitivity": 0.2416,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.004975124378109453,
+       "fa_lo": 0.004975124378109453,
+       "diff": 0.0,
+       "bound": 0.15,
+       "ratio_clause": true,
+       "delta": 0.0,
+       "n_items": 17,
+       "ci95": [
+        -0.014925373134328358,
+        0.014925373134328358
+       ],
+       "ci90": [
+        -0.010101010101010102,
+        0.010101010101010102
+       ],
+       "p_one_sided": 0.6497,
+       "p_two_sided_sensitivity": 1.0,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     }
+    },
+    "claude-opus-5": {
+     "class1_clean_anyflag": {
+      "mf": {
+       "state": "UNRESOLVED",
+       "fa_hi": 0.0625,
+       "fa_lo": 0.0,
+       "diff": 0.0625,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.0625,
+       "n_items": 4,
+       "ci95": [
+        0.0,
+        0.1875
+       ],
+       "ci90": [
+        0.0,
+        0.1875
+       ],
+       "p_one_sided": 0.3183,
+       "p_two_sided_sensitivity": 0.6366,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "UNRESOLVED",
+       "fa_hi": 0.25,
+       "fa_lo": 0.125,
+       "diff": 0.125,
+       "bound": 0.15,
+       "ratio_clause": true,
+       "delta": 0.125,
+       "n_items": 4,
+       "ci95": [
+        0.0,
+        0.375
+       ],
+       "ci90": [
+        0.0,
+        0.375
+       ],
+       "p_one_sided": 0.3104,
+       "p_two_sided_sensitivity": 0.6208,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class2_off_family_fa": {
+      "mf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.09333333333333334,
+       "fa_lo": 0.03,
+       "diff": 0.06333333333333334,
+       "bound": 0.15,
+       "ratio_clause": false,
+       "delta": 0.06333333333333334,
+       "n_items": 19,
+       "ci95": [
+        0.030405405405405407,
+        0.09666666666666666
+       ],
+       "ci90": [
+        0.03618421052631579,
+        0.09210526315789473
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.014925373134328358,
+       "fa_lo": 0.007462686567164179,
+       "diff": 0.007462686567164179,
+       "bound": 0.15,
+       "ratio_clause": true,
+       "delta": 0.007462686567164179,
+       "n_items": 17,
+       "ci95": [
+        0.0,
+        0.022727272727272728
+       ],
+       "ci90": [
+        0.0,
+        0.022388059701492536
+       ],
+       "p_one_sided": 0.3502,
+       "p_two_sided_sensitivity": 0.7004,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.0,
+       "fa_lo": 0.006666666666666667,
+       "diff": -0.006666666666666667,
+       "bound": 0.15,
+       "ratio_clause": true,
+       "delta": -0.006666666666666667,
+       "n_items": 19,
+       "ci95": [
+        -0.02027027027027027,
+        0.0
+       ],
+       "ci90": [
+        -0.02,
+        0.0
+       ],
+       "p_one_sided": 1.0,
+       "p_two_sided_sensitivity": 0.713,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.0,
+       "fa_lo": 0.007462686567164179,
+       "diff": -0.007462686567164179,
+       "bound": 0.15,
+       "ratio_clause": true,
+       "delta": -0.007462686567164179,
+       "n_items": 17,
+       "ci95": [
+        -0.022727272727272728,
+        0.0
+       ],
+       "ci90": [
+        -0.022388059701492536,
+        0.0
+       ],
+       "p_one_sided": 1.0,
+       "p_two_sided_sensitivity": 0.7004,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     }
+    }
+   },
+   "criterion_shift_stamp": {
+    "claude-haiku-4-5-20251001": {
+     "stamped": false,
+     "hits_ci_above_0": false,
+     "any_fa_ci_above_0": true
+    },
+    "claude-sonnet-5": {
+     "stamped": false,
+     "hits_ci_above_0": false,
+     "any_fa_ci_above_0": true
+    },
+    "claude-opus-5": {
+     "stamped": false,
+     "hits_ci_above_0": false,
+     "any_fa_ci_above_0": true
+    }
+   }
+  },
+  "V3_label_respecting_punitive": {
+   "relabeled_rows": 171,
+   "deltas": {
+    "H-B1": 0.0167,
+    "H-B2": -0.0463,
+    "H-B3": -0.0671,
+    "H-B4": -0.2389
+   },
+   "ci95": {
+    "H-B1": [
+     -0.0556,
+     0.0889
+    ],
+    "H-B2": [
+     -0.1574,
+     0.0648
+    ],
+    "H-B3": [
+     -0.1875,
+     0.0556
+    ],
+    "H-B4": [
+     -0.3389,
+     -0.1444
+    ]
+   },
+   "p_one_sided": {
+    "H-B1": 0.3573,
+    "H-B2": 0.814,
+    "H-B3": 0.8693,
+    "H-B4": 1.0
+   },
+   "holm_fired": {
+    "H-B1": false,
+    "H-B2": false,
+    "H-B3": false,
+    "H-B4": false
+   },
+   "member_states": {
+    "H-B1": "N",
+    "H-B2": "N",
+    "H-B3": "N",
+    "H-B4": "R"
+   },
+   "composite_cell": "C-B5",
+   "c_b5_sub_read": "RITUAL-at-haiku",
+   "hits_ci_above_0": {
+    "claude-haiku-4-5-20251001": false,
+    "claude-sonnet-5": false,
+    "claude-opus-5": false
+   },
+   "pooled_rates": {
+    "H-B1": {
+     "S": 0.6,
+     "P": 0.5833333333333334
+    },
+    "H-B4": {
+     "Sq": 0.34444444444444444,
+     "P": 0.5833333333333334
+    },
+    "H-B2": {
+     "S": 0.6944444444444444,
+     "P": 0.7407407407407407
+    },
+    "H-B3": {
+     "S_haiku": 0.6111111111111112,
+     "P_haiku": 0.6296296296296297,
+     "S_opus": 0.5208333333333334,
+     "P_opus": 0.4722222222222222
+    }
+   },
+   "fa": {
+    "claude-haiku-4-5-20251001": {
+     "class1_clean_anyflag": {
+      "mf": {
+       "state": "UNRESOLVED",
+       "fa_hi": 0.7,
+       "fa_lo": 0.43333333333333335,
+       "diff": 0.2666666666666666,
+       "bound": 0.15,
+       "ratio_clause": true,
+       "delta": 0.2666666666666666,
+       "n_items": 10,
+       "ci95": [
+        0.033333333333333326,
+        0.5
+       ],
+       "ci90": [
+        0.06666666666666665,
+        0.46666666666666673
+       ],
+       "p_one_sided": 0.0192,
+       "p_two_sided_sensitivity": 0.0384,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "UNRESOLVED",
+       "fa_hi": 0.6333333333333333,
+       "fa_lo": 0.36666666666666664,
+       "diff": 0.26666666666666666,
+       "bound": 0.15,
+       "ratio_clause": true,
+       "delta": 0.26666666666666666,
+       "n_items": 10,
+       "ci95": [
+        0.13333333333333336,
+        0.39999999999999997
+       ],
+       "ci90": [
+        0.16666666666666663,
+        0.3666666666666667
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class2_off_family_fa": {
+      "mf": {
+       "state": "UNRESOLVED",
+       "fa_hi": 0.2514124293785311,
+       "fa_lo": 0.05367231638418079,
+       "diff": 0.1977401129943503,
+       "bound": 0.15,
+       "ratio_clause": false,
+       "delta": 0.1977401129943503,
+       "n_items": 30,
+       "ci95": [
+        0.15,
+        0.24649859943977592
+       ],
+       "ci90": [
+        0.1581920903954802,
+        0.23931623931623933
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.2768361581920904,
+       "fa_lo": 0.05367231638418079,
+       "diff": 0.2231638418079096,
+       "bound": 0.15,
+       "ratio_clause": false,
+       "delta": 0.2231638418079096,
+       "n_items": 30,
+       "ci95": [
+        0.17231403013182675,
+        0.2768361581920904
+       ],
+       "ci90": [
+        0.17948717948717952,
+        0.2678340335119992
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.0423728813559322,
+       "fa_lo": 0.0,
+       "diff": 0.0423728813559322,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.0423728813559322,
+       "n_items": 30,
+       "ci95": [
+        0.01694915254237288,
+        0.07222222222222222
+       ],
+       "ci90": [
+        0.020289855072463767,
+        0.06666666666666667
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.03672316384180791,
+       "fa_lo": 0.002824858757062147,
+       "diff": 0.03389830508474576,
+       "bound": 0.15,
+       "ratio_clause": false,
+       "delta": 0.03389830508474576,
+       "n_items": 30,
+       "ci95": [
+        0.014124293785310734,
+        0.05698005698005698
+       ],
+       "ci90": [
+        0.01694915254237288,
+        0.05324383990884457
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     }
+    },
+    "claude-sonnet-5": {
+     "class1_clean_anyflag": {
+      "mf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.0,
+       "fa_lo": 0.0,
+       "diff": 0.0,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.0,
+       "n_items": 4,
+       "ci95": [
+        0.0,
+        0.0
+       ],
+       "ci90": [
+        0.0,
+        0.0
+       ],
+       "p_one_sided": 1.0,
+       "p_two_sided_sensitivity": 1.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "UNRESOLVED",
+       "fa_hi": 0.08333333333333333,
+       "fa_lo": 0.0,
+       "diff": 0.08333333333333333,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.08333333333333333,
+       "n_items": 4,
+       "ci95": [
+        0.0,
+        0.25
+       ],
+       "ci90": [
+        0.0,
+        0.25
+       ],
+       "p_one_sided": 0.3104,
+       "p_two_sided_sensitivity": 0.6208,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class2_off_family_fa": {
+      "mf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.07555555555555556,
+       "fa_lo": 0.0,
+       "diff": 0.07555555555555556,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.07555555555555556,
+       "n_items": 19,
+       "ci95": [
+        0.03508771929824561,
+        0.12162162162162163
+       ],
+       "ci90": [
+        0.04,
+        0.11403508771929824
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.03482587064676617,
+       "fa_lo": 0.009950248756218905,
+       "diff": 0.024875621890547265,
+       "bound": 0.15,
+       "ratio_clause": false,
+       "delta": 0.024875621890547265,
+       "n_items": 17,
+       "ci95": [
+        0.0,
+        0.054726368159203974
+       ],
+       "ci90": [
+        0.004901960784313725,
+        0.04975124378109452
+       ],
+       "p_one_sided": 0.0383,
+       "p_two_sided_sensitivity": 0.0766,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.013333333333333334,
+       "fa_lo": 0.0,
+       "diff": 0.013333333333333334,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.013333333333333334,
+       "n_items": 19,
+       "ci95": [
+        0.0,
+        0.03508771929824561
+       ],
+       "ci90": [
+        0.0,
+        0.03111111111111111
+       ],
+       "p_one_sided": 0.1208,
+       "p_two_sided_sensitivity": 0.2416,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.004975124378109453,
+       "fa_lo": 0.0,
+       "diff": 0.004975124378109453,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.004975124378109453,
+       "n_items": 17,
+       "ci95": [
+        0.0,
+        0.015151515151515152
+       ],
+       "ci90": [
+        0.0,
+        0.014925373134328358
+       ],
+       "p_one_sided": 0.3635,
+       "p_two_sided_sensitivity": 0.727,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     }
+    },
+    "claude-opus-5": {
+     "class1_clean_anyflag": {
+      "mf": {
+       "state": "UNRESOLVED",
+       "fa_hi": 0.0625,
+       "fa_lo": 0.0,
+       "diff": 0.0625,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.0625,
+       "n_items": 4,
+       "ci95": [
+        0.0,
+        0.1875
+       ],
+       "ci90": [
+        0.0,
+        0.1875
+       ],
+       "p_one_sided": 0.3183,
+       "p_two_sided_sensitivity": 0.6366,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "UNRESOLVED",
+       "fa_hi": 0.25,
+       "fa_lo": 0.125,
+       "diff": 0.125,
+       "bound": 0.15,
+       "ratio_clause": true,
+       "delta": 0.125,
+       "n_items": 4,
+       "ci95": [
+        0.0,
+        0.375
+       ],
+       "ci90": [
+        0.0,
+        0.375
+       ],
+       "p_one_sided": 0.3104,
+       "p_two_sided_sensitivity": 0.6208,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class2_off_family_fa": {
+      "mf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.09333333333333334,
+       "fa_lo": 0.03,
+       "diff": 0.06333333333333334,
+       "bound": 0.15,
+       "ratio_clause": false,
+       "delta": 0.06333333333333334,
+       "n_items": 19,
+       "ci95": [
+        0.030405405405405407,
+        0.09666666666666666
+       ],
+       "ci90": [
+        0.03618421052631579,
+        0.09210526315789473
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.014925373134328358,
+       "fa_lo": 0.007462686567164179,
+       "diff": 0.007462686567164179,
+       "bound": 0.15,
+       "ratio_clause": true,
+       "delta": 0.007462686567164179,
+       "n_items": 17,
+       "ci95": [
+        0.0,
+        0.022727272727272728
+       ],
+       "ci90": [
+        0.0,
+        0.022388059701492536
+       ],
+       "p_one_sided": 0.3502,
+       "p_two_sided_sensitivity": 0.7004,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.0,
+       "fa_lo": 0.0,
+       "diff": 0.0,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.0,
+       "n_items": 19,
+       "ci95": [
+        0.0,
+        0.0
+       ],
+       "ci90": [
+        0.0,
+        0.0
+       ],
+       "p_one_sided": 1.0,
+       "p_two_sided_sensitivity": 1.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.0,
+       "fa_lo": 0.0,
+       "diff": 0.0,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.0,
+       "n_items": 17,
+       "ci95": [
+        0.0,
+        0.0
+       ],
+       "ci90": [
+        0.0,
+        0.0
+       ],
+       "p_one_sided": 1.0,
+       "p_two_sided_sensitivity": 1.0,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     }
+    }
+   },
+   "criterion_shift_stamp": {
+    "claude-haiku-4-5-20251001": {
+     "stamped": false,
+     "hits_ci_above_0": false,
+     "any_fa_ci_above_0": true
+    },
+    "claude-sonnet-5": {
+     "stamped": false,
+     "hits_ci_above_0": false,
+     "any_fa_ci_above_0": true
+    },
+    "claude-opus-5": {
+     "stamped": false,
+     "hits_ci_above_0": false,
+     "any_fa_ci_above_0": true
+    }
+   }
+  },
+  "legacy_loose_primary": {
+   "relabeled_rows": 38,
+   "deltas": {
+    "H-B1": 0.0833,
+    "H-B2": -0.0463,
+    "H-B3": 0.0255,
+    "H-B4": 0.0944
+   },
+   "ci95": {
+    "H-B1": [
+     0.0167,
+     0.15
+    ],
+    "H-B2": [
+     -0.1574,
+     0.0648
+    ],
+    "H-B3": [
+     -0.0787,
+     0.1319
+    ],
+    "H-B4": [
+     0.0111,
+     0.1833
+    ]
+   },
+   "p_one_sided": {
+    "H-B1": 0.0111,
+    "H-B2": 0.814,
+    "H-B3": 0.3219,
+    "H-B4": 0.0169
+   },
+   "holm_fired": {
+    "H-B1": true,
+    "H-B2": false,
+    "H-B3": false,
+    "H-B4": false
+   },
+   "member_states": {
+    "H-B1": "F",
+    "H-B2": "N",
+    "H-B3": "N",
+    "H-B4": "N"
+   },
+   "composite_cell": "C-B2",
+   "c_b5_sub_read": null,
+   "hits_ci_above_0": {
+    "claude-haiku-4-5-20251001": true,
+    "claude-sonnet-5": false,
+    "claude-opus-5": false
+   },
+   "pooled_rates": {
+    "H-B1": {
+     "S": 0.6666666666666666,
+     "P": 0.5833333333333334
+    },
+    "H-B4": {
+     "Sq": 0.6777777777777778,
+     "P": 0.5833333333333334
+    },
+    "H-B2": {
+     "S": 0.6944444444444444,
+     "P": 0.7407407407407407
+    },
+    "H-B3": {
+     "S_haiku": 0.7037037037037037,
+     "P_haiku": 0.6296296296296297,
+     "S_opus": 0.5208333333333334,
+     "P_opus": 0.4722222222222222
+    }
+   },
+   "fa": {
+    "claude-haiku-4-5-20251001": {
+     "class1_clean_anyflag": {
+      "mf": {
+       "state": "UNRESOLVED",
+       "fa_hi": 0.7666666666666667,
+       "fa_lo": 0.43333333333333335,
+       "diff": 0.33333333333333337,
+       "bound": 0.15,
+       "ratio_clause": true,
+       "delta": 0.33333333333333337,
+       "n_items": 10,
+       "ci95": [
+        0.09999999999999998,
+        0.6000000000000001
+       ],
+       "ci90": [
+        0.1333333333333333,
+        0.5333333333333334
+       ],
+       "p_one_sided": 0.0012,
+       "p_two_sided_sensitivity": 0.0024,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.6666666666666666,
+       "fa_lo": 0.36666666666666664,
+       "diff": 0.3,
+       "bound": 0.15,
+       "ratio_clause": true,
+       "delta": 0.3,
+       "n_items": 10,
+       "ci95": [
+        0.16666666666666663,
+        0.4333333333333334
+       ],
+       "ci90": [
+        0.16666666666666669,
+        0.4333333333333333
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class2_off_family_fa": {
+      "mf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.2853107344632768,
+       "fa_lo": 0.05367231638418079,
+       "diff": 0.23163841807909602,
+       "bound": 0.15,
+       "ratio_clause": false,
+       "delta": 0.23163841807909602,
+       "n_items": 30,
+       "ci95": [
+        0.18055555555555555,
+        0.2833333333333333
+       ],
+       "ci90": [
+        0.18840579710144928,
+        0.27635327635327633
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.2937853107344633,
+       "fa_lo": 0.05367231638418079,
+       "diff": 0.2401129943502825,
+       "bound": 0.15,
+       "ratio_clause": false,
+       "delta": 0.2401129943502825,
+       "n_items": 30,
+       "ci95": [
+        0.1851851851851852,
+        0.2963041431261769
+       ],
+       "ci90": [
+        0.19373219373219372,
+        0.28735632183908044
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.0480225988700565,
+       "fa_lo": 0.0,
+       "diff": 0.0480225988700565,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.0480225988700565,
+       "n_items": 30,
+       "ci95": [
+        0.022598870056497175,
+        0.07692307692307693
+       ],
+       "ci90": [
+        0.02564102564102564,
+        0.07222222222222222
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.04519774011299435,
+       "fa_lo": 0.002824858757062147,
+       "diff": 0.0423728813559322,
+       "bound": 0.15,
+       "ratio_clause": false,
+       "delta": 0.0423728813559322,
+       "n_items": 30,
+       "ci95": [
+        0.022222222222222223,
+        0.06722689075630253
+       ],
+       "ci90": [
+        0.025,
+        0.06267806267806268
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     }
+    },
+    "claude-sonnet-5": {
+     "class1_clean_anyflag": {
+      "mf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.0,
+       "fa_lo": 0.0,
+       "diff": 0.0,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.0,
+       "n_items": 4,
+       "ci95": [
+        0.0,
+        0.0
+       ],
+       "ci90": [
+        0.0,
+        0.0
+       ],
+       "p_one_sided": 1.0,
+       "p_two_sided_sensitivity": 1.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "UNRESOLVED",
+       "fa_hi": 0.16666666666666666,
+       "fa_lo": 0.0,
+       "diff": 0.16666666666666666,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.16666666666666666,
+       "n_items": 4,
+       "ci95": [
+        0.0,
+        0.5
+       ],
+       "ci90": [
+        0.0,
+        0.5
+       ],
+       "p_one_sided": 0.3104,
+       "p_two_sided_sensitivity": 0.6208,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class2_off_family_fa": {
+      "mf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.07555555555555556,
+       "fa_lo": 0.0,
+       "diff": 0.07555555555555556,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.07555555555555556,
+       "n_items": 19,
+       "ci95": [
+        0.03508771929824561,
+        0.12162162162162163
+       ],
+       "ci90": [
+        0.04,
+        0.11403508771929824
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.03482587064676617,
+       "fa_lo": 0.009950248756218905,
+       "diff": 0.024875621890547265,
+       "bound": 0.15,
+       "ratio_clause": false,
+       "delta": 0.024875621890547265,
+       "n_items": 17,
+       "ci95": [
+        0.0,
+        0.054726368159203974
+       ],
+       "ci90": [
+        0.004901960784313725,
+        0.04975124378109452
+       ],
+       "p_one_sided": 0.0383,
+       "p_two_sided_sensitivity": 0.0766,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.013333333333333334,
+       "fa_lo": 0.0,
+       "diff": 0.013333333333333334,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.013333333333333334,
+       "n_items": 19,
+       "ci95": [
+        0.0,
+        0.03508771929824561
+       ],
+       "ci90": [
+        0.0,
+        0.03111111111111111
+       ],
+       "p_one_sided": 0.1208,
+       "p_two_sided_sensitivity": 0.2416,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.004975124378109453,
+       "fa_lo": 0.0,
+       "diff": 0.004975124378109453,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.004975124378109453,
+       "n_items": 17,
+       "ci95": [
+        0.0,
+        0.015151515151515152
+       ],
+       "ci90": [
+        0.0,
+        0.014925373134328358
+       ],
+       "p_one_sided": 0.3635,
+       "p_two_sided_sensitivity": 0.727,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     }
+    },
+    "claude-opus-5": {
+     "class1_clean_anyflag": {
+      "mf": {
+       "state": "UNRESOLVED",
+       "fa_hi": 0.0625,
+       "fa_lo": 0.0,
+       "diff": 0.0625,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.0625,
+       "n_items": 4,
+       "ci95": [
+        0.0,
+        0.1875
+       ],
+       "ci90": [
+        0.0,
+        0.1875
+       ],
+       "p_one_sided": 0.3183,
+       "p_two_sided_sensitivity": 0.6366,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "UNRESOLVED",
+       "fa_hi": 0.25,
+       "fa_lo": 0.125,
+       "diff": 0.125,
+       "bound": 0.15,
+       "ratio_clause": true,
+       "delta": 0.125,
+       "n_items": 4,
+       "ci95": [
+        0.0,
+        0.375
+       ],
+       "ci90": [
+        0.0,
+        0.375
+       ],
+       "p_one_sided": 0.3104,
+       "p_two_sided_sensitivity": 0.6208,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class2_off_family_fa": {
+      "mf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.09333333333333334,
+       "fa_lo": 0.03,
+       "diff": 0.06333333333333334,
+       "bound": 0.15,
+       "ratio_clause": false,
+       "delta": 0.06333333333333334,
+       "n_items": 19,
+       "ci95": [
+        0.030405405405405407,
+        0.09666666666666666
+       ],
+       "ci90": [
+        0.03618421052631579,
+        0.09210526315789473
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.014925373134328358,
+       "fa_lo": 0.007462686567164179,
+       "diff": 0.007462686567164179,
+       "bound": 0.15,
+       "ratio_clause": true,
+       "delta": 0.007462686567164179,
+       "n_items": 17,
+       "ci95": [
+        0.0,
+        0.022727272727272728
+       ],
+       "ci90": [
+        0.0,
+        0.022388059701492536
+       ],
+       "p_one_sided": 0.3502,
+       "p_two_sided_sensitivity": 0.7004,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.0,
+       "fa_lo": 0.0,
+       "diff": 0.0,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.0,
+       "n_items": 19,
+       "ci95": [
+        0.0,
+        0.0
+       ],
+       "ci90": [
+        0.0,
+        0.0
+       ],
+       "p_one_sided": 1.0,
+       "p_two_sided_sensitivity": 1.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.0,
+       "fa_lo": 0.0,
+       "diff": 0.0,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.0,
+       "n_items": 17,
+       "ci95": [
+        0.0,
+        0.0
+       ],
+       "ci90": [
+        0.0,
+        0.0
+       ],
+       "p_one_sided": 1.0,
+       "p_two_sided_sensitivity": 1.0,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     }
+    }
+   },
+   "criterion_shift_stamp": {
+    "claude-haiku-4-5-20251001": {
+     "stamped": true,
+     "hits_ci_above_0": true,
+     "any_fa_ci_above_0": true
+    },
+    "claude-sonnet-5": {
+     "stamped": false,
+     "hits_ci_above_0": false,
+     "any_fa_ci_above_0": true
+    },
+    "claude-opus-5": {
+     "stamped": false,
+     "hits_ci_above_0": false,
+     "any_fa_ci_above_0": true
+    }
+   }
+  },
+  "legacy_none_scope": {
+   "relabeled_rows": 0,
+   "deltas": {
+    "H-B1": 0.0833,
+    "H-B2": -0.0463,
+    "H-B3": 0.0255,
+    "H-B4": 0.0944
+   },
+   "ci95": {
+    "H-B1": [
+     0.0167,
+     0.15
+    ],
+    "H-B2": [
+     -0.1574,
+     0.0648
+    ],
+    "H-B3": [
+     -0.0787,
+     0.1319
+    ],
+    "H-B4": [
+     0.0111,
+     0.1833
+    ]
+   },
+   "p_one_sided": {
+    "H-B1": 0.0111,
+    "H-B2": 0.814,
+    "H-B3": 0.3219,
+    "H-B4": 0.0169
+   },
+   "holm_fired": {
+    "H-B1": true,
+    "H-B2": false,
+    "H-B3": false,
+    "H-B4": false
+   },
+   "member_states": {
+    "H-B1": "F",
+    "H-B2": "N",
+    "H-B3": "N",
+    "H-B4": "N"
+   },
+   "composite_cell": "C-B2",
+   "c_b5_sub_read": null,
+   "hits_ci_above_0": {
+    "claude-haiku-4-5-20251001": true,
+    "claude-sonnet-5": false,
+    "claude-opus-5": false
+   },
+   "pooled_rates": {
+    "H-B1": {
+     "S": 0.6666666666666666,
+     "P": 0.5833333333333334
+    },
+    "H-B4": {
+     "Sq": 0.6777777777777778,
+     "P": 0.5833333333333334
+    },
+    "H-B2": {
+     "S": 0.6944444444444444,
+     "P": 0.7407407407407407
+    },
+    "H-B3": {
+     "S_haiku": 0.7037037037037037,
+     "P_haiku": 0.6296296296296297,
+     "S_opus": 0.5208333333333334,
+     "P_opus": 0.4722222222222222
+    }
+   },
+   "fa": {
+    "claude-haiku-4-5-20251001": {
+     "class1_clean_anyflag": {
+      "mf": {
+       "state": "UNRESOLVED",
+       "fa_hi": 0.7666666666666667,
+       "fa_lo": 0.43333333333333335,
+       "diff": 0.33333333333333337,
+       "bound": 0.15,
+       "ratio_clause": true,
+       "delta": 0.33333333333333337,
+       "n_items": 10,
+       "ci95": [
+        0.09999999999999998,
+        0.6000000000000001
+       ],
+       "ci90": [
+        0.1333333333333333,
+        0.5333333333333334
+       ],
+       "p_one_sided": 0.0012,
+       "p_two_sided_sensitivity": 0.0024,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.6666666666666666,
+       "fa_lo": 0.36666666666666664,
+       "diff": 0.3,
+       "bound": 0.15,
+       "ratio_clause": true,
+       "delta": 0.3,
+       "n_items": 10,
+       "ci95": [
+        0.16666666666666663,
+        0.4333333333333334
+       ],
+       "ci90": [
+        0.16666666666666669,
+        0.4333333333333333
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class2_off_family_fa": {
+      "mf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.2853107344632768,
+       "fa_lo": 0.05367231638418079,
+       "diff": 0.23163841807909602,
+       "bound": 0.15,
+       "ratio_clause": false,
+       "delta": 0.23163841807909602,
+       "n_items": 30,
+       "ci95": [
+        0.18055555555555555,
+        0.2833333333333333
+       ],
+       "ci90": [
+        0.18840579710144928,
+        0.27635327635327633
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.2937853107344633,
+       "fa_lo": 0.05367231638418079,
+       "diff": 0.2401129943502825,
+       "bound": 0.15,
+       "ratio_clause": false,
+       "delta": 0.2401129943502825,
+       "n_items": 30,
+       "ci95": [
+        0.1851851851851852,
+        0.2963041431261769
+       ],
+       "ci90": [
+        0.19373219373219372,
+        0.28735632183908044
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.0480225988700565,
+       "fa_lo": 0.0,
+       "diff": 0.0480225988700565,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.0480225988700565,
+       "n_items": 30,
+       "ci95": [
+        0.022598870056497175,
+        0.07692307692307693
+       ],
+       "ci90": [
+        0.02564102564102564,
+        0.07222222222222222
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.04519774011299435,
+       "fa_lo": 0.002824858757062147,
+       "diff": 0.0423728813559322,
+       "bound": 0.15,
+       "ratio_clause": false,
+       "delta": 0.0423728813559322,
+       "n_items": 30,
+       "ci95": [
+        0.022222222222222223,
+        0.06722689075630253
+       ],
+       "ci90": [
+        0.025,
+        0.06267806267806268
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     }
+    },
+    "claude-sonnet-5": {
+     "class1_clean_anyflag": {
+      "mf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.0,
+       "fa_lo": 0.0,
+       "diff": 0.0,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.0,
+       "n_items": 4,
+       "ci95": [
+        0.0,
+        0.0
+       ],
+       "ci90": [
+        0.0,
+        0.0
+       ],
+       "p_one_sided": 1.0,
+       "p_two_sided_sensitivity": 1.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "UNRESOLVED",
+       "fa_hi": 0.16666666666666666,
+       "fa_lo": 0.0,
+       "diff": 0.16666666666666666,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.16666666666666666,
+       "n_items": 4,
+       "ci95": [
+        0.0,
+        0.5
+       ],
+       "ci90": [
+        0.0,
+        0.5
+       ],
+       "p_one_sided": 0.3104,
+       "p_two_sided_sensitivity": 0.6208,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class2_off_family_fa": {
+      "mf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.07555555555555556,
+       "fa_lo": 0.0,
+       "diff": 0.07555555555555556,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.07555555555555556,
+       "n_items": 19,
+       "ci95": [
+        0.03508771929824561,
+        0.12162162162162163
+       ],
+       "ci90": [
+        0.04,
+        0.11403508771929824
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.03482587064676617,
+       "fa_lo": 0.009950248756218905,
+       "diff": 0.024875621890547265,
+       "bound": 0.15,
+       "ratio_clause": false,
+       "delta": 0.024875621890547265,
+       "n_items": 17,
+       "ci95": [
+        0.0,
+        0.054726368159203974
+       ],
+       "ci90": [
+        0.004901960784313725,
+        0.04975124378109452
+       ],
+       "p_one_sided": 0.0383,
+       "p_two_sided_sensitivity": 0.0766,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.013333333333333334,
+       "fa_lo": 0.0,
+       "diff": 0.013333333333333334,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.013333333333333334,
+       "n_items": 19,
+       "ci95": [
+        0.0,
+        0.03508771929824561
+       ],
+       "ci90": [
+        0.0,
+        0.03111111111111111
+       ],
+       "p_one_sided": 0.1208,
+       "p_two_sided_sensitivity": 0.2416,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.004975124378109453,
+       "fa_lo": 0.0,
+       "diff": 0.004975124378109453,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.004975124378109453,
+       "n_items": 17,
+       "ci95": [
+        0.0,
+        0.015151515151515152
+       ],
+       "ci90": [
+        0.0,
+        0.014925373134328358
+       ],
+       "p_one_sided": 0.3635,
+       "p_two_sided_sensitivity": 0.727,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     }
+    },
+    "claude-opus-5": {
+     "class1_clean_anyflag": {
+      "mf": {
+       "state": "UNRESOLVED",
+       "fa_hi": 0.0625,
+       "fa_lo": 0.0,
+       "diff": 0.0625,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.0625,
+       "n_items": 4,
+       "ci95": [
+        0.0,
+        0.1875
+       ],
+       "ci90": [
+        0.0,
+        0.1875
+       ],
+       "p_one_sided": 0.3183,
+       "p_two_sided_sensitivity": 0.6366,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "UNRESOLVED",
+       "fa_hi": 0.25,
+       "fa_lo": 0.125,
+       "diff": 0.125,
+       "bound": 0.15,
+       "ratio_clause": true,
+       "delta": 0.125,
+       "n_items": 4,
+       "ci95": [
+        0.0,
+        0.375
+       ],
+       "ci90": [
+        0.0,
+        0.375
+       ],
+       "p_one_sided": 0.3104,
+       "p_two_sided_sensitivity": 0.6208,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class2_off_family_fa": {
+      "mf": {
+       "state": "OUT-OF-BOUND",
+       "fa_hi": 0.09333333333333334,
+       "fa_lo": 0.03,
+       "diff": 0.06333333333333334,
+       "bound": 0.15,
+       "ratio_clause": false,
+       "delta": 0.06333333333333334,
+       "n_items": 19,
+       "ci95": [
+        0.030405405405405407,
+        0.09666666666666666
+       ],
+       "ci90": [
+        0.03618421052631579,
+        0.09210526315789473
+       ],
+       "p_one_sided": 0.0001,
+       "p_two_sided_sensitivity": 0.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.014925373134328358,
+       "fa_lo": 0.007462686567164179,
+       "diff": 0.007462686567164179,
+       "bound": 0.15,
+       "ratio_clause": true,
+       "delta": 0.007462686567164179,
+       "n_items": 17,
+       "ci95": [
+        0.0,
+        0.022727272727272728
+       ],
+       "ci90": [
+        0.0,
+        0.022388059701492536
+       ],
+       "p_one_sided": 0.3502,
+       "p_two_sided_sensitivity": 0.7004,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.0,
+       "fa_lo": 0.0,
+       "diff": 0.0,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.0,
+       "n_items": 19,
+       "ci95": [
+        0.0,
+        0.0
+       ],
+       "ci90": [
+        0.0,
+        0.0
+       ],
+       "p_one_sided": 1.0,
+       "p_two_sided_sensitivity": 1.0,
+       "n_boot": 10000,
+       "seed": 1512
+      },
+      "sf": {
+       "state": "IN-BOUND",
+       "fa_hi": 0.0,
+       "fa_lo": 0.0,
+       "diff": 0.0,
+       "bound": 0.15,
+       "ratio_clause": null,
+       "delta": 0.0,
+       "n_items": 17,
+       "ci95": [
+        0.0,
+        0.0
+       ],
+       "ci90": [
+        0.0,
+        0.0
+       ],
+       "p_one_sided": 1.0,
+       "p_two_sided_sensitivity": 1.0,
+       "n_boot": 10000,
+       "seed": 1512
+      }
+     }
+    }
+   },
+   "criterion_shift_stamp": {
+    "claude-haiku-4-5-20251001": {
+     "stamped": true,
+     "hits_ci_above_0": true,
+     "any_fa_ci_above_0": true
+    },
+    "claude-sonnet-5": {
+     "stamped": false,
+     "hits_ci_above_0": false,
+     "any_fa_ci_above_0": true
+    },
+    "claude-opus-5": {
+     "stamped": false,
+     "hits_ci_above_0": false,
+     "any_fa_ci_above_0": true
+    }
+   }
+  }
+ },
+ "divergences": [
+  {
+   "variant": "V2_p_maximal_key_scope",
+   "field": "member_states",
+   "primary": {
+    "H-B1": "F",
+    "H-B2": "N",
+    "H-B3": "N",
+    "H-B4": "N"
+   },
+   "variant_value": {
+    "H-B1": "N",
+    "H-B2": "N",
+    "H-B3": "N",
+    "H-B4": "N"
+   }
+  },
+  {
+   "variant": "V2_p_maximal_key_scope",
+   "field": "composite_cell",
+   "primary": "C-B2",
+   "variant_value": "C-B5"
+  },
+  {
+   "variant": "V2_p_maximal_key_scope",
+   "field": "holm_fired",
+   "primary": {
+    "H-B1": true,
+    "H-B2": false,
+    "H-B3": false,
+    "H-B4": false
+   },
+   "variant_value": {
+    "H-B1": false,
+    "H-B2": false,
+    "H-B3": false,
+    "H-B4": false
+   }
+  },
+  {
+   "variant": "V2_p_maximal_key_scope",
+   "field": "c_b5_sub_read",
+   "primary": null,
+   "variant_value": "INCONCLUSIVE"
+  },
+  {
+   "variant": "V2_p_maximal_key_scope",
+   "field": "criterion_shift_stamp",
+   "primary": {
+    "claude-haiku-4-5-20251001": {
+     "stamped": true,
+     "hits_ci_above_0": true,
+     "any_fa_ci_above_0": true
+    },
+    "claude-sonnet-5": {
+     "stamped": false,
+     "hits_ci_above_0": false,
+     "any_fa_ci_above_0": true
+    },
+    "claude-opus-5": {
+     "stamped": false,
+     "hits_ci_above_0": false,
+     "any_fa_ci_above_0": true
+    }
+   },
+   "variant_value": {
+    "claude-haiku-4-5-20251001": {
+     "stamped": false,
+     "hits_ci_above_0": false,
+     "any_fa_ci_above_0": true
+    },
+    "claude-sonnet-5": {
+     "stamped": false,
+     "hits_ci_above_0": false,
+     "any_fa_ci_above_0": true
+    },
+    "claude-opus-5": {
+     "stamped": false,
+     "hits_ci_above_0": false,
+     "any_fa_ci_above_0": true
+    }
+   }
+  },
+  {
+   "variant": "V2_p_maximal_key_scope",
+   "field": "fa_states",
+   "primary": {
+    "claude-haiku-4-5-20251001": {
+     "class1_clean_anyflag": {
+      "mf": "UNRESOLVED",
+      "sf": "OUT-OF-BOUND"
+     },
+     "class2_off_family_fa": {
+      "mf": "OUT-OF-BOUND",
+      "sf": "OUT-OF-BOUND"
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": "IN-BOUND",
+      "sf": "OUT-OF-BOUND"
+     }
+    },
+    "claude-sonnet-5": {
+     "class1_clean_anyflag": {
+      "mf": "IN-BOUND",
+      "sf": "UNRESOLVED"
+     },
+     "class2_off_family_fa": {
+      "mf": "IN-BOUND",
+      "sf": "OUT-OF-BOUND"
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": "IN-BOUND",
+      "sf": "IN-BOUND"
+     }
+    },
+    "claude-opus-5": {
+     "class1_clean_anyflag": {
+      "mf": "UNRESOLVED",
+      "sf": "UNRESOLVED"
+     },
+     "class2_off_family_fa": {
+      "mf": "OUT-OF-BOUND",
+      "sf": "IN-BOUND"
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": "IN-BOUND",
+      "sf": "IN-BOUND"
+     }
+    }
+   },
+   "variant_value": {
+    "claude-haiku-4-5-20251001": {
+     "class1_clean_anyflag": {
+      "mf": "UNRESOLVED",
+      "sf": "OUT-OF-BOUND"
+     },
+     "class2_off_family_fa": {
+      "mf": "OUT-OF-BOUND",
+      "sf": "OUT-OF-BOUND"
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": "IN-BOUND",
+      "sf": "IN-BOUND"
+     }
+    },
+    "claude-sonnet-5": {
+     "class1_clean_anyflag": {
+      "mf": "IN-BOUND",
+      "sf": "UNRESOLVED"
+     },
+     "class2_off_family_fa": {
+      "mf": "IN-BOUND",
+      "sf": "OUT-OF-BOUND"
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": "IN-BOUND",
+      "sf": "IN-BOUND"
+     }
+    },
+    "claude-opus-5": {
+     "class1_clean_anyflag": {
+      "mf": "UNRESOLVED",
+      "sf": "UNRESOLVED"
+     },
+     "class2_off_family_fa": {
+      "mf": "OUT-OF-BOUND",
+      "sf": "IN-BOUND"
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": "IN-BOUND",
+      "sf": "IN-BOUND"
+     }
+    }
+   }
+  },
+  {
+   "variant": "V3_label_respecting_punitive",
+   "field": "member_states",
+   "primary": {
+    "H-B1": "F",
+    "H-B2": "N",
+    "H-B3": "N",
+    "H-B4": "N"
+   },
+   "variant_value": {
+    "H-B1": "N",
+    "H-B2": "N",
+    "H-B3": "N",
+    "H-B4": "R"
+   }
+  },
+  {
+   "variant": "V3_label_respecting_punitive",
+   "field": "composite_cell",
+   "primary": "C-B2",
+   "variant_value": "C-B5"
+  },
+  {
+   "variant": "V3_label_respecting_punitive",
+   "field": "holm_fired",
+   "primary": {
+    "H-B1": true,
+    "H-B2": false,
+    "H-B3": false,
+    "H-B4": false
+   },
+   "variant_value": {
+    "H-B1": false,
+    "H-B2": false,
+    "H-B3": false,
+    "H-B4": false
+   }
+  },
+  {
+   "variant": "V3_label_respecting_punitive",
+   "field": "c_b5_sub_read",
+   "primary": null,
+   "variant_value": "RITUAL-at-haiku"
+  },
+  {
+   "variant": "V3_label_respecting_punitive",
+   "field": "criterion_shift_stamp",
+   "primary": {
+    "claude-haiku-4-5-20251001": {
+     "stamped": true,
+     "hits_ci_above_0": true,
+     "any_fa_ci_above_0": true
+    },
+    "claude-sonnet-5": {
+     "stamped": false,
+     "hits_ci_above_0": false,
+     "any_fa_ci_above_0": true
+    },
+    "claude-opus-5": {
+     "stamped": false,
+     "hits_ci_above_0": false,
+     "any_fa_ci_above_0": true
+    }
+   },
+   "variant_value": {
+    "claude-haiku-4-5-20251001": {
+     "stamped": false,
+     "hits_ci_above_0": false,
+     "any_fa_ci_above_0": true
+    },
+    "claude-sonnet-5": {
+     "stamped": false,
+     "hits_ci_above_0": false,
+     "any_fa_ci_above_0": true
+    },
+    "claude-opus-5": {
+     "stamped": false,
+     "hits_ci_above_0": false,
+     "any_fa_ci_above_0": true
+    }
+   }
+  },
+  {
+   "variant": "V3_label_respecting_punitive",
+   "field": "fa_states",
+   "primary": {
+    "claude-haiku-4-5-20251001": {
+     "class1_clean_anyflag": {
+      "mf": "UNRESOLVED",
+      "sf": "OUT-OF-BOUND"
+     },
+     "class2_off_family_fa": {
+      "mf": "OUT-OF-BOUND",
+      "sf": "OUT-OF-BOUND"
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": "IN-BOUND",
+      "sf": "OUT-OF-BOUND"
+     }
+    },
+    "claude-sonnet-5": {
+     "class1_clean_anyflag": {
+      "mf": "IN-BOUND",
+      "sf": "UNRESOLVED"
+     },
+     "class2_off_family_fa": {
+      "mf": "IN-BOUND",
+      "sf": "OUT-OF-BOUND"
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": "IN-BOUND",
+      "sf": "IN-BOUND"
+     }
+    },
+    "claude-opus-5": {
+     "class1_clean_anyflag": {
+      "mf": "UNRESOLVED",
+      "sf": "UNRESOLVED"
+     },
+     "class2_off_family_fa": {
+      "mf": "OUT-OF-BOUND",
+      "sf": "IN-BOUND"
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": "IN-BOUND",
+      "sf": "IN-BOUND"
+     }
+    }
+   },
+   "variant_value": {
+    "claude-haiku-4-5-20251001": {
+     "class1_clean_anyflag": {
+      "mf": "UNRESOLVED",
+      "sf": "UNRESOLVED"
+     },
+     "class2_off_family_fa": {
+      "mf": "UNRESOLVED",
+      "sf": "OUT-OF-BOUND"
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": "IN-BOUND",
+      "sf": "OUT-OF-BOUND"
+     }
+    },
+    "claude-sonnet-5": {
+     "class1_clean_anyflag": {
+      "mf": "IN-BOUND",
+      "sf": "UNRESOLVED"
+     },
+     "class2_off_family_fa": {
+      "mf": "IN-BOUND",
+      "sf": "OUT-OF-BOUND"
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": "IN-BOUND",
+      "sf": "IN-BOUND"
+     }
+    },
+    "claude-opus-5": {
+     "class1_clean_anyflag": {
+      "mf": "UNRESOLVED",
+      "sf": "UNRESOLVED"
+     },
+     "class2_off_family_fa": {
+      "mf": "OUT-OF-BOUND",
+      "sf": "IN-BOUND"
+     },
+     "class3_key_matched_wrong_family": {
+      "mf": "IN-BOUND",
+      "sf": "IN-BOUND"
+     }
+    }
+   }
+  }
+ ],
+ "conclusion": "DIVERGENT on a registered variant \u2014 disclosed above",
+ "disclosure": "legacy NONE-scope S-record keying collision fixed in this version (texts keyed by family for every arm)"
+}

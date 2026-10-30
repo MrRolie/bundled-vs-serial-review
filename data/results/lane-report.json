@@ -1,0 +1,67 @@
+{
+ "queue_size": 864,
+ "ids": [
+  "adj-2001",
+  "adj-2864"
+ ],
+ "batches": 80,
+ "primary_missing_ids": [],
+ "verdicts_by_stage": {
+  "primary": {
+   "FLAG": 340,
+   "NONE": 523,
+   "NEITHER": 1
+  },
+  "readjudication": {
+   "NONE": 79,
+   "FLAG": 51
+  },
+  "armguess": {
+   "UNKNOWN": 86
+  }
+ },
+ "readjudication": {
+  "sampled": 130,
+  "r2_done": 130,
+  "agree": 130,
+  "disagreements": [],
+  "r3_tiebreaks": 0
+ },
+ "arm_guess": {
+  "sampled": 86,
+  "guessed": 86,
+  "non_unknown": 0,
+  "correct": 0,
+  "accuracy_non_unknown": null,
+  "chance": 0.3333333333333333,
+  "by_true_arm": {
+   "P": {
+    "n": 27,
+    "correct": 0
+   },
+   "S": {
+    "n": 31,
+    "correct": 0
+   },
+   "Sq": {
+    "n": 28,
+    "correct": 0
+   }
+  }
+ },
+ "scrub_tokens_placed": 3,
+ "cost_usd_by_stage": {
+  "armguess": 1.907,
+  "primary": 3.2718,
+  "readjudication": 1.0204
+ },
+ "cost_usd_total": 6.1992,
+ "served_models": [
+  "claude-haiku-4-5-20251001",
+  "claude-opus-5"
+ ],
+ "adjudicator_models": [
+  "claude-opus-5"
+ ],
+ "n_records": 199
+}

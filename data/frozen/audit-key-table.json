@@ -1,0 +1,619 @@
+{
+ "table": [
+  {
+   "item_id": "mf-boundary-01",
+   "blind_id": "audit-item-49",
+   "assigned_family": "boundary",
+   "disposition": "MULTI-FAMILY",
+   "allowed_families": [
+    "exception"
+   ],
+   "fa_denominator": 3,
+   "rule": "any credible second family",
+   "round": 1
+  },
+  {
+   "item_id": "mf-boundary-02",
+   "blind_id": "audit-item-13",
+   "assigned_family": "boundary",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-boundary-03",
+   "blind_id": "audit-item-45",
+   "assigned_family": "boundary",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-boundary-04",
+   "blind_id": "audit-item-31",
+   "assigned_family": "boundary",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-boundary-05",
+   "blind_id": "audit-item-10",
+   "assigned_family": "boundary",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-boundary-06",
+   "blind_id": "audit-item-24",
+   "assigned_family": "boundary",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-comparison-01",
+   "blind_id": "audit-item-09",
+   "assigned_family": "comparison",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-comparison-02",
+   "blind_id": "audit-item-48",
+   "assigned_family": "comparison",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-comparison-03",
+   "blind_id": "audit-item-55",
+   "assigned_family": "comparison",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-comparison-04",
+   "blind_id": "audit-item-47",
+   "assigned_family": "comparison",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-comparison-05",
+   "blind_id": "audit-item-60",
+   "assigned_family": "comparison",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-comparison-06",
+   "blind_id": "audit-item-15",
+   "assigned_family": "comparison",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-exception-01",
+   "blind_id": "audit-item-57",
+   "assigned_family": "exception",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-exception-02",
+   "blind_id": "audit-item-21",
+   "assigned_family": "exception",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-exception-03",
+   "blind_id": "audit-item-43",
+   "assigned_family": "exception",
+   "disposition": "MULTI-FAMILY",
+   "allowed_families": [
+    "units"
+   ],
+   "fa_denominator": 3,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-exception-04",
+   "blind_id": "audit-item-58",
+   "assigned_family": "exception",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-exception-05",
+   "blind_id": "audit-item-44",
+   "assigned_family": "exception",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-exception-06",
+   "blind_id": "audit-item-34",
+   "assigned_family": "exception",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-sign-01",
+   "blind_id": "audit-item-30",
+   "assigned_family": "sign",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-sign-02",
+   "blind_id": "audit-item-29",
+   "assigned_family": "sign",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-sign-03",
+   "blind_id": "audit-item-23",
+   "assigned_family": "sign",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-sign-04",
+   "blind_id": "audit-item-39",
+   "assigned_family": "sign",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-sign-05",
+   "blind_id": "audit-item-20",
+   "assigned_family": "sign",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-sign-06",
+   "blind_id": "audit-item-33",
+   "assigned_family": "sign",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-units-01",
+   "blind_id": "audit-item-32",
+   "assigned_family": "units",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-units-02",
+   "blind_id": "audit-item-22",
+   "assigned_family": "units",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-units-03",
+   "blind_id": "audit-item-01",
+   "assigned_family": "units",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-units-04",
+   "blind_id": "audit-item-46",
+   "assigned_family": "units",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-units-05",
+   "blind_id": "audit-item-27",
+   "assigned_family": "units",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-units-06",
+   "blind_id": "audit-item-59",
+   "assigned_family": "units",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-boundary-01",
+   "blind_id": "audit-item-04",
+   "assigned_family": "boundary",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-boundary-02",
+   "blind_id": "audit-item-38",
+   "assigned_family": "boundary",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-boundary-03",
+   "blind_id": "audit-item-52",
+   "assigned_family": "boundary",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-boundary-04",
+   "blind_id": "audit-item-42",
+   "assigned_family": "boundary",
+   "disposition": "MULTI-FAMILY",
+   "allowed_families": [
+    "comparison"
+   ],
+   "fa_denominator": 3,
+   "rule": "any credible second family",
+   "round": 1
+  },
+  {
+   "item_id": "sf-boundary-05",
+   "blind_id": "audit-item-11",
+   "assigned_family": "boundary",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-boundary-06",
+   "blind_id": "audit-item-17",
+   "assigned_family": "boundary",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-comparison-01",
+   "blind_id": "audit-item-16",
+   "assigned_family": "comparison",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": "repanel-v3"
+  },
+  {
+   "item_id": "sf-comparison-02",
+   "blind_id": "audit-item-12",
+   "assigned_family": "comparison",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-comparison-03",
+   "blind_id": "audit-item-07",
+   "assigned_family": "comparison",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-comparison-04",
+   "blind_id": "audit-item-28",
+   "assigned_family": "comparison",
+   "disposition": "MULTI-FAMILY",
+   "allowed_families": [
+    "exception"
+   ],
+   "fa_denominator": 3,
+   "rule": "any credible second family",
+   "round": 1
+  },
+  {
+   "item_id": "sf-comparison-05",
+   "blind_id": "audit-item-18",
+   "assigned_family": "comparison",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-comparison-06",
+   "blind_id": "audit-item-36",
+   "assigned_family": "comparison",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-exception-01",
+   "blind_id": "audit-item-53",
+   "assigned_family": "exception",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-exception-02",
+   "blind_id": "audit-item-37",
+   "assigned_family": "exception",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-exception-03",
+   "blind_id": "audit-item-40",
+   "assigned_family": "exception",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-exception-04",
+   "blind_id": "audit-item-54",
+   "assigned_family": "exception",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-exception-05",
+   "blind_id": "audit-item-25",
+   "assigned_family": "exception",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-exception-06",
+   "blind_id": "audit-item-50",
+   "assigned_family": "exception",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-sign-01",
+   "blind_id": "audit-item-51",
+   "assigned_family": "sign",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-sign-02",
+   "blind_id": "audit-item-08",
+   "assigned_family": "sign",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-sign-03",
+   "blind_id": "audit-item-06",
+   "assigned_family": "sign",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-sign-04",
+   "blind_id": "audit-item-41",
+   "assigned_family": "sign",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-sign-05",
+   "blind_id": "audit-item-14",
+   "assigned_family": "sign",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-sign-06",
+   "blind_id": "audit-item-26",
+   "assigned_family": "sign",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-units-01",
+   "blind_id": "audit-item-02",
+   "assigned_family": "units",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-units-02",
+   "blind_id": "audit-item-35",
+   "assigned_family": "units",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-units-03",
+   "blind_id": "audit-item-05",
+   "assigned_family": "units",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-units-04",
+   "blind_id": "audit-item-56",
+   "assigned_family": "units",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-units-05",
+   "blind_id": "audit-item-03",
+   "assigned_family": "units",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-units-06",
+   "blind_id": "audit-item-19",
+   "assigned_family": "units",
+   "disposition": "EXCLUSIVE",
+   "allowed_families": [],
+   "fa_denominator": 4,
+   "rule": "unanimous",
+   "round": 1
+  }
+ ],
+ "dropped": [],
+ "summary": {
+  "surviving": 60,
+  "exclusive": 56,
+  "multi_family": 4,
+  "dropped": 0
+ }
+}

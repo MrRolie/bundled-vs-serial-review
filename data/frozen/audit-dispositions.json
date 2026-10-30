@@ -1,0 +1,432 @@
+{
+ "note": "Family-exclusivity audit of the 60 defective items against the five locked family definitions (registration §5.3). Dispositions, rule and round only; the readers' free-text rationales are not published.",
+ "items": [
+  {
+   "item_id": "mf-units-03",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-units-01",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-units-05",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-boundary-01",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-units-03",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-sign-03",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-comparison-03",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-sign-02",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-comparison-01",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-boundary-05",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-boundary-05",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-comparison-02",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-boundary-02",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-sign-05",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-comparison-06",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-boundary-06",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-comparison-05",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-units-06",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-sign-05",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-exception-02",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-units-02",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-sign-03",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-boundary-06",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-exception-05",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-sign-06",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-units-05",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-comparison-04",
+   "disposition": "MULTI-FAMILY",
+   "families": [
+    "exception"
+   ],
+   "rule": "any credible second family",
+   "round": 1
+  },
+  {
+   "item_id": "mf-sign-02",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-sign-01",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-boundary-04",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-units-01",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-sign-06",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-exception-06",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-units-02",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-comparison-06",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-exception-02",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-boundary-02",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-sign-04",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-exception-03",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-sign-04",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-boundary-04",
+   "disposition": "MULTI-FAMILY",
+   "families": [
+    "comparison"
+   ],
+   "rule": "any credible second family",
+   "round": 1
+  },
+  {
+   "item_id": "mf-exception-03",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-exception-05",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-boundary-03",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-units-04",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-comparison-04",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-comparison-02",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-boundary-01",
+   "disposition": "MULTI-FAMILY",
+   "families": [
+    "exception"
+   ],
+   "rule": "any credible second family",
+   "round": 1
+  },
+  {
+   "item_id": "sf-exception-06",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-sign-01",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-boundary-03",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-exception-01",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-exception-04",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-comparison-03",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "sf-units-04",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-exception-01",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-exception-04",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-units-06",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  },
+  {
+   "item_id": "mf-comparison-05",
+   "disposition": "EXCLUSIVE",
+   "families": [],
+   "rule": "unanimous",
+   "round": 1
+  }
+ ],
+ "summary": {
+  "decided": 59,
+  "by_disposition": {
+   "EXCLUSIVE": 56,
+   "MULTI-FAMILY": 3,
+   "DROPPED": 0
+  }
+ }
+}

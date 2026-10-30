@@ -1,0 +1,1068 @@
+{
+ "meta": {
+  "module": "recount_economics.py",
+  "phase": "A (blind)",
+  "date": "2026-08-28",
+  "price_tables": {
+   "LIST": {
+    "haiku": [
+     1.0,
+     5.0
+    ],
+    "sonnet": [
+     2.0,
+     10.0
+    ],
+    "opus": [
+     5.0,
+     25.0
+    ]
+   },
+   "CLI_implied": {
+    "haiku": [
+     1.0,
+     5.0
+    ],
+    "sonnet": [
+     3.0,
+     15.0
+    ],
+    "opus": [
+     5.0,
+     25.0
+    ]
+   },
+   "cache_write_mult": 1.25,
+   "cache_read_mult": 0.1
+  },
+  "inputs": [
+   "per-dispatch trial records (public subset: data/dispatches/)",
+   "grouped-order probe records (data/dispatches/)",
+   "recount/recount-rows.jsonl (the recount V1 statuses)"
+  ],
+  "not_opened": [
+   "costs-v2.json",
+   "costs.json",
+   "descriptives-v2.json",
+   "analysis/costs.py",
+   "analysis/descriptives.py"
+  ]
+ },
+ "instrument_checks": {
+  "haiku": {
+   "n_records": 1680,
+   "sq_sessions_by_turn_count": {
+    "5": 240
+   },
+   "sq_turn_errors": 0,
+   "sq_max_abs_gap_session_total_vs_sum_turn_cost": 5.551115123125783e-17,
+   "cli_table_used": {
+    "in_per_mtok": 1.0,
+    "out_per_mtok": 5.0,
+    "cw_mult": 1.25,
+    "cr_mult": 0.1
+   },
+   "cli_table_residual_usd_per_dispatch": {
+    "S": {
+     "n": 1200,
+     "mean": 0.00192638,
+     "median": 0.0016550000000000002,
+     "sd": 0.0007499965159474635,
+     "min": 0.0,
+     "max": 0.005104000000000004,
+     "sum": 2.311656
+    },
+    "P": {
+     "n": 240,
+     "mean": 0.0022359583333333333,
+     "median": 0.0019694999999999956,
+     "sd": 0.0007483496330351795,
+     "min": 0.0013439999999999945,
+     "max": 0.005405000000000007,
+     "sum": 0.5366299999999999
+    },
+    "Sq": {
+     "n": 1200,
+     "mean": 0.0003855275,
+     "median": 0.0,
+     "sd": 0.0008404456531569526,
+     "min": -1.3877787807814457e-17,
+     "max": 0.005092000000000006,
+     "sum": 0.46263299999999996
+    }
+   },
+   "single_served_model_units_residual": {
+    "S": {
+     "n": 1200,
+     "max_abs": 0.005104000000000004
+    },
+    "P": {
+     "n": 240,
+     "max_abs": 0.005405000000000007
+    },
+    "Sq": {
+     "n": 1200,
+     "max_abs": 0.005092000000000006
+    }
+   },
+   "list_table": {
+    "in_per_mtok": 1.0,
+    "out_per_mtok": 5.0
+   },
+   "list_table_residual_usd_per_dispatch": {
+    "S": {
+     "mean": 0.00192638,
+     "sd": 0.0007499965159474635,
+     "min": 0.0,
+     "max": 0.005104000000000004
+    },
+    "P": {
+     "mean": 0.0022359583333333333,
+     "sd": 0.0007483496330351795,
+     "min": 0.0013439999999999945,
+     "max": 0.005405000000000007
+    },
+    "Sq": {
+     "mean": 0.0003855275,
+     "sd": 0.0008404456531569526,
+     "min": -1.3877787807814457e-17,
+     "max": 0.005092000000000006
+    }
+   }
+  },
+  "sonnet": {
+   "n_records": 924,
+   "sq_sessions_by_turn_count": {
+    "5": 132
+   },
+   "sq_turn_errors": 0,
+   "sq_max_abs_gap_session_total_vs_sum_turn_cost": 2.7755575615628914e-17,
+   "cli_table_used": {
+    "in_per_mtok": 3.0,
+    "out_per_mtok": 15.0,
+    "cw_mult": 1.25,
+    "cr_mult": 0.1
+   },
+   "cli_table_residual_usd_per_dispatch": {
+    "S": {
+     "n": 660,
+     "mean": 0.001798859090909091,
+     "median": 0.001628,
+     "sd": 0.00057988841389432,
+     "min": 0.0,
+     "max": 0.003218999999999996,
+     "sum": 1.187247
+    },
+    "P": {
+     "n": 132,
+     "mean": 0.002113522727272727,
+     "median": 0.0019335000000000012,
+     "sd": 0.0005729242171303112,
+     "min": 0.001339,
+     "max": 0.0035200000000000023,
+     "sum": 0.2789849999999999
+    },
+    "Sq": {
+     "n": 660,
+     "mean": 0.000359039393939394,
+     "median": 0.0,
+     "sd": 0.0007654795595075514,
+     "min": -6.938893903907228e-18,
+     "max": 0.0032189999999999996,
+     "sum": 0.236966
+    }
+   },
+   "single_served_model_units_residual": {
+    "Sq": {
+     "n": 529,
+     "max_abs": 6.938893903907228e-18
+    },
+    "S": {
+     "n": 2,
+     "max_abs": 3.469446951953614e-18
+    }
+   },
+   "list_table": {
+    "in_per_mtok": 2.0,
+    "out_per_mtok": 10.0
+   },
+   "list_table_residual_usd_per_dispatch": {
+    "S": {
+     "mean": 0.006124434696969696,
+     "sd": 0.003141059618059678,
+     "min": 0.0015534,
+     "max": 0.023072500000000003
+    },
+    "P": {
+     "mean": 0.01367759659090909,
+     "sd": 0.006102364195868883,
+     "min": 0.00556625,
+     "max": 0.035075499999999996
+    },
+    "Sq": {
+     "mean": 0.0038485778787878786,
+     "sd": 0.0027829193846970798,
+     "min": 0.00039535000000000004,
+     "max": 0.024857499999999998
+    }
+   }
+  },
+  "opus": {
+   "n_records": 1056,
+   "sq_sessions_by_turn_count": {},
+   "sq_turn_errors": 0,
+   "sq_max_abs_gap_session_total_vs_sum_turn_cost": 0.0,
+   "cli_table_used": {
+    "in_per_mtok": 5.0,
+    "out_per_mtok": 25.0,
+    "cw_mult": 1.25,
+    "cr_mult": 0.1
+   },
+   "cli_table_residual_usd_per_dispatch": {
+    "S": {
+     "n": 880,
+     "mean": 0.0018031465909090906,
+     "median": 0.0016289999999999985,
+     "sd": 0.000576379300312986,
+     "min": 0.0,
+     "max": 0.0032239999999999977,
+     "sum": 1.5867689999999997
+    },
+    "P": {
+     "n": 176,
+     "mean": 0.0021135227272727295,
+     "median": 0.0019360000000000037,
+     "sd": 0.0005723897269199298,
+     "min": 0.001343999999999998,
+     "max": 0.0035199999999999954,
+     "sum": 0.3719800000000004
+    }
+   },
+   "single_served_model_units_residual": {
+    "S": {
+     "n": 1,
+     "max_abs": 0.0
+    }
+   },
+   "list_table": {
+    "in_per_mtok": 5.0,
+    "out_per_mtok": 25.0
+   },
+   "list_table_residual_usd_per_dispatch": {
+    "S": {
+     "mean": 0.0018031465909090906,
+     "sd": 0.000576379300312986,
+     "min": 0.0,
+     "max": 0.0032239999999999977
+    },
+    "P": {
+     "mean": 0.0021135227272727295,
+     "sd": 0.0005723897269199298,
+     "min": 0.001343999999999998,
+     "max": 0.0035199999999999954
+    }
+   }
+  }
+ },
+ "cells": {
+  "haiku/P": {
+   "tier": "haiku",
+   "arm": "P",
+   "model_id": "claude-haiku-4-5-20251001",
+   "units_records": 240,
+   "dispatches": 240,
+   "unit_kind": "item x rep bundle (1 dispatch)",
+   "item_reps": 240,
+   "items_in_cell": 80,
+   "target_items": 60,
+   "reps": 3,
+   "realized_usd": 11.223787250000006,
+   "realized_usd_defective_items_only": 7.614106,
+   "realized_usd_per_dispatch": 0.04676578020833336,
+   "realized_usd_per_item_rep": 0.04676578020833336,
+   "tokens": {
+    "input_tokens": 398916,
+    "cache_creation_input_tokens": 27489,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 2050776
+   },
+   "tokens_total": 2477181,
+   "target_rows": 180,
+   "true_catches_v1": 105,
+   "true_catches_v2": 108,
+   "true_catches_v3": 105,
+   "catch_rate_v1": 0.5833333333333334,
+   "usd_per_true_catch_realized": 0.10689321190476196,
+   "usd_per_true_catch_realized_defective_only": 0.07251529523809523,
+   "tokens_per_true_catch": 23592.2,
+   "output_tokens_per_true_catch": 19531.2,
+   "cache_cold_usd_LIST": 10.680285,
+   "usd_per_true_catch_cache_cold_LIST": 0.101717,
+   "cache_cold_usd_CLI": 10.680285,
+   "usd_per_true_catch_cache_cold_CLI": 0.101717,
+   "cache_cold_over_realized_LIST": 0.9515758595655841,
+   "cache_cold_over_realized_CLI": 0.9515758595655841,
+   "helper_call_overhead_usd_sum": 0.5366299999999999,
+   "helper_call_overhead_share_of_realized": 0.04781184711069783,
+   "realized_usd_LIST_repriced": 11.223787250000006,
+   "usd_per_true_catch_realized_LIST_repriced": 0.10689321190476196
+  },
+  "haiku/S": {
+   "tier": "haiku",
+   "arm": "S",
+   "model_id": "claude-haiku-4-5-20251001",
+   "units_records": 1200,
+   "dispatches": 1200,
+   "unit_kind": "per-question dispatch",
+   "item_reps": 240,
+   "items_in_cell": 80,
+   "target_items": 60,
+   "reps": 3,
+   "realized_usd": 38.04983729999989,
+   "realized_usd_defective_items_only": 26.519601,
+   "realized_usd_per_dispatch": 0.03170819774999991,
+   "realized_usd_per_item_rep": 0.15854098874999956,
+   "tokens": {
+    "input_tokens": 1690548,
+    "cache_creation_input_tokens": 60004,
+    "cache_read_input_tokens": 9233,
+    "output_tokens": 6794341
+   },
+   "tokens_total": 8554126,
+   "target_rows": 180,
+   "true_catches_v1": 120,
+   "true_catches_v2": 120,
+   "true_catches_v3": 108,
+   "catch_rate_v1": 0.6666666666666666,
+   "usd_per_true_catch_realized": 0.3170819774999991,
+   "usd_per_true_catch_realized_defective_only": 0.220996675,
+   "tokens_per_true_catch": 71284.38333333333,
+   "output_tokens_per_true_catch": 56619.50833333333,
+   "cache_cold_usd_LIST": 35.73149,
+   "usd_per_true_catch_cache_cold_LIST": 0.2977624166666667,
+   "cache_cold_usd_CLI": 35.73149,
+   "usd_per_true_catch_cache_cold_CLI": 0.2977624166666667,
+   "cache_cold_over_realized_LIST": 0.9390707696928865,
+   "cache_cold_over_realized_CLI": 0.9390707696928865,
+   "helper_call_overhead_usd_sum": 2.311656,
+   "helper_call_overhead_share_of_realized": 0.060753374101812696,
+   "realized_usd_LIST_repriced": 38.04983729999989,
+   "usd_per_true_catch_realized_LIST_repriced": 0.3170819774999991
+  },
+  "haiku/Sq": {
+   "tier": "haiku",
+   "arm": "Sq",
+   "model_id": "claude-haiku-4-5-20251001",
+   "units_records": 240,
+   "dispatches": 1200,
+   "unit_kind": "item x rep session (5 turns = 5 dispatches)",
+   "item_reps": 240,
+   "items_in_cell": 80,
+   "target_items": 60,
+   "reps": 3,
+   "realized_usd": 34.4468402,
+   "realized_usd_defective_items_only": 23.87211715,
+   "realized_usd_per_dispatch": 0.028705700166666664,
+   "realized_usd_per_item_rep": 0.14352850083333332,
+   "tokens": {
+    "input_tokens": 593119,
+    "cache_creation_input_tokens": 4852324,
+    "cache_read_input_tokens": 8460032,
+    "output_tokens": 5295936
+   },
+   "tokens_total": 19201411,
+   "target_rows": 180,
+   "true_catches_v1": 122,
+   "true_catches_v2": 122,
+   "true_catches_v3": 62,
+   "catch_rate_v1": 0.6777777777777778,
+   "usd_per_true_catch_realized": 0.28235114918032783,
+   "usd_per_true_catch_realized_defective_only": 0.19567309139344263,
+   "tokens_per_true_catch": 157388.61475409835,
+   "output_tokens_per_true_catch": 43409.311475409835,
+   "cache_cold_usd_LIST": 40.385155,
+   "usd_per_true_catch_cache_cold_LIST": 0.3310258606557377,
+   "cache_cold_usd_CLI": 40.385155,
+   "usd_per_true_catch_cache_cold_CLI": 0.3310258606557377,
+   "cache_cold_over_realized_LIST": 1.1723906972460134,
+   "cache_cold_over_realized_CLI": 1.1723906972460134,
+   "helper_call_overhead_usd_sum": 0.46263299999999996,
+   "helper_call_overhead_share_of_realized": 0.013430346508240834,
+   "realized_usd_LIST_repriced": 34.4468402,
+   "usd_per_true_catch_realized_LIST_repriced": 0.28235114918032783
+  },
+  "opus/P": {
+   "tier": "opus",
+   "arm": "P",
+   "model_id": "claude-opus-5",
+   "units_records": 176,
+   "dispatches": 176,
+   "unit_kind": "item x rep bundle (1 dispatch)",
+   "item_reps": 176,
+   "items_in_cell": 44,
+   "target_items": 36,
+   "reps": 4,
+   "realized_usd": 10.191080750000003,
+   "realized_usd_defective_items_only": 7.667084,
+   "realized_usd_per_dispatch": 0.057903867897727286,
+   "realized_usd_per_item_rep": 0.057903867897727286,
+   "tokens": {
+    "input_tokens": 352,
+    "cache_creation_input_tokens": 379821,
+    "cache_read_input_tokens": 1719,
+    "output_tokens": 297704
+   },
+   "tokens_total": 679596,
+   "target_rows": 144,
+   "true_catches_v1": 68,
+   "true_catches_v2": 69,
+   "true_catches_v3": 68,
+   "catch_rate_v1": 0.4722222222222222,
+   "usd_per_true_catch_realized": 0.14986883455882358,
+   "usd_per_true_catch_realized_defective_only": 0.11275123529411765,
+   "tokens_per_true_catch": 9994.058823529413,
+   "output_tokens_per_true_catch": 4378.0,
+   "cache_cold_usd_LIST": 9.35206,
+   "usd_per_true_catch_cache_cold_LIST": 0.13753029411764706,
+   "cache_cold_usd_CLI": 9.35206,
+   "usd_per_true_catch_cache_cold_CLI": 0.13753029411764706,
+   "cache_cold_over_realized_LIST": 0.9176710723246891,
+   "cache_cold_over_realized_CLI": 0.9176710723246891,
+   "helper_call_overhead_usd_sum": 0.3719800000000004,
+   "helper_call_overhead_share_of_realized": 0.036500544851437895,
+   "realized_usd_LIST_repriced": 10.191080750000003,
+   "usd_per_true_catch_realized_LIST_repriced": 0.14986883455882358
+  },
+  "opus/S": {
+   "tier": "opus",
+   "arm": "S",
+   "model_id": "claude-opus-5",
+   "units_records": 880,
+   "dispatches": 880,
+   "unit_kind": "per-question dispatch",
+   "item_reps": 176,
+   "items_in_cell": 44,
+   "target_items": 36,
+   "reps": 4,
+   "realized_usd": 25.202628750000024,
+   "realized_usd_defective_items_only": 20.111931249999998,
+   "realized_usd_per_dispatch": 0.028639350852272753,
+   "realized_usd_per_item_rep": 0.14319675426136377,
+   "tokens": {
+    "input_tokens": 1760,
+    "cache_creation_input_tokens": 935457,
+    "cache_read_input_tokens": 596307,
+    "output_tokens": 698492
+   },
+   "tokens_total": 2232016,
+   "target_rows": 144,
+   "true_catches_v1": 75,
+   "true_catches_v2": 75,
+   "true_catches_v3": 75,
+   "catch_rate_v1": 0.5208333333333334,
+   "usd_per_true_catch_realized": 0.33603505000000033,
+   "usd_per_true_catch_realized_defective_only": 0.2681590833333333,
+   "tokens_per_true_catch": 29760.213333333333,
+   "output_tokens_per_true_catch": 9313.226666666667,
+   "cache_cold_usd_LIST": 25.12992,
+   "usd_per_true_catch_cache_cold_LIST": 0.33506559999999996,
+   "cache_cold_usd_CLI": 25.12992,
+   "usd_per_true_catch_cache_cold_CLI": 0.33506559999999996,
+   "cache_cold_over_realized_LIST": 0.9971150330895532,
+   "cache_cold_over_realized_CLI": 0.9971150330895532,
+   "helper_call_overhead_usd_sum": 1.5867689999999997,
+   "helper_call_overhead_share_of_realized": 0.06296045605956871,
+   "realized_usd_LIST_repriced": 25.202628750000024,
+   "usd_per_true_catch_realized_LIST_repriced": 0.33603505000000033
+  },
+  "sonnet/P": {
+   "tier": "sonnet",
+   "arm": "P",
+   "model_id": "claude-sonnet-5",
+   "units_records": 132,
+   "dispatches": 132,
+   "unit_kind": "item x rep bundle (1 dispatch)",
+   "item_reps": 132,
+   "items_in_cell": 44,
+   "target_items": 36,
+   "reps": 3,
+   "realized_usd": 4.858358250000001,
+   "realized_usd_defective_items_only": 3.7089635,
+   "realized_usd_per_dispatch": 0.03680574431818183,
+   "realized_usd_per_item_rep": 0.03680574431818183,
+   "tokens": {
+    "input_tokens": 264,
+    "cache_creation_input_tokens": 286155,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 233700
+   },
+   "tokens_total": 520119,
+   "target_rows": 108,
+   "true_catches_v1": 80,
+   "true_catches_v2": 81,
+   "true_catches_v3": 80,
+   "catch_rate_v1": 0.7407407407407407,
+   "usd_per_true_catch_realized": 0.060729478125000014,
+   "usd_per_true_catch_realized_defective_only": 0.04636204375,
+   "tokens_per_true_catch": 6501.4875,
+   "output_tokens_per_true_catch": 2921.25,
+   "cache_cold_usd_LIST": 2.909838,
+   "usd_per_true_catch_cache_cold_LIST": 0.036372975,
+   "cache_cold_usd_CLI": 4.364757,
+   "usd_per_true_catch_cache_cold_CLI": 0.0545594625,
+   "cache_cold_over_realized_LIST": 0.5989344239898322,
+   "cache_cold_over_realized_CLI": 0.8984016359847483,
+   "helper_call_overhead_usd_sum": 0.2789849999999999,
+   "helper_call_overhead_share_of_realized": 0.05742371921625991,
+   "realized_usd_LIST_repriced": 3.331900500000001,
+   "usd_per_true_catch_realized_LIST_repriced": 0.041648756250000016
+  },
+  "sonnet/S": {
+   "tier": "sonnet",
+   "arm": "S",
+   "model_id": "claude-sonnet-5",
+   "units_records": 660,
+   "dispatches": 660,
+   "unit_kind": "per-question dispatch",
+   "item_reps": 132,
+   "items_in_cell": 44,
+   "target_items": 36,
+   "reps": 3,
+   "realized_usd": 9.751886699999993,
+   "realized_usd_defective_items_only": 7.9390098,
+   "realized_usd_per_dispatch": 0.014775585909090899,
+   "realized_usd_per_item_rep": 0.0738779295454545,
+   "tokens": {
+    "input_tokens": 82242,
+    "cache_creation_input_tokens": 648772,
+    "cache_read_input_tokens": 419129,
+    "output_tokens": 383952
+   },
+   "tokens_total": 1534095,
+   "target_rows": 108,
+   "true_catches_v1": 75,
+   "true_catches_v2": 75,
+   "true_catches_v3": 75,
+   "catch_rate_v1": 0.6944444444444444,
+   "usd_per_true_catch_realized": 0.1300251559999999,
+   "usd_per_true_catch_realized_defective_only": 0.105853464,
+   "tokens_per_true_catch": 20454.6,
+   "output_tokens_per_true_catch": 5119.36,
+   "cache_cold_usd_LIST": 6.139806,
+   "usd_per_true_catch_cache_cold_LIST": 0.08186408,
+   "cache_cold_usd_CLI": 9.209709,
+   "usd_per_true_catch_cache_cold_CLI": 0.12279612000000001,
+   "cache_cold_over_realized_LIST": 0.6296018595047874,
+   "cache_cold_over_realized_CLI": 0.944402789257181,
+   "helper_call_overhead_usd_sum": 1.187247,
+   "helper_call_overhead_share_of_realized": 0.12174536441240656,
+   "realized_usd_LIST_repriced": 6.897006799999995,
+   "usd_per_true_catch_realized_LIST_repriced": 0.0919600906666666
+  },
+  "sonnet/Sq": {
+   "tier": "sonnet",
+   "arm": "Sq",
+   "model_id": "claude-sonnet-5",
+   "units_records": 132,
+   "dispatches": 660,
+   "unit_kind": "item x rep session (5 turns = 5 dispatches)",
+   "item_reps": 132,
+   "items_in_cell": 44,
+   "target_items": 36,
+   "reps": 3,
+   "realized_usd": 7.1462522,
+   "realized_usd_defective_items_only": 5.89456175,
+   "realized_usd_per_dispatch": 0.01082765484848485,
+   "realized_usd_per_item_rep": 0.05413827424242424,
+   "tokens": {
+    "input_tokens": 17562,
+    "cache_creation_input_tokens": 447326,
+    "cache_read_input_tokens": 1535359,
+    "output_tokens": 314568
+   },
+   "tokens_total": 2314815,
+   "target_rows": 108,
+   "true_catches_v1": 70,
+   "true_catches_v2": 70,
+   "true_catches_v3": 64,
+   "catch_rate_v1": 0.6481481481481481,
+   "usd_per_true_catch_realized": 0.10208931714285714,
+   "usd_per_true_catch_realized_defective_only": 0.084208025,
+   "tokens_per_true_catch": 33068.78571428572,
+   "output_tokens_per_true_catch": 4493.828571428571,
+   "cache_cold_usd_LIST": 7.146174,
+   "usd_per_true_catch_cache_cold_LIST": 0.1020882,
+   "cache_cold_usd_CLI": 10.719261,
+   "usd_per_true_catch_cache_cold_CLI": 0.1531323,
+   "cache_cold_over_realized_LIST": 0.9999890572011998,
+   "cache_cold_over_realized_CLI": 1.4999835858017996,
+   "helper_call_overhead_usd_sum": 0.236966,
+   "helper_call_overhead_share_of_realized": 0.03315947903433915,
+   "realized_usd_LIST_repriced": 4.8431568,
+   "usd_per_true_catch_realized_LIST_repriced": 0.06918795428571428
+  }
+ },
+ "equal_dollars": {
+  "haiku/S-vs-P/realized": {
+   "tier": "haiku",
+   "arm": "S",
+   "basis": "realized",
+   "usd_P": 11.223787250000006,
+   "usd_arm": 38.04983729999989,
+   "marginal_usd_arm_over_P": 26.826050049999886,
+   "catches_P": 105,
+   "catches_arm": 120,
+   "marginal_catches": 15,
+   "arm_marginal_catches_per_marginal_usd": 0.5591579815903632,
+   "P_catches_per_usd": 9.35513099644685,
+   "arm_catches_per_usd": 3.1537585575957334,
+   "P_usd_per_rep": 3.7412624166666686,
+   "P_catches_per_rep": 35.0,
+   "extra_P_reps_same_usd": 7.170320352428242,
+   "catches_same_usd_buys_as_P_reps_linear": 250.9612123349885,
+   "arm_marginal_catches_minus_P_reps_catches": -235.9612123349885,
+   "usd_ratio_arm_over_P": 3.3901067841427475
+  },
+  "haiku/S-vs-P/realized_LIST_repriced": {
+   "tier": "haiku",
+   "arm": "S",
+   "basis": "realized_LIST_repriced",
+   "usd_P": 11.223787250000006,
+   "usd_arm": 38.04983729999989,
+   "marginal_usd_arm_over_P": 26.826050049999886,
+   "catches_P": 105,
+   "catches_arm": 120,
+   "marginal_catches": 15,
+   "arm_marginal_catches_per_marginal_usd": 0.5591579815903632,
+   "P_catches_per_usd": 9.35513099644685,
+   "arm_catches_per_usd": 3.1537585575957334,
+   "P_usd_per_rep": 3.7412624166666686,
+   "P_catches_per_rep": 35.0,
+   "extra_P_reps_same_usd": 7.170320352428242,
+   "catches_same_usd_buys_as_P_reps_linear": 250.9612123349885,
+   "arm_marginal_catches_minus_P_reps_catches": -235.9612123349885,
+   "usd_ratio_arm_over_P": 3.3901067841427475
+  },
+  "haiku/S-vs-P/cache_cold_LIST": {
+   "tier": "haiku",
+   "arm": "S",
+   "basis": "cache_cold_LIST",
+   "usd_P": 10.680285,
+   "usd_arm": 35.73149,
+   "marginal_usd_arm_over_P": 25.051205000000003,
+   "catches_P": 105,
+   "catches_arm": 120,
+   "marginal_catches": 15,
+   "arm_marginal_catches_per_marginal_usd": 0.5987735919290109,
+   "P_catches_per_usd": 9.831198324763806,
+   "arm_catches_per_usd": 3.358382200126555,
+   "P_usd_per_rep": 3.560095,
+   "P_catches_per_rep": 35.0,
+   "extra_P_reps_same_usd": 7.036667560837563,
+   "catches_same_usd_buys_as_P_reps_linear": 246.2833646293147,
+   "arm_marginal_catches_minus_P_reps_catches": -231.2833646293147,
+   "usd_ratio_arm_over_P": 3.3455558536125207
+  },
+  "haiku/S-vs-P/cache_cold_CLI": {
+   "tier": "haiku",
+   "arm": "S",
+   "basis": "cache_cold_CLI",
+   "usd_P": 10.680285,
+   "usd_arm": 35.73149,
+   "marginal_usd_arm_over_P": 25.051205000000003,
+   "catches_P": 105,
+   "catches_arm": 120,
+   "marginal_catches": 15,
+   "arm_marginal_catches_per_marginal_usd": 0.5987735919290109,
+   "P_catches_per_usd": 9.831198324763806,
+   "arm_catches_per_usd": 3.358382200126555,
+   "P_usd_per_rep": 3.560095,
+   "P_catches_per_rep": 35.0,
+   "extra_P_reps_same_usd": 7.036667560837563,
+   "catches_same_usd_buys_as_P_reps_linear": 246.2833646293147,
+   "arm_marginal_catches_minus_P_reps_catches": -231.2833646293147,
+   "usd_ratio_arm_over_P": 3.3455558536125207
+  },
+  "haiku/Sq-vs-P/realized": {
+   "tier": "haiku",
+   "arm": "Sq",
+   "basis": "realized",
+   "usd_P": 11.223787250000006,
+   "usd_arm": 34.4468402,
+   "marginal_usd_arm_over_P": 23.22305294999999,
+   "catches_P": 105,
+   "catches_arm": 122,
+   "marginal_catches": 17,
+   "arm_marginal_catches_per_marginal_usd": 0.7320312293392935,
+   "P_catches_per_usd": 9.35513099644685,
+   "arm_catches_per_usd": 3.5416891445387204,
+   "P_usd_per_rep": 3.7412624166666686,
+   "P_catches_per_rep": 35.0,
+   "extra_P_reps_same_usd": 6.207277213847752,
+   "catches_same_usd_buys_as_P_reps_linear": 217.25470248467136,
+   "arm_marginal_catches_minus_P_reps_catches": -200.25470248467136,
+   "usd_ratio_arm_over_P": 3.0690924046159176
+  },
+  "haiku/Sq-vs-P/realized_LIST_repriced": {
+   "tier": "haiku",
+   "arm": "Sq",
+   "basis": "realized_LIST_repriced",
+   "usd_P": 11.223787250000006,
+   "usd_arm": 34.4468402,
+   "marginal_usd_arm_over_P": 23.22305294999999,
+   "catches_P": 105,
+   "catches_arm": 122,
+   "marginal_catches": 17,
+   "arm_marginal_catches_per_marginal_usd": 0.7320312293392935,
+   "P_catches_per_usd": 9.35513099644685,
+   "arm_catches_per_usd": 3.5416891445387204,
+   "P_usd_per_rep": 3.7412624166666686,
+   "P_catches_per_rep": 35.0,
+   "extra_P_reps_same_usd": 6.207277213847752,
+   "catches_same_usd_buys_as_P_reps_linear": 217.25470248467136,
+   "arm_marginal_catches_minus_P_reps_catches": -200.25470248467136,
+   "usd_ratio_arm_over_P": 3.0690924046159176
+  },
+  "haiku/Sq-vs-P/cache_cold_LIST": {
+   "tier": "haiku",
+   "arm": "Sq",
+   "basis": "cache_cold_LIST",
+   "usd_P": 10.680285,
+   "usd_arm": 40.385155,
+   "marginal_usd_arm_over_P": 29.70487,
+   "catches_P": 105,
+   "catches_arm": 122,
+   "marginal_catches": 17,
+   "arm_marginal_catches_per_marginal_usd": 0.5722967311420653,
+   "P_catches_per_usd": 9.831198324763806,
+   "arm_catches_per_usd": 3.0209120158137317,
+   "P_usd_per_rep": 3.560095,
+   "P_catches_per_rep": 35.0,
+   "extra_P_reps_same_usd": 8.343841948037904,
+   "catches_same_usd_buys_as_P_reps_linear": 292.03446818132664,
+   "arm_marginal_catches_minus_P_reps_catches": -275.03446818132664,
+   "usd_ratio_arm_over_P": 3.781280649345968
+  },
+  "haiku/Sq-vs-P/cache_cold_CLI": {
+   "tier": "haiku",
+   "arm": "Sq",
+   "basis": "cache_cold_CLI",
+   "usd_P": 10.680285,
+   "usd_arm": 40.385155,
+   "marginal_usd_arm_over_P": 29.70487,
+   "catches_P": 105,
+   "catches_arm": 122,
+   "marginal_catches": 17,
+   "arm_marginal_catches_per_marginal_usd": 0.5722967311420653,
+   "P_catches_per_usd": 9.831198324763806,
+   "arm_catches_per_usd": 3.0209120158137317,
+   "P_usd_per_rep": 3.560095,
+   "P_catches_per_rep": 35.0,
+   "extra_P_reps_same_usd": 8.343841948037904,
+   "catches_same_usd_buys_as_P_reps_linear": 292.03446818132664,
+   "arm_marginal_catches_minus_P_reps_catches": -275.03446818132664,
+   "usd_ratio_arm_over_P": 3.781280649345968
+  },
+  "sonnet/S-vs-P/realized": {
+   "tier": "sonnet",
+   "arm": "S",
+   "basis": "realized",
+   "usd_P": 4.858358250000001,
+   "usd_arm": 9.751886699999993,
+   "marginal_usd_arm_over_P": 4.893528449999992,
+   "catches_P": 80,
+   "catches_arm": 75,
+   "marginal_catches": -5,
+   "arm_marginal_catches_per_marginal_usd": -1.0217576235814074,
+   "P_catches_per_usd": 16.46646786494182,
+   "arm_catches_per_usd": 7.690819459582119,
+   "P_usd_per_rep": 1.6194527500000004,
+   "P_catches_per_rep": 26.666666666666668,
+   "extra_P_reps_same_usd": 3.0217173363038783,
+   "catches_same_usd_buys_as_P_reps_linear": 80.57912896810342,
+   "arm_marginal_catches_minus_P_reps_catches": -85.57912896810342,
+   "usd_ratio_arm_over_P": 2.007239112101293
+  },
+  "sonnet/S-vs-P/realized_LIST_repriced": {
+   "tier": "sonnet",
+   "arm": "S",
+   "basis": "realized_LIST_repriced",
+   "usd_P": 3.331900500000001,
+   "usd_arm": 6.897006799999995,
+   "marginal_usd_arm_over_P": 3.5651062999999943,
+   "catches_P": 80,
+   "catches_arm": 75,
+   "marginal_catches": -5,
+   "arm_marginal_catches_per_marginal_usd": -1.402482725409901,
+   "P_catches_per_usd": 24.010320836411523,
+   "arm_catches_per_usd": 10.874282449598288,
+   "P_usd_per_rep": 1.1106335000000003,
+   "P_catches_per_rep": 26.666666666666668,
+   "extra_P_reps_same_usd": 3.209975477959195,
+   "catches_same_usd_buys_as_P_reps_linear": 85.59934607891185,
+   "arm_marginal_catches_minus_P_reps_catches": -90.59934607891185,
+   "usd_ratio_arm_over_P": 2.0699918259863983
+  },
+  "sonnet/S-vs-P/cache_cold_LIST": {
+   "tier": "sonnet",
+   "arm": "S",
+   "basis": "cache_cold_LIST",
+   "usd_P": 2.909838,
+   "usd_arm": 6.139806,
+   "marginal_usd_arm_over_P": 3.229968,
+   "catches_P": 80,
+   "catches_arm": 75,
+   "marginal_catches": -5,
+   "arm_marginal_catches_per_marginal_usd": -1.5480029523512306,
+   "P_catches_per_usd": 27.492939469482494,
+   "arm_catches_per_usd": 12.215369671289288,
+   "P_usd_per_rep": 0.9699460000000001,
+   "P_catches_per_rep": 26.666666666666668,
+   "extra_P_reps_same_usd": 3.330049301713703,
+   "catches_same_usd_buys_as_P_reps_linear": 88.80131471236542,
+   "arm_marginal_catches_minus_P_reps_catches": -93.80131471236542,
+   "usd_ratio_arm_over_P": 2.1100164339045677
+  },
+  "sonnet/S-vs-P/cache_cold_CLI": {
+   "tier": "sonnet",
+   "arm": "S",
+   "basis": "cache_cold_CLI",
+   "usd_P": 4.364757,
+   "usd_arm": 9.209709,
+   "marginal_usd_arm_over_P": 4.844952,
+   "catches_P": 80,
+   "catches_arm": 75,
+   "marginal_catches": -5,
+   "arm_marginal_catches_per_marginal_usd": -1.0320019682341537,
+   "P_catches_per_usd": 18.32862631298833,
+   "arm_catches_per_usd": 8.143579780859525,
+   "P_usd_per_rep": 1.454919,
+   "P_catches_per_rep": 26.666666666666668,
+   "extra_P_reps_same_usd": 3.3300493017137036,
+   "catches_same_usd_buys_as_P_reps_linear": 88.80131471236544,
+   "arm_marginal_catches_minus_P_reps_catches": -93.80131471236544,
+   "usd_ratio_arm_over_P": 2.1100164339045677
+  },
+  "sonnet/Sq-vs-P/realized": {
+   "tier": "sonnet",
+   "arm": "Sq",
+   "basis": "realized",
+   "usd_P": 4.858358250000001,
+   "usd_arm": 7.1462522,
+   "marginal_usd_arm_over_P": 2.287893949999999,
+   "catches_P": 80,
+   "catches_arm": 70,
+   "marginal_catches": -10,
+   "arm_marginal_catches_per_marginal_usd": -4.370831960983159,
+   "P_catches_per_usd": 16.46646786494182,
+   "arm_catches_per_usd": 9.795344194541581,
+   "P_usd_per_rep": 1.6194527500000004,
+   "P_catches_per_rep": 26.666666666666668,
+   "extra_P_reps_same_usd": 1.4127574577276172,
+   "catches_same_usd_buys_as_P_reps_linear": 37.67353220606979,
+   "arm_marginal_catches_minus_P_reps_catches": -47.67353220606979,
+   "usd_ratio_arm_over_P": 1.4709191525758725
+  },
+  "sonnet/Sq-vs-P/realized_LIST_repriced": {
+   "tier": "sonnet",
+   "arm": "Sq",
+   "basis": "realized_LIST_repriced",
+   "usd_P": 3.331900500000001,
+   "usd_arm": 4.8431568,
+   "marginal_usd_arm_over_P": 1.511256299999999,
+   "catches_P": 80,
+   "catches_arm": 70,
+   "marginal_catches": -10,
+   "arm_marginal_catches_per_marginal_usd": -6.6170112905402,
+   "P_catches_per_usd": 24.010320836411523,
+   "arm_catches_per_usd": 14.45338296707635,
+   "P_usd_per_rep": 1.1106335000000003,
+   "P_catches_per_rep": 26.666666666666668,
+   "extra_P_reps_same_usd": 1.3607155735893062,
+   "catches_same_usd_buys_as_P_reps_linear": 36.28574862904816,
+   "arm_marginal_catches_minus_P_reps_catches": -46.28574862904816,
+   "usd_ratio_arm_over_P": 1.453571857863102
+  },
+  "sonnet/Sq-vs-P/cache_cold_LIST": {
+   "tier": "sonnet",
+   "arm": "Sq",
+   "basis": "cache_cold_LIST",
+   "usd_P": 2.909838,
+   "usd_arm": 7.146174,
+   "marginal_usd_arm_over_P": 4.236336,
+   "catches_P": 80,
+   "catches_arm": 70,
+   "marginal_catches": -10,
+   "arm_marginal_catches_per_marginal_usd": -2.360530420627637,
+   "P_catches_per_usd": 27.492939469482494,
+   "arm_catches_per_usd": 9.795451384195236,
+   "P_usd_per_rep": 0.9699460000000001,
+   "P_catches_per_rep": 26.666666666666668,
+   "extra_P_reps_same_usd": 4.367599845764609,
+   "catches_same_usd_buys_as_P_reps_linear": 116.46932922038958,
+   "arm_marginal_catches_minus_P_reps_catches": -126.46932922038958,
+   "usd_ratio_arm_over_P": 2.4558666152548696
+  },
+  "sonnet/Sq-vs-P/cache_cold_CLI": {
+   "tier": "sonnet",
+   "arm": "Sq",
+   "basis": "cache_cold_CLI",
+   "usd_P": 4.364757,
+   "usd_arm": 10.719261,
+   "marginal_usd_arm_over_P": 6.3545039999999995,
+   "catches_P": 80,
+   "catches_arm": 70,
+   "marginal_catches": -10,
+   "arm_marginal_catches_per_marginal_usd": -1.5736869470850912,
+   "P_catches_per_usd": 18.32862631298833,
+   "arm_catches_per_usd": 6.530300922796823,
+   "P_usd_per_rep": 1.454919,
+   "P_catches_per_rep": 26.666666666666668,
+   "extra_P_reps_same_usd": 4.367599845764609,
+   "catches_same_usd_buys_as_P_reps_linear": 116.46932922038958,
+   "arm_marginal_catches_minus_P_reps_catches": -126.46932922038958,
+   "usd_ratio_arm_over_P": 2.4558666152548696
+  },
+  "opus/S-vs-P/realized": {
+   "tier": "opus",
+   "arm": "S",
+   "basis": "realized",
+   "usd_P": 10.191080750000003,
+   "usd_arm": 25.202628750000024,
+   "marginal_usd_arm_over_P": 15.01154800000002,
+   "catches_P": 68,
+   "catches_arm": 75,
+   "marginal_catches": 7,
+   "arm_marginal_catches_per_marginal_usd": 0.46630767193363337,
+   "P_catches_per_usd": 6.6725013438834715,
+   "arm_catches_per_usd": 2.975880045846405,
+   "P_usd_per_rep": 2.5477701875000007,
+   "P_catches_per_rep": 17.0,
+   "extra_P_reps_same_usd": 5.892033776692434,
+   "catches_same_usd_buys_as_P_reps_linear": 100.16457420377138,
+   "arm_marginal_catches_minus_P_reps_catches": -93.16457420377138,
+   "usd_ratio_arm_over_P": 2.4730084441731086
+  },
+  "opus/S-vs-P/realized_LIST_repriced": {
+   "tier": "opus",
+   "arm": "S",
+   "basis": "realized_LIST_repriced",
+   "usd_P": 10.191080750000003,
+   "usd_arm": 25.202628750000024,
+   "marginal_usd_arm_over_P": 15.01154800000002,
+   "catches_P": 68,
+   "catches_arm": 75,
+   "marginal_catches": 7,
+   "arm_marginal_catches_per_marginal_usd": 0.46630767193363337,
+   "P_catches_per_usd": 6.6725013438834715,
+   "arm_catches_per_usd": 2.975880045846405,
+   "P_usd_per_rep": 2.5477701875000007,
+   "P_catches_per_rep": 17.0,
+   "extra_P_reps_same_usd": 5.892033776692434,
+   "catches_same_usd_buys_as_P_reps_linear": 100.16457420377138,
+   "arm_marginal_catches_minus_P_reps_catches": -93.16457420377138,
+   "usd_ratio_arm_over_P": 2.4730084441731086
+  },
+  "opus/S-vs-P/cache_cold_LIST": {
+   "tier": "opus",
+   "arm": "S",
+   "basis": "cache_cold_LIST",
+   "usd_P": 9.35206,
+   "usd_arm": 25.12992,
+   "marginal_usd_arm_over_P": 15.777859999999999,
+   "catches_P": 68,
+   "catches_arm": 75,
+   "marginal_catches": 7,
+   "arm_marginal_catches_per_marginal_usd": 0.4436596598017729,
+   "P_catches_per_usd": 7.271125292181615,
+   "arm_catches_per_usd": 2.9844902013217713,
+   "P_usd_per_rep": 2.338015,
+   "P_catches_per_rep": 17.0,
+   "extra_P_reps_same_usd": 6.748399817794154,
+   "catches_same_usd_buys_as_P_reps_linear": 114.72279690250062,
+   "arm_marginal_catches_minus_P_reps_catches": -107.72279690250062,
+   "usd_ratio_arm_over_P": 2.6870999544485383
+  },
+  "opus/S-vs-P/cache_cold_CLI": {
+   "tier": "opus",
+   "arm": "S",
+   "basis": "cache_cold_CLI",
+   "usd_P": 9.35206,
+   "usd_arm": 25.12992,
+   "marginal_usd_arm_over_P": 15.777859999999999,
+   "catches_P": 68,
+   "catches_arm": 75,
+   "marginal_catches": 7,
+   "arm_marginal_catches_per_marginal_usd": 0.4436596598017729,
+   "P_catches_per_usd": 7.271125292181615,
+   "arm_catches_per_usd": 2.9844902013217713,
+   "P_usd_per_rep": 2.338015,
+   "P_catches_per_rep": 17.0,
+   "extra_P_reps_same_usd": 6.748399817794154,
+   "catches_same_usd_buys_as_P_reps_linear": 114.72279690250062,
+   "arm_marginal_catches_minus_P_reps_catches": -107.72279690250062,
+   "usd_ratio_arm_over_P": 2.6870999544485383
+  }
+ },
+ "grouped_probe_anchors": {
+  "haiku": {
+   "n": 5,
+   "items": [
+    "mf-boundary-01"
+   ],
+   "lane": [
+    "grouped-order-probe"
+   ],
+   "sum_usd": 0.096123,
+   "mean_usd_per_dispatch": 0.0192246,
+   "cache_read_tokens_total": 0,
+   "cache_creation_tokens_total": 0,
+   "regime_n_per_cell": [
+    3
+   ]
+  },
+  "sonnet": {
+   "n": 5,
+   "items": [
+    "mf-boundary-01"
+   ],
+   "lane": [
+    "grouped-order-probe"
+   ],
+   "sum_usd": 0.0549815,
+   "mean_usd_per_dispatch": 0.0109963,
+   "cache_read_tokens_total": 0,
+   "cache_creation_tokens_total": 5214,
+   "regime_n_per_cell": [
+    3
+   ]
+  },
+  "opus": {
+   "n": 5,
+   "items": [
+    "mf-boundary-01"
+   ],
+   "lane": [
+    "grouped-order-probe"
+   ],
+   "sum_usd": 0.11513150000000001,
+   "mean_usd_per_dispatch": 0.023026300000000003,
+   "cache_read_tokens_total": 0,
+   "cache_creation_tokens_total": 5214,
+   "regime_n_per_cell": [
+    3
+   ]
+  }
+ },
+ "totals": {
+  "realized_usd_all_cells": 140.8706713999999,
+  "realized_usd_by_tier": {
+   "haiku": 83.72046474999989,
+   "sonnet": 21.756497149999994,
+   "opus": 35.39370950000003
+  },
+  "records_all": 3660,
+  "dispatches_all": 5148,
+  "true_catches_v1_all": 715
+ }
+}
