@@ -1,0 +1,27 @@
+{
+  "id": "sf-units-06",
+  "item_class": "single_function",
+  "defect_class": "units",
+  "files": [
+    {
+      "path": "seismic_extract.py",
+      "content": "\"\"\"Extract calibrated ground-velocity windows from raw seismic digitizer data.\"\"\"\n\nfrom __future__ import annotations\n\nfrom typing import List\n\n\ndef _seconds_to_samples(seconds: float, sample_rate_hz: float) -> int:\n    return int(round(seconds * sample_rate_hz))\n\n\ndef _counts_to_volts(counts: float, full_scale_counts: int, full_scale_volts: float) -> float:\n    return counts * (full_scale_volts / full_scale_counts)\n\n\ndef _to_ground_velocity(window_volts: List[float], sensitivity_v_per_mm_s: float,\n                         agc_gain_percent: float) -> List[float]:\n    # Undo sensor sensitivity and any automatic gain boost applied at the digitizer\n    gain_correction = 1.0 + agc_gain_percent\n    return [v / sensitivity_v_per_mm_s / gain_correction for v in window_volts]\n\n\ndef extract_event_trace(raw_counts: List[int], sample_rate_hz: float,\n                         trace_start_epoch: float, event_epoch: float,\n                         sensitivity_v_per_mm_s: float, agc_gain_percent: float,\n                         adc_full_scale_counts: int = 8388607,\n                         adc_full_scale_volts: float = 5.0,\n                         pre_roll_s: float = 2.0, post_roll_s: float = 5.0):\n    \"\"\"Slice a window of samples around an event time and convert to mm/s.\"\"\"\n    offset_s = event_epoch - trace_start_epoch\n    center_sample = _seconds_to_samples(offset_s, sample_rate_hz)\n    pre_roll_samples = _seconds_to_samples(pre_roll_s, sample_rate_hz)\n    post_roll_samples = _seconds_to_samples(post_roll_s, sample_rate_hz)\n\n    start = max(0, center_sample - pre_roll_samples)\n    end = min(len(raw_counts), center_sample + post_roll_samples)\n    if start >= end:\n        raise ValueError(\"event window falls outside the recorded trace\")\n\n    window_counts = raw_counts[start:end]\n    window_volts = [\n        _counts_to_volts(c, adc_full_scale_counts, adc_full_scale_volts)\n        for c in window_counts\n    ]\n\n    window_mm_s = _to_ground_velocity(window_volts, sensitivity_v_per_mm_s, agc_gain_percent)\n    return window_mm_s, start, end\n\n\nif __name__ == \"__main__\":\n    import random\n\n    # Synthetic 100 sps trace, ten seconds long, quiet noise floor.\n    random.seed(0)\n    trace = [random.randint(-50, 50) for _ in range(1000)]\n    result, start, end = extract_event_trace(\n        raw_counts=trace,\n        sample_rate_hz=100.0,\n        trace_start_epoch=1_700_000_000.0,\n        event_epoch=1_700_000_005.0,\n        sensitivity_v_per_mm_s=0.02,\n        agc_gain_percent=20.0,\n        pre_roll_s=1.0,\n        post_roll_s=2.0,\n    )\n    print(f\"extracted {len(result)} samples spanning indices [{start}, {end})\")\n"
+    }
+  ],
+  "defect_keys": [
+    "gain correction factor",
+    "percent to a fraction",
+    "divide by 100",
+    "agc gain percentage",
+    "a percentage",
+    "as a fraction",
+    "computes gain_correction"
+  ],
+  "covariates": {
+    "locality_hops": 1,
+    "files_spanned": 1,
+    "distractor_count": 5,
+    "cue_directness": "indirect"
+  },
+  "size_bytes": 2636
+}

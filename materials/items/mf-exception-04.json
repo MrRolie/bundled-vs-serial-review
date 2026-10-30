@@ -1,0 +1,38 @@
+{
+  "id": "mf-exception-04",
+  "item_class": "multi_file",
+  "defect_class": "exception",
+  "files": [
+    {
+      "path": "currency.py",
+      "content": "\"\"\"Currency conversion utilities for cross-border auction bids.\"\"\"\n\nfrom decimal import Decimal, ROUND_HALF_UP\n\n\nclass UnsupportedCurrencyError(Exception):\n    pass\n\n\n_EXCHANGE_RATES = {\n    (\"USD\", \"USD\"): Decimal(\"1\"),\n    (\"EUR\", \"USD\"): Decimal(\"1.08\"),\n    (\"USD\", \"EUR\"): Decimal(\"0.93\"),\n    (\"GBP\", \"USD\"): Decimal(\"1.27\"),\n    (\"USD\", \"GBP\"): Decimal(\"0.79\"),\n    (\"EUR\", \"EUR\"): Decimal(\"1\"),\n    (\"GBP\", \"GBP\"): Decimal(\"1\"),\n    (\"JPY\", \"USD\"): Decimal(\"0.0067\"),\n    (\"USD\", \"JPY\"): Decimal(\"149.20\"),\n}\n\n\ndef convert_to_base(amount, from_currency, to_currency):\n    \"\"\"Convert a proposed bid amount into the auction's base currency.\"\"\"\n    if amount <= 0:\n        raise ValueError(\"bid amount must be positive\")\n\n    key = (from_currency.upper(), to_currency.upper())\n    try:\n        rate = _EXCHANGE_RATES[key]\n    except KeyError:\n        raise UnsupportedCurrencyError(\n            f\"no exchange rate available for {from_currency} -> {to_currency}\"\n        )\n\n    converted = (amount * rate).quantize(Decimal(\"0.01\"), rounding=ROUND_HALF_UP)\n    return converted\n\n\ndef format_amount(amount, currency_code):\n    return f\"{amount:.2f} {currency_code.upper()}\"\n"
+    },
+    {
+      "path": "validation.py",
+      "content": "\"\"\"Business-rule checks applied before a bid is accepted.\"\"\"\n\nfrom decimal import Decimal\n\nimport currency\n\n\nclass AuctionClosedError(Exception):\n    pass\n\n\nclass BidTooLowError(Exception):\n    pass\n\n\nclass BidRejectedError(Exception):\n    pass\n\n\nMAX_JUMP_MULTIPLIER = Decimal(\"25\")\n\n\ndef validate_bid(auction, bidder, amount, currency_code):\n    \"\"\"Check that a proposed bid can legally be accepted, normalized to the auction's currency.\"\"\"\n    if auction.closed:\n        raise AuctionClosedError(f\"auction {auction.id} is no longer accepting bids\")\n\n    if bidder.id == auction.seller_id:\n        raise BidRejectedError(\"sellers may not bid on their own listings\")\n\n    amount_base = currency.convert_to_base(amount, currency_code, auction.currency)\n\n    min_next_bid = auction.current_price + auction.min_increment\n    if amount_base < min_next_bid:\n        raise BidTooLowError(\n            f\"bid of {currency.format_amount(amount_base, auction.currency)} is below \"\n            f\"the minimum next bid of {currency.format_amount(min_next_bid, auction.currency)}\"\n        )\n\n    if auction.current_price > 0 and amount_base > auction.current_price * MAX_JUMP_MULTIPLIER:\n        raise BidRejectedError(\n            f\"bid of {currency.format_amount(amount_base, auction.currency)} is implausibly \"\n            f\"far above the current price and has been flagged for manual review\"\n        )\n\n    return amount_base\n"
+    },
+    {
+      "path": "ledger.py",
+      "content": "\"\"\"Bid ledger: places funding holds and records winning bid history.\"\"\"\n\nimport random\n\nimport currency\n\n\nclass InsufficientFundsError(Exception):\n    pass\n\n\nclass GatewayTimeoutError(Exception):\n    pass\n\n\nclass Hold:\n    def __init__(self, account_id, amount, confirmed):\n        self.account_id = account_id\n        self.amount = amount\n        self.confirmed = confirmed\n\n\nclass PaymentGateway:\n    \"\"\"Stand-in for the real payment processor's hold API.\"\"\"\n\n    def __init__(self, failure_rate=0.0):\n        self._failure_rate = failure_rate\n\n    def authorize_hold(self, account_id, amount, available_balance):\n        if amount > available_balance:\n            raise InsufficientFundsError(\n                f\"account {account_id} has insufficient balance to cover {amount}\"\n            )\n        if random.random() < self._failure_rate:\n            raise GatewayTimeoutError(\n                f\"payment processor did not respond in time for account {account_id}\"\n            )\n        return Hold(account_id, amount, confirmed=True)\n\n\n_gateway = PaymentGateway(failure_rate=0.05)\n\n_bid_history = []\n\n\ndef commit_bid(auction, bidder, amount_base):\n    \"\"\"Reserve the bidder's funds and, once secured, record the bid as the new leading offer.\"\"\"\n    hold = _reserve_funds(bidder, amount_base)\n\n    auction.current_price = amount_base\n    auction.leading_bidder_id = bidder.id\n\n    entry = {\n        \"auction_id\": auction.id,\n        \"bidder_id\": bidder.id,\n        \"amount\": amount_base,\n        \"amount_display\": currency.format_amount(amount_base, auction.currency),\n        \"hold_confirmed\": hold.confirmed,\n    }\n    _bid_history.append(entry)\n    return entry\n\n\ndef _reserve_funds(bidder, amount_base):\n    try:\n        hold = _gateway.authorize_hold(bidder.id, amount_base, bidder.available_balance)\n    except InsufficientFundsError:\n        raise\n    except Exception:\n        hold = Hold(bidder.id, amount_base, confirmed=False)\n    return hold\n\n\ndef bid_history_for(auction_id):\n    return [entry for entry in _bid_history if entry[\"auction_id\"] == auction_id]\n"
+    },
+    {
+      "path": "bidding.py",
+      "content": "\"\"\"Public entry point for submitting a bid on a live auction.\"\"\"\n\nfrom datetime import timedelta\n\nimport validation\nimport ledger\n\nANTI_SNIPE_WINDOW_SECONDS = 60\nANTI_SNIPE_EXTENSION_SECONDS = 120\n\n\ndef submit_bid(auction, bidder, amount, currency_code, now):\n    \"\"\"Validate an incoming bid, place a funding hold, and record it as the new high bid.\"\"\"\n    seconds_remaining = (auction.end_time - now).total_seconds()\n    if seconds_remaining < 0:\n        auction.closed = True\n\n    amount_base = validation.validate_bid(auction, bidder, amount, currency_code)\n\n    entry = ledger.commit_bid(auction, bidder, amount_base)\n\n    if 0 <= seconds_remaining < ANTI_SNIPE_WINDOW_SECONDS:\n        auction.end_time = now + timedelta(seconds=ANTI_SNIPE_EXTENSION_SECONDS)\n\n    return entry\n"
+    }
+  ],
+  "defect_keys": [
+    "unconfirmed hold",
+    "gateway timeout",
+    "never checks whether",
+    "proceeds to",
+    "reserve_funds catches",
+    "regardless of hold.confirmed"
+  ],
+  "covariates": {
+    "locality_hops": 3,
+    "files_spanned": 4,
+    "distractor_count": 6,
+    "cue_directness": "direct"
+  },
+  "size_bytes": 5447
+}

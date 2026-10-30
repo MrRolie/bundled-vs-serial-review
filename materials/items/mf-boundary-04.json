@@ -1,0 +1,38 @@
+{
+  "id": "mf-boundary-04",
+  "item_class": "multi_file",
+  "defect_class": "boundary",
+  "files": [
+    {
+      "path": "pay_calendar.py",
+      "content": "\"\"\"Date and business-day helpers used by the payroll month-end close.\"\"\"\n\nfrom datetime import timedelta\n\n\ndef _is_business_day(d):\n    return d.weekday() < 5\n\n\ndef build_biweekly_period(start_date):\n    \"\"\"Return (period_start, period_end) for a standard 14-day biweekly pay period.\"\"\"\n    period_end = start_date + timedelta(days=13)\n    return start_date, period_end\n\n\ndef business_days_in_period(period_start, period_end):\n    \"\"\"Total business days contained in the pay period, start and end dates both included.\"\"\"\n    count = 0\n    current = period_start\n    while current <= period_end:\n        if _is_business_day(current):\n            count += 1\n        current += timedelta(days=1)\n    return count\n\n\ndef business_days_worked_by(period_start, cutoff_date):\n    \"\"\"Count business days from the start of the pay period through the accrual\n    cutoff date, i.e. every day already worked and owed as of the close.\"\"\"\n    count = 0\n    current = period_start\n    while current < cutoff_date:\n        if _is_business_day(current):\n            count += 1\n        current += timedelta(days=1)\n    return count\n"
+    },
+    {
+      "path": "employee_data.py",
+      "content": "\"\"\"Employee master data and PTO accrual balances used by the payroll close.\"\"\"\n\nfrom dataclasses import dataclass\n\n\n@dataclass\nclass Employee:\n    employee_id: str\n    name: str\n    annual_salary: float\n    hire_month: int  # 1-12, month the employee joined this calendar year\n\n\ndef load_employees():\n    \"\"\"Return the roster of active employees eligible for the current accrual run.\"\"\"\n    return [\n        Employee(\"E100\", \"Dana Ruiz\", 96000.0, 1),\n        Employee(\"E101\", \"Marcus Lee\", 78000.0, 3),\n        Employee(\"E102\", \"Priya Nair\", 112000.0, 1),\n        Employee(\"E103\", \"Wes Okafor\", 64000.0, 7),\n    ]\n\n\ndef gross_pay_per_period(employee, periods_per_year=26):\n    \"\"\"Gross pay owed for a single biweekly pay period, before proration.\"\"\"\n    return employee.annual_salary / periods_per_year\n\n\ndef pto_months_accrued(employee, as_of_month):\n    \"\"\"Number of full calendar months of PTO accrual the employee has earned this year.\"\"\"\n    months = 0\n    for month in range(employee.hire_month, as_of_month + 1):\n        months += 1\n    return months\n"
+    },
+    {
+      "path": "accrual_engine.py",
+      "content": "\"\"\"Computes the wage accrual entry needed when a pay period spans a month-end close.\"\"\"\n\nimport pay_calendar\nimport employee_data\n\n\ndef _proration_fraction(period_start, period_end, cutoff_date):\n    worked_days = pay_calendar.business_days_worked_by(period_start, cutoff_date)\n    total_days = pay_calendar.business_days_in_period(period_start, period_end)\n    if total_days == 0:\n        return 0.0\n    return worked_days / total_days\n\n\ndef compute_accrual_for_employee(employee, period_start, period_end, cutoff_date):\n    \"\"\"Compute the wage amount earned by an employee up through the accrual\n    cutoff date, for a pay period that will not actually be paid until after close.\"\"\"\n    fraction = _proration_fraction(period_start, period_end, cutoff_date)\n    base_pay = employee_data.gross_pay_per_period(employee)\n    return round(base_pay * fraction, 2)\n"
+    },
+    {
+      "path": "accrual_report.py",
+      "content": "\"\"\"Entry point for generating the month-end payroll accrual report.\"\"\"\n\nfrom datetime import date\n\nimport pay_calendar\nimport employee_data\nimport accrual_engine\n\n\ndef generate_accrual_report(period_start, cutoff_date):\n    \"\"\"Build the accrual report listing, for each employee, the wages earned\n    through the cutoff date on a pay period that will not be paid until after close.\"\"\"\n    _, period_end = pay_calendar.build_biweekly_period(period_start)\n    employees = employee_data.load_employees()\n\n    lines = []\n    total = 0.0\n    for employee in employees:\n        amount = accrual_engine.compute_accrual_for_employee(\n            employee, period_start, period_end, cutoff_date\n        )\n        total += amount\n        lines.append(f\"{employee.employee_id}  {employee.name:<20} {amount:>10.2f}\")\n\n    lines.append(\"-\" * 40)\n    lines.append(f\"{'TOTAL':<27} {total:>10.2f}\")\n    return \"\\n\".join(lines)\n\n\nif __name__ == \"__main__\":\n    report = generate_accrual_report(date(2026, 7, 20), date(2026, 7, 31))\n    print(report)\n"
+    }
+  ],
+  "defect_keys": [
+    "stops one day early",
+    "one day early",
+    "off by one",
+    "excludes the",
+    "inclusive",
+    "says it should count"
+  ],
+  "covariates": {
+    "locality_hops": 3,
+    "files_spanned": 4,
+    "distractor_count": 5,
+    "cue_directness": "direct"
+  },
+  "size_bytes": 4064
+}

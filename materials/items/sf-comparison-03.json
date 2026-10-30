@@ -1,0 +1,24 @@
+{
+  "id": "sf-comparison-03",
+  "item_class": "single_function",
+  "defect_class": "comparison",
+  "files": [
+    {
+      "path": "gentamicin_dosing.py",
+      "content": "\"\"\"Extended-interval gentamicin dosing support for adult inpatients.\"\"\"\n\nIDEAL_INTERVAL_HOURS = 8\nEXTENDED_INTERVAL_HOURS = 12\nFURTHER_EXTENDED_INTERVAL_HOURS = 24\nCONSULT_PHARMACY_THRESHOLD_CRCL = 20\n\n\ndef cockcroft_gault_crcl(age_years, weight_kg, serum_creatinine_mg_dl, is_female):\n    sex_factor = 0.85 if is_female else 1.0\n    return ((140 - age_years) * weight_kg * sex_factor) / (72 * serum_creatinine_mg_dl)\n\n\ndef ideal_body_weight_kg(height_cm, is_female):\n    height_in = height_cm / 2.54\n    base = 45.5 if is_female else 50.0\n    return base + 2.3 * max(height_in - 60, 0)\n\n\ndef dosing_weight_kg(actual_weight_kg, ideal_weight_kg):\n    # Devine-style adjustment: only correct toward ideal weight once a\n    # patient is well above it, otherwise dose on actual body weight.\n    if actual_weight_kg > ideal_weight_kg * 1.20:\n        return ideal_weight_kg + 0.4 * (actual_weight_kg - ideal_weight_kg)\n    return actual_weight_kg\n\n\ndef _interval_for_patient(patient):\n    crcl = patient[\"crcl_ml_min\"]\n    age = patient[\"age_years\"]\n\n    if age < CONSULT_PHARMACY_THRESHOLD_CRCL:\n        return None\n    if crcl < 40:\n        return FURTHER_EXTENDED_INTERVAL_HOURS\n    if crcl < 60:\n        return EXTENDED_INTERVAL_HOURS\n    return IDEAL_INTERVAL_HOURS\n\n\ndef gentamicin_dosing_interval(age_years, weight_kg, height_cm, serum_creatinine_mg_dl, is_female):\n    \"\"\"Return (dosing_weight_kg, interval_hours) for once-daily gentamicin.\n\n    interval_hours is None when the case falls outside the standard\n    nomogram and needs individualized pharmacy dosing.\n    \"\"\"\n    crcl = cockcroft_gault_crcl(age_years, weight_kg, serum_creatinine_mg_dl, is_female)\n    ibw = ideal_body_weight_kg(height_cm, is_female)\n    dose_weight = dosing_weight_kg(weight_kg, ibw)\n\n    patient = {\n        \"age_years\": age_years,\n        \"weight_kg\": weight_kg,\n        \"crcl_ml_min\": crcl,\n    }\n    interval_hours = _interval_for_patient(patient)\n    return dose_weight, interval_hours\n"
+    }
+  ],
+  "defect_keys": [
+    "age instead of crcl",
+    "compares age",
+    "wrong field",
+    "creatinine clearance"
+  ],
+  "covariates": {
+    "locality_hops": 1,
+    "files_spanned": 1,
+    "distractor_count": 0,
+    "cue_directness": "indirect"
+  },
+  "size_bytes": 1975
+}

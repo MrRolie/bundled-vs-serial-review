@@ -1,0 +1,25 @@
+{
+  "id": "sf-units-03",
+  "item_class": "single_function",
+  "defect_class": "units",
+  "files": [
+    {
+      "path": "fleet_maintenance.py",
+      "content": "from dataclasses import dataclass\n\n\nSERVICE_INTERVAL_HOURS = 250\nTIRE_PRESSURE_MIN_KPA = 200.0\nKPA_PER_PSI = 6.89476\n\n\n@dataclass\nclass VehicleTelemetry:\n    vehicle_id: str\n    engine_seconds: int   # cumulative runtime counter from the ECU\n    idle_minutes: int     # cumulative idle time, logged by the cabin controller\n    tire_pressure_psi: float\n    fuel_used_liters: float\n    distance_km: float\n\n\ndef _tire_pressure_ok(psi: float) -> bool:\n    kpa = psi * KPA_PER_PSI\n    return kpa >= TIRE_PRESSURE_MIN_KPA\n\n\ndef _fuel_efficiency(distance_km: float, fuel_used_liters: float):\n    if fuel_used_liters <= 0:\n        return None\n    return distance_km / fuel_used_liters\n\n\ndef _total_engine_hours(telemetry: VehicleTelemetry) -> float:\n    running_hours = telemetry.engine_seconds / 3600\n    return running_hours + telemetry.idle_minutes\n\n\ndef estimate_service_status(telemetry: VehicleTelemetry) -> dict:\n    total_engine_hours = _total_engine_hours(telemetry)\n    hours_remaining = SERVICE_INTERVAL_HOURS - total_engine_hours\n    due_soon = hours_remaining <= 10\n\n    return {\n        \"vehicle_id\": telemetry.vehicle_id,\n        \"total_engine_hours\": round(total_engine_hours, 1),\n        \"hours_remaining\": round(hours_remaining, 1),\n        \"due_soon\": due_soon,\n        \"tires_ok\": _tire_pressure_ok(telemetry.tire_pressure_psi),\n        \"fuel_efficiency_km_per_l\": _fuel_efficiency(\n            telemetry.distance_km, telemetry.fuel_used_liters\n        ),\n    }\n\n\nif __name__ == \"__main__\":\n    sample = VehicleTelemetry(\n        vehicle_id=\"TRK-114\",\n        engine_seconds=612000,\n        idle_minutes=940,\n        tire_pressure_psi=32.5,\n        fuel_used_liters=410.0,\n        distance_km=2100.0,\n    )\n    print(estimate_service_status(sample))\n"
+    }
+  ],
+  "defect_keys": [
+    "idle minutes",
+    "minutes and hours",
+    "without converting",
+    "factor of 60",
+    "should be divided by"
+  ],
+  "covariates": {
+    "locality_hops": 1,
+    "files_spanned": 1,
+    "distractor_count": 2,
+    "cue_directness": "indirect"
+  },
+  "size_bytes": 1762
+}

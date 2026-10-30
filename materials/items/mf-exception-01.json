@@ -1,0 +1,29 @@
+{
+  "id": "mf-exception-01",
+  "item_class": "multi_file",
+  "defect_class": "exception",
+  "files": [
+    {
+      "path": "rate_store.py",
+      "content": "\"\"\"Helpers for reading and writing cached exchange rates and fetching live quotes.\"\"\"\n\nimport json\nimport os\nimport re\nimport urllib.error\nimport urllib.request\n\n_CURRENCY_RE = re.compile(r\"^[A-Z]{3}$\")\n\n\ndef load_rates(path):\n    \"\"\"Load cached exchange rates from disk, returning an empty dict if no cache exists yet.\"\"\"\n    if not os.path.exists(path):\n        return {}\n    with open(path, \"r\", encoding=\"utf-8\") as f:\n        return json.load(f)\n\n\ndef save_rates(path, rates):\n    \"\"\"Persist the current rate cache to disk.\"\"\"\n    with open(path, \"w\", encoding=\"utf-8\") as f:\n        json.dump(rates, f)\n\n\ndef fetch_live_rate(base, quote):\n    \"\"\"Fetch the current live exchange rate for a currency pair from the remote quote service.\n\n    Raises ValueError if either currency code is malformed or identical, and\n    ConnectionError if the remote service cannot be reached.\n    \"\"\"\n    if not _CURRENCY_RE.match(base) or not _CURRENCY_RE.match(quote):\n        raise ValueError(f\"invalid currency code: {base!r}/{quote!r}\")\n    if base == quote:\n        raise ValueError(\"base and quote currencies must differ\")\n\n    url = f\"https://example-fx-api.internal/v1/rate?base={base}&quote={quote}\"\n    try:\n        with urllib.request.urlopen(url, timeout=5) as response:\n            payload = json.loads(response.read().decode(\"utf-8\"))\n    except urllib.error.URLError as exc:\n        raise ConnectionError(f\"could not reach rate service: {exc}\") from exc\n\n    return float(payload[\"rate\"])\n"
+    },
+    {
+      "path": "rate_client.py",
+      "content": "\"\"\"Client for looking up and converting currencies, backed by a local rate cache.\"\"\"\n\nimport os\n\nimport rate_store\n\n\nclass RateClient:\n    \"\"\"Looks up and converts currency pairs, caching rates locally to avoid refetching.\"\"\"\n\n    def __init__(self, cache_path):\n        self._cache_path = cache_path\n        self._rates = rate_store.load_rates(cache_path)\n\n    def get_rate(self, base, quote):\n        \"\"\"Return the exchange rate for base/quote, or None if no rate is currently cached or fetchable.\"\"\"\n        pair = f\"{base}{quote}\"\n        if pair in self._rates:\n            return self._rates[pair]\n        try:\n            rate = rate_store.fetch_live_rate(base, quote)\n        except Exception:\n            return None\n        self._rates[pair] = rate\n        rate_store.save_rates(self._cache_path, self._rates)\n        return rate\n\n    def refresh(self, base, quote):\n        \"\"\"Force a live refetch of a currency pair, overwriting any cached value.\"\"\"\n        rate = rate_store.fetch_live_rate(base, quote)\n        pair = f\"{base}{quote}\"\n        self._rates[pair] = rate\n        rate_store.save_rates(self._cache_path, self._rates)\n        return rate\n\n    def convert(self, amount, base, quote):\n        \"\"\"Convert an amount between two currencies.\n\n        A pair should be treated as unavailable only when no rate can\n        actually be found for it -- not when the lookup itself was invalid.\n        \"\"\"\n        rate = self.get_rate(base, quote)\n        if rate is None:\n            raise LookupError(f\"no rate available for {base}/{quote}\")\n        return round(amount * rate, 2)\n\n\ndef main():\n    client = RateClient(os.path.expanduser(\"~/.fxcache.json\"))\n    print(client.convert(100, \"USD\", \"EUR\"))\n\n\nif __name__ == \"__main__\":\n    main()\n"
+    }
+  ],
+  "defect_keys": [
+    "too broad",
+    "swallow",
+    "silently",
+    "masks real errors",
+    "catches all exceptions"
+  ],
+  "covariates": {
+    "locality_hops": 1,
+    "files_spanned": 2,
+    "distractor_count": 0,
+    "cue_directness": "direct"
+  },
+  "size_bytes": 3250
+}

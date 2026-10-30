@@ -1,0 +1,26 @@
+{
+  "id": "sf-units-04",
+  "item_class": "single_function",
+  "defect_class": "units",
+  "files": [
+    {
+      "path": "moderation.py",
+      "content": "\"\"\"Utilities for spam and toxicity based chat moderation.\"\"\"\n\nimport time\n\nSPAM_MESSAGE_WINDOW_SECONDS = 10\nSPAM_MESSAGE_LIMIT = 5\nMUTE_DURATION_MS = 5 * 60 * 1000\nTOXICITY_DECAY_PER_SECOND = 0.02\nSEVERITY_THRESHOLD_PERCENT = 80\nMAX_MESSAGE_BYTES = 2000\n\n_violation_history = {}\n_toxicity_scores = {}\n_mutes = {}\n\n\ndef _prune_old_violations(user_id, now):\n    history = _violation_history.get(user_id, [])\n    cutoff = now - SPAM_MESSAGE_WINDOW_SECONDS\n    return [t for t in history if t >= cutoff]\n\n\ndef _current_toxicity(user_id, now):\n    entry = _toxicity_scores.get(user_id)\n    if entry is None:\n        return 0.0\n    score, last_seen = entry\n    elapsed = max(0.0, now - last_seen)\n    decayed = score - TOXICITY_DECAY_PER_SECOND * elapsed\n    return max(0.0, decayed)\n\n\ndef _apply_toxicity_hit(user_id, now, hit):\n    updated = min(1.0, _current_toxicity(user_id, now) + hit)\n    _toxicity_scores[user_id] = (updated, now)\n    return updated\n\n\ndef _mute_user(user_id, now):\n    expires_at = now + MUTE_DURATION_MS\n    _mutes[user_id] = expires_at\n    return expires_at\n\n\ndef _maybe_mute(user_id, now, violation_count, severity_percent):\n    if violation_count > SPAM_MESSAGE_LIMIT:\n        return _mute_user(user_id, now), \"rate_limited\"\n    if severity_percent >= SEVERITY_THRESHOLD_PERCENT:\n        return _mute_user(user_id, now), \"toxicity\"\n    return None, None\n\n\ndef is_muted(user_id, now):\n    expires_at = _mutes.get(user_id)\n    return expires_at is not None and now < expires_at\n\n\ndef moderate_message(user_id, text, now=None):\n    if now is None:\n        now = time.time()\n\n    if is_muted(user_id, now):\n        return {\"allowed\": False, \"reason\": \"muted\"}\n\n    if len(text.encode(\"utf-8\")) > MAX_MESSAGE_BYTES:\n        return {\"allowed\": False, \"reason\": \"message_too_long\"}\n\n    history = _prune_old_violations(user_id, now)\n    history.append(now)\n    _violation_history[user_id] = history\n\n    base_hit = 0.15 if len(history) > 1 else 0.05\n    toxicity = _apply_toxicity_hit(user_id, now, base_hit)\n    severity_percent = toxicity * 100\n\n    expires_at, reason = _maybe_mute(\n        user_id, now, len(history), severity_percent\n    )\n    if expires_at is not None:\n        return {\"allowed\": False, \"reason\": reason, \"muted_until\": expires_at}\n\n    return {\"allowed\": True, \"reason\": None, \"toxicity_percent\": severity_percent}\n"
+    }
+  ],
+  "defect_keys": [
+    "milliseconds to seconds",
+    "unit mismatch",
+    "off by a factor of 1000",
+    "unconverted milliseconds",
+    "in milliseconds",
+    "directly to"
+  ],
+  "covariates": {
+    "locality_hops": 2,
+    "files_spanned": 1,
+    "distractor_count": 3,
+    "cue_directness": "none"
+  },
+  "size_bytes": 2355
+}

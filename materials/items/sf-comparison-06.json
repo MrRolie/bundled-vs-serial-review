@@ -1,0 +1,27 @@
+{
+  "id": "sf-comparison-06",
+  "item_class": "single_function",
+  "defect_class": "comparison",
+  "files": [
+    {
+      "path": "shuffle_queue.py",
+      "content": "import random\nfrom dataclasses import dataclass, field\nfrom typing import List, Dict\n\n\n@dataclass\nclass Track:\n    id: str\n    artist: str\n    skip_count: int = 0\n\n\nDEFAULT_COOLDOWN = 6\nMIN_ARTIST_GAP = 3\nFAVORED_PICK_CHANCE = 0.75\n\n\ndef _on_cooldown(track: Track, history: List[str], cooldown: int) -> bool:\n    return track.id in history[:cooldown]\n\n\ndef _artist_gap_ok(track: Track, position: int, last_artist_slot: Dict[str, int], min_gap: int) -> bool:\n    last_slot = last_artist_slot.get(track.artist, -min_gap)\n    return position - last_slot >= min_gap\n\n\ndef _split_by_affinity(tracks: List[Track]):\n    if not tracks:\n        return [], []\n    avg_skips = sum(t.skip_count for t in tracks) / len(tracks)\n    favored = [t for t in tracks if t.skip_count > avg_skips]\n    overflow = [t for t in tracks if t.skip_count <= avg_skips]\n    return favored, overflow\n\n\ndef build_shuffle_queue(tracks: List[Track], history: List[str], length: int,\n                        cooldown: int = DEFAULT_COOLDOWN, min_gap: int = MIN_ARTIST_GAP) -> List[str]:\n    queue = []\n    last_artist_slot: Dict[str, int] = {}\n    remaining = list(tracks)\n    history = list(history)\n\n    for position in range(length):\n        if not remaining:\n            remaining = list(tracks)\n\n        eligible = [\n            t for t in remaining\n            if not _on_cooldown(t, history, cooldown)\n            and _artist_gap_ok(t, position, last_artist_slot, min_gap)\n        ]\n        if not eligible:\n            eligible = [t for t in remaining if _artist_gap_ok(t, position, last_artist_slot, min_gap)]\n        if not eligible:\n            eligible = list(remaining)\n\n        favored, overflow = _split_by_affinity(eligible)\n        if favored and random.random() < FAVORED_PICK_CHANCE:\n            pool = favored\n        else:\n            pool = overflow or eligible\n\n        choice = random.choice(pool)\n        queue.append(choice.id)\n        last_artist_slot[choice.artist] = position\n        remaining.remove(choice)\n        history.insert(0, choice.id)\n\n    return queue\n"
+    }
+  ],
+  "defect_keys": [
+    "average skip count comparison",
+    "preferred pool",
+    "reversed comparison",
+    "high-skip tracks",
+    "75% of the time",
+    "high skip_count",
+    "are labeled 'favored"
+  ],
+  "covariates": {
+    "locality_hops": 1,
+    "files_spanned": 1,
+    "distractor_count": 3,
+    "cue_directness": "indirect"
+  },
+  "size_bytes": 2058
+}

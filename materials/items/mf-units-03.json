@@ -1,0 +1,32 @@
+{
+  "id": "mf-units-03",
+  "item_class": "multi_file",
+  "defect_class": "units",
+  "files": [
+    {
+      "path": "pig_units.py",
+      "content": "\"\"\"Common unit conversions used across the pigging telemetry pipeline.\"\"\"\n\nKM_TO_M = 1000.0\nPSI_TO_KPA = 6.89476\nMM_TO_M = 0.001\n\n\ndef km_to_m(value_km: float) -> float:\n    return value_km * KM_TO_M\n\n\ndef psi_to_kpa(value_psi: float) -> float:\n    return value_psi * PSI_TO_KPA\n\n\ndef mm_to_m(value_mm: float) -> float:\n    return value_mm * MM_TO_M\n\n\ndef ms_to_s(value_ms: float) -> float:\n    return value_ms / 1000.0\n"
+    },
+    {
+      "path": "speed_tracker.py",
+      "content": "\"\"\"Derives pig transit speed from above-ground marker (AGM) detections.\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import List\n\nimport pig_units\n\n\n@dataclass\nclass AGMReading:\n    station_id: str\n    position_km: float\n    timestamp_ms: int\n\n\n@dataclass\nclass SegmentMetric:\n    from_station: str\n    to_station: str\n    distance_m: float\n    elapsed_ms: int\n    velocity_mps: float\n\n\ndef compute_segment_metrics(readings: List[AGMReading]) -> List[SegmentMetric]:\n    ordered = sorted(readings, key=lambda r: r.timestamp_ms)\n    metrics = []\n    for upstream, downstream in zip(ordered, ordered[1:]):\n        distance_m = pig_units.km_to_m(downstream.position_km - upstream.position_km)\n        elapsed_ms = downstream.timestamp_ms - upstream.timestamp_ms\n        elapsed_s = pig_units.ms_to_s(elapsed_ms)\n        velocity_mps = distance_m / elapsed_s if elapsed_s else 0.0\n        metrics.append(\n            SegmentMetric(\n                from_station=upstream.station_id,\n                to_station=downstream.station_id,\n                distance_m=distance_m,\n                elapsed_ms=elapsed_ms,\n                velocity_mps=velocity_mps,\n            )\n        )\n    return metrics\n"
+    },
+    {
+      "path": "run_report.py",
+      "content": "\"\"\"Generates end-of-run summaries for completed pig runs.\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import List\nfrom statistics import mean\n\nimport pig_units\nfrom speed_tracker import AGMReading, compute_segment_metrics\n\n\n@dataclass\nclass RunConfig:\n    line_name: str\n    trap_purge_time_s: float\n    max_allowable_pressure_psi: float\n\n\n@dataclass\nclass RunSummary:\n    line_name: str\n    average_velocity_mps: float\n    total_downtime_minutes: float\n    max_allowable_pressure_kpa: float\n\n\ndef generate_run_report(readings: List[AGMReading], config: RunConfig) -> RunSummary:\n    segments = compute_segment_metrics(readings)\n    return summarize_run(segments, config)\n\n\ndef summarize_run(segments, config: RunConfig) -> RunSummary:\n    average_velocity = mean(segment.velocity_mps for segment in segments)\n    total_transit_ms = sum(segment.elapsed_ms for segment in segments)\n    total_downtime_s = config.trap_purge_time_s + total_transit_ms\n    total_downtime_minutes = total_downtime_s / 60.0\n    pressure_kpa = pig_units.psi_to_kpa(config.max_allowable_pressure_psi)\n    return RunSummary(\n        line_name=config.line_name,\n        average_velocity_mps=average_velocity,\n        total_downtime_minutes=total_downtime_minutes,\n        max_allowable_pressure_kpa=pressure_kpa,\n    )\n\n\ndef main():\n    readings = [\n        AGMReading(\"AGM-01\", 0.0, 0),\n        AGMReading(\"AGM-02\", 4.2, 612_000),\n        AGMReading(\"AGM-03\", 9.7, 1_486_000),\n        AGMReading(\"AGM-04\", 15.0, 2_310_000),\n    ]\n    config = RunConfig(\n        line_name=\"Line 7 - Crude Trunk\",\n        trap_purge_time_s=900.0,\n        max_allowable_pressure_psi=1440.0,\n    )\n    summary = generate_run_report(readings, config)\n    print(\n        f\"{summary.line_name}: avg speed {summary.average_velocity_mps:.2f} m/s, \"\n        f\"downtime {summary.total_downtime_minutes:.1f} min, \"\n        f\"max pressure {summary.max_allowable_pressure_kpa:.0f} kPa\"\n    )\n\n\nif __name__ == \"__main__\":\n    main()\n"
+    }
+  ],
+  "defect_keys": [
+    "seconds and milliseconds",
+    "mixing seconds and milliseconds",
+    "seconds vs milliseconds",
+    "unit mismatch"
+  ],
+  "covariates": {
+    "locality_hops": 2,
+    "files_spanned": 3,
+    "distractor_count": 2,
+    "cue_directness": "none"
+  },
+  "size_bytes": 3599
+}

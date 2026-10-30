@@ -1,0 +1,19 @@
+{
+  "id": "clean-sf-07",
+  "item_class": "single_function",
+  "defect_class": "clean",
+  "files": [
+    {
+      "path": "trail_maintenance_scheduler.py",
+      "content": "\"\"\"Prioritize trail segments for maintenance crews within a limited hours budget.\"\"\"\nfrom __future__ import annotations\n\nfrom dataclasses import dataclass\nfrom datetime import date\n\n\n@dataclass(frozen=True)\nclass TrailSegment:\n    segment_id: str\n    name: str\n    length_miles: float\n    last_maintained: date\n    severity: int  # 1 (cosmetic) to 5 (safety hazard)\n    estimated_hours: float\n\n\nSEVERITY_WEIGHT = {1: 1.0, 2: 2.0, 3: 4.0, 4: 8.0, 5: 16.0}\n\n\ndef priority_score(segment: TrailSegment, today: date) -> float:\n    \"\"\"Higher score means more urgent. Combines hazard severity with how\n    long the segment has gone without maintenance.\"\"\"\n    if segment.severity not in SEVERITY_WEIGHT:\n        raise ValueError(f\"unknown severity level: {segment.severity}\")\n    days_since = (today - segment.last_maintained).days\n    if days_since < 0:\n        raise ValueError(\n            f\"last_maintained date is in the future for {segment.segment_id}\"\n        )\n    weight = SEVERITY_WEIGHT[segment.severity]\n    # Age contributes on a slower curve than severity so a five-year-old\n    # cosmetic issue doesn't outrank a fresh safety hazard.\n    age_factor = 1.0 + (days_since / 365.0)\n    return weight * age_factor\n\n\ndef schedule_maintenance(\n    segments: list[TrailSegment],\n    available_hours: float,\n    today: date,\n) -> list[TrailSegment]:\n    \"\"\"Greedily select segments for this maintenance cycle, most urgent\n    first, until the crew's available hours are exhausted.\n\n    Returns the selected segments in the order they should be worked,\n    skipping any segment whose estimated hours would exceed what remains\n    in the budget (a later, cheaper segment may still fit).\n    \"\"\"\n    if available_hours < 0:\n        raise ValueError(\"available_hours cannot be negative\")\n\n    ranked = sorted(\n        segments,\n        key=lambda s: priority_score(s, today),\n        reverse=True,\n    )\n\n    scheduled: list[TrailSegment] = []\n    hours_remaining = available_hours\n    for segment in ranked:\n        if segment.estimated_hours <= hours_remaining:\n            scheduled.append(segment)\n            hours_remaining -= segment.estimated_hours\n\n    return scheduled\n\n\nif __name__ == \"__main__\":\n    today = date(2026, 7, 26)\n    segments = [\n        TrailSegment(\"A1\", \"Ridge Overlook\", 1.2, date(2025, 3, 1), 4, 6.0),\n        TrailSegment(\"A2\", \"Creek Crossing\", 0.4, date(2026, 6, 1), 5, 3.0),\n        TrailSegment(\"A3\", \"Meadow Loop\", 2.5, date(2023, 8, 15), 1, 5.0),\n        TrailSegment(\"A4\", \"Switchback Descent\", 0.9, date(2024, 11, 20), 3, 4.5),\n    ]\n\n    plan = schedule_maintenance(segments, available_hours=10.0, today=today)\n    for seg in plan:\n        print(f\"{seg.segment_id}: {seg.name} ({seg.estimated_hours}h)\")\n"
+    }
+  ],
+  "defect_keys": [],
+  "covariates": {
+    "locality_hops": null,
+    "files_spanned": 1,
+    "distractor_count": 0,
+    "cue_directness": null
+  },
+  "size_bytes": 2739
+}

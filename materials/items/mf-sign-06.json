@@ -1,0 +1,29 @@
+{
+  "id": "mf-sign-06",
+  "item_class": "multi_file",
+  "defect_class": "sign",
+  "files": [
+    {
+      "path": "standby_priority.py",
+      "content": "\"\"\"Priority scoring for the flight standby waitlist.\"\"\"\n\nfrom dataclasses import dataclass, field\nfrom datetime import datetime\nfrom typing import Optional\n\nFARE_CLASS_WEIGHTS = {\n    \"first\": 400,\n    \"business\": 300,\n    \"premium_economy\": 200,\n    \"economy\": 100,\n}\n\nTIER_BONUS = {\n    \"platinum\": 150,\n    \"gold\": 90,\n    \"silver\": 40,\n    \"none\": 0,\n}\n\nWAIT_MINUTE_WEIGHT = 0.5\nWAIT_CAP_MINUTES = 240\nMISCONNECT_BONUS = 120\nPRIOR_BUMP_WEIGHT = 75\nDO_NOT_REBOOK_PENALTY = 100_000\n\n\n@dataclass\nclass Passenger:\n    record_locator: str\n    fare_class: str\n    loyalty_tier: Optional[str]\n    checked_in_at: datetime\n    involuntary_misconnect: bool = False\n    prior_denied_boardings: int = 0\n    do_not_rebook: bool = False\n\n\ndef compute_priority_score(passenger: Passenger, now: datetime) -> float:\n    \"\"\"Higher score means the passenger clears the standby list sooner.\"\"\"\n    score = FARE_CLASS_WEIGHTS.get(passenger.fare_class, 100)\n    score += TIER_BONUS.get(passenger.loyalty_tier or \"none\", 0)\n\n    elapsed_minutes = (now - passenger.checked_in_at).total_seconds() / 60\n    elapsed_minutes = max(0.0, min(elapsed_minutes, WAIT_CAP_MINUTES))\n    score += elapsed_minutes * WAIT_MINUTE_WEIGHT\n\n    if passenger.involuntary_misconnect:\n        score += MISCONNECT_BONUS\n\n    score -= passenger.prior_denied_boardings * PRIOR_BUMP_WEIGHT\n\n    if passenger.do_not_rebook:\n        score -= DO_NOT_REBOOK_PENALTY\n\n    return score\n\n\ndef rank_by_priority(scored_passengers):\n    \"\"\"Sort (passenger, score) pairs from most to least likely to clear.\"\"\"\n    return sorted(scored_passengers, key=lambda item: item[1], reverse=True)\n"
+    },
+    {
+      "path": "standby_manager.py",
+      "content": "\"\"\"Builds a boarding manifest from the flight's standby waitlist.\"\"\"\n\nfrom datetime import datetime, timedelta, timezone\n\nfrom standby_priority import Passenger, compute_priority_score, rank_by_priority\n\nSTANDBY_CUTOFF_MINUTES = 30\n\n\ndef minutes_to_departure(departure_time: datetime, now: datetime) -> float:\n    return (departure_time - now).total_seconds() / 60\n\n\ndef is_still_eligible(departure_time: datetime, now: datetime) -> bool:\n    return minutes_to_departure(departure_time, now) >= STANDBY_CUTOFF_MINUTES\n\n\ndef compute_fare_refund(original_fare: float, assigned_fare: float) -> float:\n    \"\"\"Amount owed back when a passenger clears into a lower fare class.\"\"\"\n    return max(0.0, original_fare - assigned_fare)\n\n\ndef build_boarding_manifest(passengers, available_seats, departure_time, now=None):\n    now = now or datetime.now(timezone.utc)\n\n    eligible = [p for p in passengers if is_still_eligible(departure_time, now)]\n\n    scored = [(p, compute_priority_score(p, now)) for p in eligible]\n    ranked = rank_by_priority(scored)\n\n    manifest = []\n    seats_left = available_seats\n    for passenger, score in ranked:\n        if seats_left <= 0:\n            break\n        manifest.append({\n            \"record_locator\": passenger.record_locator,\n            \"score\": round(score, 1),\n        })\n        seats_left -= 1\n\n    return manifest\n\n\ndef _demo():\n    now = datetime.now(timezone.utc)\n    departure = now + timedelta(hours=2)\n    passengers = [\n        Passenger(\"AA111\", \"economy\", \"gold\", now - timedelta(minutes=90)),\n        Passenger(\"AA222\", \"economy\", None, now - timedelta(minutes=30), prior_denied_boardings=2),\n        Passenger(\"AA333\", \"business\", \"silver\", now - timedelta(minutes=10), involuntary_misconnect=True),\n    ]\n    manifest = build_boarding_manifest(passengers, available_seats=2, departure_time=departure, now=now)\n    for entry in manifest:\n        print(entry[\"record_locator\"], entry[\"score\"])\n\n\nif __name__ == \"__main__\":\n    _demo()\n"
+    }
+  ],
+  "defect_keys": [
+    "bumped passengers",
+    "priority boost",
+    "sign is flipped",
+    "should be added",
+    "penalized"
+  ],
+  "covariates": {
+    "locality_hops": 1,
+    "files_spanned": 2,
+    "distractor_count": 4,
+    "cue_directness": "none"
+  },
+  "size_bytes": 3616
+}

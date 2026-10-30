@@ -1,0 +1,19 @@
+{
+  "id": "clean-sf-09",
+  "item_class": "single_function",
+  "defect_class": "clean",
+  "files": [
+    {
+      "path": "rain_gauge_aggregation.py",
+      "content": "\"\"\"Aggregate tipping-bucket rain gauge tip timestamps into hourly rainfall totals.\n\nStandard 0.2 mm tipping-bucket gauges register a \"tip\" each time the bucket\nfills and empties. Mechanical bounce in the tip switch can register a second,\nspurious tip within a couple of seconds of a real one, so raw tip timestamps\nmust be debounced before they are converted to a rainfall depth.\n\"\"\"\n\nfrom datetime import datetime, timedelta\nfrom typing import Iterable, Dict, List\n\nDEFAULT_MM_PER_TIP = 0.2\nDEFAULT_BOUNCE_INTERVAL = timedelta(seconds=2)\n\n\ndef floor_hour(dt: datetime) -> datetime:\n    \"\"\"Truncate a timestamp down to the start of its hour.\"\"\"\n    return dt.replace(minute=0, second=0, microsecond=0)\n\n\ndef debounce_tips(\n    tips: Iterable[datetime],\n    min_interval: timedelta = DEFAULT_BOUNCE_INTERVAL,\n) -> List[datetime]:\n    \"\"\"Drop spurious tips caused by switch bounce.\n\n    A tip is kept only if at least ``min_interval`` has elapsed since the\n    last *accepted* tip. Comparing against the last accepted tip (rather\n    than the previous raw tip) prevents a burst of closely spaced bounces\n    from each resetting the clock and slipping through one at a time.\n    \"\"\"\n    accepted: List[datetime] = []\n    last_accepted = None\n    for t in sorted(tips):\n        if last_accepted is None or t - last_accepted >= min_interval:\n            accepted.append(t)\n            last_accepted = t\n    return accepted\n\n\ndef hourly_totals(\n    tips: Iterable[datetime],\n    period_start: datetime,\n    period_end: datetime,\n    mm_per_tip: float = DEFAULT_MM_PER_TIP,\n    bounce_interval: timedelta = DEFAULT_BOUNCE_INTERVAL,\n) -> Dict[datetime, float]:\n    \"\"\"Aggregate tip timestamps into per-hour rainfall depth (mm).\n\n    The window [period_start, period_end) is half-open: a tip exactly at\n    period_end belongs to the next reporting period, not this one. Every\n    hour in the window is represented in the result, even hours with no\n    rainfall, so downstream consumers get a complete, gap-free series.\n    \"\"\"\n    if period_end <= period_start:\n        raise ValueError(\"period_end must be after period_start\")\n\n    totals: Dict[datetime, float] = {}\n    hour = floor_hour(period_start)\n    last_hour = floor_hour(period_end - timedelta(microseconds=1))\n    while hour <= last_hour:\n        totals[hour] = 0.0\n        hour += timedelta(hours=1)\n\n    # Debounce across the full tip stream (not just the reporting window) so\n    # that a bounce pair straddling the window boundary is still caught.\n    clean_tips = debounce_tips(tips, bounce_interval)\n\n    for t in clean_tips:\n        if period_start <= t < period_end:\n            totals[floor_hour(t)] += mm_per_tip\n\n    return totals\n\n\nif __name__ == \"__main__\":\n    raw_tips = [\n        datetime(2026, 7, 26, 3, 5, 0),\n        datetime(2026, 7, 26, 3, 5, 1),  # bounce, should be dropped\n        datetime(2026, 7, 26, 3, 40, 0),\n        datetime(2026, 7, 26, 4, 10, 0),\n    ]\n    start = datetime(2026, 7, 26, 3, 0, 0)\n    end = datetime(2026, 7, 26, 5, 0, 0)\n    for hr, mm in sorted(hourly_totals(raw_tips, start, end).items()):\n        print(f\"{hr:%Y-%m-%d %H:00}  {mm:.1f} mm\")\n"
+    }
+  ],
+  "defect_keys": [],
+  "covariates": {
+    "locality_hops": null,
+    "files_spanned": 1,
+    "distractor_count": 2,
+    "cue_directness": null
+  },
+  "size_bytes": 3143
+}

@@ -1,0 +1,32 @@
+{
+  "id": "mf-boundary-01",
+  "item_class": "multi_file",
+  "defect_class": "boundary",
+  "files": [
+    {
+      "path": "rolling.py",
+      "content": "\"\"\"Utilities for computing rolling statistics over numeric sensor readings.\"\"\"\n\nfrom typing import Iterator, List, Sequence\n\n\ndef rolling_windows(values: Sequence[float], window_size: int) -> Iterator[List[float]]:\n    \"\"\"\n    Yield every contiguous window of length window_size found in values,\n    sliding one position at a time from the start of the sequence to the end.\n    \"\"\"\n    if window_size <= 0:\n        raise ValueError(\"window_size must be positive\")\n    if window_size > len(values):\n        return\n    for start in range(len(values) - window_size + 1):\n        yield list(values[start:start + window_size])\n\n\ndef rolling_average(values: Sequence[float], window_size: int) -> List[float]:\n    \"\"\"Return the average of each window produced by rolling_windows.\"\"\"\n    return [sum(window) / len(window) for window in rolling_windows(values, window_size)]\n",
+      "size_note": null
+    },
+    {
+      "path": "sensor_report.py",
+      "content": "\"\"\"Build daily summaries of sensor readings for the monitoring dashboard.\"\"\"\n\nfrom typing import Dict, List, Optional, Sequence\n\nfrom rolling import rolling_average\n\n\ndef recent_reading_summary(values: Sequence[float], window_size: int) -> Dict[str, Optional[float]]:\n    \"\"\"\n    Summarize the most recent window_size readings, returning their\n    average and the highest value seen among them.\n    \"\"\"\n    if not values:\n        return {\"average\": None, \"peak\": None}\n\n    window_size = min(window_size, len(values))\n    recent = values[-window_size:-1]\n\n    return {\n        \"average\": sum(recent) / len(recent),\n        \"peak\": max(recent),\n    }\n\n\ndef build_daily_report(readings: Sequence[float], alert_window: int = 5) -> Dict[str, object]:\n    \"\"\"\n    Build a report combining a full rolling average trend with a\n    summary of the most recent alert_window readings.\n    \"\"\"\n    trend = rolling_average(readings, alert_window)\n    summary = recent_reading_summary(readings, alert_window)\n    return {\n        \"trend\": trend,\n        \"recent\": summary,\n        \"reading_count\": len(readings),\n    }\n"
+    }
+  ],
+  "defect_keys": [
+    "last reading",
+    "off by one",
+    "excludes the last",
+    "drops the last",
+    "elements",
+    "the last element",
+    "last (most recent) reading"
+  ],
+  "covariates": {
+    "locality_hops": 1,
+    "files_spanned": 2,
+    "distractor_count": 1,
+    "cue_directness": "direct"
+  },
+  "size_bytes": 1971
+}

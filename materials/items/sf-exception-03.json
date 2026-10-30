@@ -1,0 +1,25 @@
+{
+  "id": "sf-exception-03",
+  "item_class": "single_function",
+  "defect_class": "exception",
+  "files": [
+    {
+      "path": "proctor_frame.py",
+      "content": "\"\"\"Frame-level proctoring checks executed during an active exam session.\"\"\"\n\nimport logging\nimport time\n\nlogger = logging.getLogger(\"proctor\")\n\n\nclass CorruptFrameError(Exception):\n    \"\"\"Raised when a webcam frame cannot be decoded (dropped packet, truncated JPEG, etc).\"\"\"\n\n\nclass GazeOffScreenError(Exception):\n    \"\"\"Raised by the gaze-tracking SDK whenever the candidate's eyes leave the screen bounds.\n\n    This is a normal, expected outcome of running gaze analysis on a frame -- it is how\n    the SDK reports that the candidate was looking away, not a failure to analyze.\n    \"\"\"\n\n\ndef decode_frame(frame_bytes):\n    if not frame_bytes or len(frame_bytes) < 128:\n        raise CorruptFrameError(\"frame too small to contain a valid JPEG header\")\n    return frame_bytes\n\n\ndef detect_face_count(image):\n    marker = image[16] if len(image) > 16 else 0\n    return marker % 3\n\n\ndef check_gaze_direction(image):\n    marker = image[32] if len(image) > 32 else 0\n    if marker % 5 == 0:\n        raise GazeOffScreenError(\"gaze vector exceeded screen bounds\")\n\n\nclass ExamSession:\n    def __init__(self, candidate_id):\n        self.candidate_id = candidate_id\n        self.violations = []\n        self.notes = []\n        self.frames_processed = 0\n\n    def log_violation(self, kind):\n        self.violations.append((time.time(), kind))\n        logger.warning(\"violation for %s: %s\", self.candidate_id, kind)\n\n    def log_warning(self, message):\n        self.notes.append((time.time(), message))\n        logger.info(\"dropping frame for %s: %s\", self.candidate_id, message)\n\n\ndef process_frame(session, frame_bytes):\n    \"\"\"Analyze one webcam frame and update the session's violation record.\"\"\"\n    try:\n        image = decode_frame(frame_bytes)\n        face_count = detect_face_count(image)\n        if face_count == 0:\n            session.log_violation(\"no_face_detected\")\n        elif face_count > 1:\n            session.log_violation(\"multiple_faces_detected\")\n\n        check_gaze_direction(image)\n\n    except (CorruptFrameError, GazeOffScreenError) as exc:\n        session.log_warning(str(exc))\n        return\n\n    session.frames_processed += 1\n"
+    }
+  ],
+  "defect_keys": [
+    "except block",
+    "swallowed",
+    "gaze off screen",
+    "not a decoding failure",
+    "documented as a normal"
+  ],
+  "covariates": {
+    "locality_hops": 1,
+    "files_spanned": 1,
+    "distractor_count": 4,
+    "cue_directness": "indirect"
+  },
+  "size_bytes": 2144
+}

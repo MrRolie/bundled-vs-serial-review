@@ -1,0 +1,26 @@
+{
+  "id": "sf-boundary-04",
+  "item_class": "single_function",
+  "defect_class": "boundary",
+  "files": [
+    {
+      "path": "roster_compliance.py",
+      "content": "from datetime import timedelta\n\n\ndef audit_roster(shifts, period_start, period_end, max_consecutive=6):\n    worked_days = build_worked_days(shifts)\n    return {\n        \"rest_period\": check_rest_periods(shifts),\n        \"consecutive_days\": check_consecutive_days(\n            worked_days, period_start, period_end, max_consecutive\n        ),\n    }\n\n\ndef build_worked_days(shifts):\n    days = set()\n    for shift in shifts:\n        day = shift[\"start\"].date()\n        end_day = shift[\"end\"].date()\n        while day <= end_day:\n            days.add(day)\n            day += timedelta(days=1)\n    return days\n\n\ndef check_rest_periods(shifts, min_rest_hours=11):\n    violations = []\n    ordered = sorted(shifts, key=lambda s: s[\"start\"])\n    for prev_shift, next_shift in zip(ordered, ordered[1:]):\n        gap = next_shift[\"start\"] - prev_shift[\"end\"]\n        gap_hours = gap.total_seconds() / 3600\n        if gap_hours < min_rest_hours:\n            violations.append(\n                (prev_shift[\"employee\"], prev_shift[\"end\"], next_shift[\"start\"])\n            )\n    return violations\n\n\ndef check_consecutive_days(worked_days, period_start, period_end, max_consecutive):\n    violations = []\n    current = period_start\n    while current <= period_end:\n        if is_overworked_window(worked_days, current, max_consecutive):\n            violations.append(current)\n        current += timedelta(days=1)\n    return violations\n\n\ndef is_overworked_window(worked_days, window_start, max_consecutive):\n    window = [window_start + timedelta(days=i) for i in range(max_consecutive)]\n    return all(day in worked_days for day in window)\n"
+    }
+  ],
+  "defect_keys": [
+    "window size",
+    "one day short",
+    "off by one",
+    "exactly max_consecutive days",
+    "working exactly",
+    "the maximum allowed consecutive"
+  ],
+  "covariates": {
+    "locality_hops": 2,
+    "files_spanned": 1,
+    "distractor_count": 2,
+    "cue_directness": "none"
+  },
+  "size_bytes": 1624
+}

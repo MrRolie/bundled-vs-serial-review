@@ -1,0 +1,35 @@
+{
+  "id": "mf-exception-03",
+  "item_class": "multi_file",
+  "defect_class": "exception",
+  "files": [
+    {
+      "path": "sensor_reader.py",
+      "content": "\"\"\"\nLow-level interface to capacitive soil moisture probes.\n\nEach field node reports a raw oscillator frequency count over a simple\npolling protocol. This module converts that raw count into volumetric\nwater content (VWC) using the Topp equation, a widely used empirical\nrelationship between dielectric permittivity and soil moisture.\n\"\"\"\n\nimport time\n\n\nclass SensorTimeoutError(Exception):\n    pass\n\n\nclass ProbeConfig:\n    def __init__(self, node_id, probe_length_cm, freq_slope, freq_intercept):\n        self.node_id = node_id\n        self.probe_length_cm = probe_length_cm\n        self.freq_slope = freq_slope\n        self.freq_intercept = freq_intercept\n\n\ndef poll_sensor_raw(node_id, radio, retries=3, poll_timeout=0.5):\n    \"\"\"Poll a field node over the mesh radio and return its raw ADC count.\n\n    Field nodes occasionally miss a poll window because of RF interference\n    from nearby irrigation valves switching on; a handful of retries is\n    normal and does not indicate a failing sensor.\n    \"\"\"\n    last_error = None\n    for attempt in range(retries):\n        try:\n            return radio.request(node_id, timeout=poll_timeout)\n        except TimeoutError as exc:\n            last_error = exc\n            time.sleep(0.05 * (attempt + 1))\n    raise SensorTimeoutError(\n        f\"node {node_id} did not respond after {retries} polling attempts\"\n    ) from last_error\n\n\ndef parse_reading(node_id, raw_count, config):\n    \"\"\"Convert a raw ADC frequency count into volumetric water content.\n\n    Uses the probe's two-point calibration (freq_slope/freq_intercept) to\n    recover an apparent travel time, then applies the Topp equation.\n    \"\"\"\n    if not (0 <= raw_count <= 65535):\n        raise ValueError(\n            f\"node {node_id} reported an out-of-range ADC count: {raw_count}\"\n        )\n\n    travel_time_ns = raw_count * config.freq_slope + config.freq_intercept\n    apparent_permittivity = (travel_time_ns / config.probe_length_cm) ** 2\n\n    ea = apparent_permittivity\n    vwc = (\n        4.3e-6 * ea ** 3\n        - 5.5e-4 * ea ** 2\n        + 2.92e-2 * ea\n        - 5.3e-2\n    )\n    return max(0.0, min(vwc, 1.0))\n"
+    },
+    {
+      "path": "calibration.py",
+      "content": "\"\"\"\nAggregates raw per-node readings into a single field moisture estimate.\n\"\"\"\n\nimport json\nimport statistics\n\nfrom sensor_reader import (\n    ProbeConfig,\n    SensorTimeoutError,\n    parse_reading,\n    poll_sensor_raw,\n)\n\n\nclass ProbeConfigError(Exception):\n    pass\n\n\ndef load_probe_configs(path):\n    try:\n        with open(path) as f:\n            raw = json.load(f)\n    except FileNotFoundError as exc:\n        raise ProbeConfigError(f\"calibration file not found: {path}\") from exc\n\n    configs = {}\n    for entry in raw:\n        configs[entry[\"node_id\"]] = ProbeConfig(\n            node_id=entry[\"node_id\"],\n            probe_length_cm=entry[\"probe_length_cm\"],\n            freq_slope=entry[\"freq_slope\"],\n            freq_intercept=entry[\"freq_intercept\"],\n        )\n    return configs\n\n\ndef compute_field_moisture_average(node_ids, radio, probe_configs):\n    \"\"\"Poll every node in the field and average the successful readings.\n\n    A node that fails to report during a given cycle is simply excluded\n    from that cycle's average rather than aborting the whole reading, since\n    the odd missed poll is a normal part of running probes over a lossy\n    field radio link.\n    \"\"\"\n    readings = []\n    skipped = 0\n    for node_id in node_ids:\n        config = probe_configs[node_id]\n        try:\n            raw_count = poll_sensor_raw(node_id, radio)\n            vwc = parse_reading(node_id, raw_count, config)\n            readings.append(vwc)\n        except (SensorTimeoutError, ValueError, ZeroDivisionError):\n            skipped += 1\n            continue\n\n    if not readings:\n        raise ProbeConfigError(\"no field nodes returned a usable reading\")\n\n    if skipped > len(node_ids) // 2:\n        print(f\"warning: {skipped} of {len(node_ids)} nodes skipped this cycle\")\n\n    return statistics.mean(readings)\n\n\ndef evaluate_field(node_ids, radio, probe_configs):\n    \"\"\"Return the field's current average volumetric water content.\"\"\"\n    return compute_field_moisture_average(node_ids, radio, probe_configs)\n"
+    },
+    {
+      "path": "irrigation_controller.py",
+      "content": "\"\"\"\nEntry point: decide which field zones need irrigation this cycle.\n\"\"\"\n\nfrom calibration import ProbeConfigError, evaluate_field\n\nMIN_SENSORS_REQUIRED = 3\n\n\ndef should_irrigate(node_ids, radio, probe_configs, moisture_threshold):\n    if len(node_ids) < MIN_SENSORS_REQUIRED:\n        raise ValueError(\n            f\"zone has only {len(node_ids)} configured probes; \"\n            f\"at least {MIN_SENSORS_REQUIRED} are needed for a reliable reading\"\n        )\n\n    average_vwc = evaluate_field(node_ids, radio, probe_configs)\n    return average_vwc < moisture_threshold\n\n\ndef run_irrigation_cycle(zones, radio, probe_configs, moisture_threshold):\n    \"\"\"Check every zone in the field and return the ones that need water.\"\"\"\n    zones_to_water = []\n    for zone_name, node_ids in zones.items():\n        try:\n            if should_irrigate(node_ids, radio, probe_configs, moisture_threshold):\n                zones_to_water.append(zone_name)\n        except ProbeConfigError as exc:\n            print(f\"skipping zone {zone_name}: {exc}\")\n    return zones_to_water\n"
+    }
+  ],
+  "defect_keys": [
+    "silently dropped",
+    "too broadly",
+    "misconfigured probe",
+    "zero-length probe",
+    "outside the try-except block",
+    "only catches",
+    "catches probeconfigerror"
+  ],
+  "covariates": {
+    "locality_hops": 2,
+    "files_spanned": 3,
+    "distractor_count": 5,
+    "cue_directness": "none"
+  },
+  "size_bytes": 5213
+}

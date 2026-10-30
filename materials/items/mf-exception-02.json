@@ -1,0 +1,37 @@
+{
+  "id": "mf-exception-02",
+  "item_class": "multi_file",
+  "defect_class": "exception",
+  "files": [
+    {
+      "path": "api_client.py",
+      "content": "\"\"\"Client for the vendor stock-update feed.\"\"\"\n\nimport json\nimport time\nimport urllib.request\nimport urllib.error\n\n\nclass ApiError(Exception):\n    pass\n\n\nDEFAULT_TIMEOUT = 10\nMAX_RETRIES = 3\nBACKOFF_SECONDS = 2\n\n\ndef fetch_stock_updates(base_url, since_token, page_size=200):\n    \"\"\"Fetch a single page of stock updates from the vendor API.\n\n    Retries transient network failures with linear backoff, then raises\n    ApiError once the retry budget is exhausted so callers can decide\n    whether to abort the sync.\n    \"\"\"\n    url = f\"{base_url}/stock-updates?since={since_token}&limit={page_size}\"\n    attempt = 0\n    last_error = None\n    while attempt < MAX_RETRIES:\n        try:\n            with urllib.request.urlopen(url, timeout=DEFAULT_TIMEOUT) as response:\n                raw = response.read()\n                return json.loads(raw)\n        except (urllib.error.URLError, TimeoutError) as exc:\n            last_error = exc\n            attempt += 1\n            time.sleep(BACKOFF_SECONDS * attempt)\n    raise ApiError(\n        f\"failed to fetch stock updates after {MAX_RETRIES} attempts: {last_error}\"\n    )\n"
+    },
+    {
+      "path": "parser.py",
+      "content": "\"\"\"Parsing helpers for vendor stock-update payloads.\"\"\"\n\nfrom dataclasses import dataclass\nfrom datetime import datetime, timezone\nimport logging\n\nlogger = logging.getLogger(__name__)\n\n\n@dataclass(frozen=True)\nclass StockUpdate:\n    sku: str\n    warehouse_id: str\n    quantity_delta: int\n    recorded_at: datetime\n\n\nREQUIRED_FIELDS = (\"sku\", \"warehouse_id\", \"quantity_delta\", \"recorded_at\")\n\n\ndef parse_updates(payload):\n    \"\"\"Turn a raw API page (list of dicts) into StockUpdate records.\n\n    The vendor feed occasionally includes partial or malformed records for\n    products that were discontinued mid-page; those are logged and skipped\n    rather than treated as a fatal parsing error.\n    \"\"\"\n    updates = []\n    for raw in payload.get(\"results\", []):\n        missing = [field for field in REQUIRED_FIELDS if field not in raw]\n        if missing:\n            logger.warning(\"skipping stock update missing fields %s: %r\", missing, raw)\n            continue\n        try:\n            recorded_at = datetime.fromisoformat(raw[\"recorded_at\"]).astimezone(timezone.utc)\n            quantity_delta = int(raw[\"quantity_delta\"])\n        except (ValueError, TypeError):\n            logger.warning(\"skipping stock update with malformed fields: %r\", raw)\n            continue\n        updates.append(\n            StockUpdate(\n                sku=raw[\"sku\"],\n                warehouse_id=raw[\"warehouse_id\"],\n                quantity_delta=quantity_delta,\n                recorded_at=recorded_at,\n            )\n        )\n    return updates\n"
+    },
+    {
+      "path": "store.py",
+      "content": "\"\"\"Local persistence for warehouse stock levels.\"\"\"\n\nimport sqlite3\n\n\nclass InventoryStore:\n    def __init__(self, db_path):\n        self._conn = sqlite3.connect(db_path)\n        self._conn.execute(\n            \"\"\"\n            CREATE TABLE IF NOT EXISTS stock_levels (\n                sku TEXT NOT NULL,\n                warehouse_id TEXT NOT NULL,\n                quantity INTEGER NOT NULL DEFAULT 0,\n                last_update TEXT,\n                PRIMARY KEY (sku, warehouse_id)\n            )\n            \"\"\"\n        )\n        self._conn.commit()\n\n    def close(self):\n        self._conn.close()\n\n    def apply_update(self, update):\n        \"\"\"Apply a single stock delta to the warehouse's running total.\"\"\"\n        self._execute_upsert(update)\n\n    def _execute_upsert(self, update):\n        try:\n            self._conn.execute(\n                \"\"\"\n                INSERT INTO stock_levels (sku, warehouse_id, quantity, last_update)\n                VALUES (?, ?, ?, ?)\n                ON CONFLICT(sku, warehouse_id) DO UPDATE SET\n                    quantity = quantity + excluded.quantity,\n                    last_update = excluded.last_update\n                \"\"\",\n                (\n                    update.sku,\n                    update.warehouse_id,\n                    update.quantity_delta,\n                    update.recorded_at.isoformat(),\n                ),\n            )\n            self._conn.commit()\n        except sqlite3.OperationalError:\n            self._conn.rollback()\n            raise\n        except Exception:\n            pass\n"
+    },
+    {
+      "path": "sync.py",
+      "content": "\"\"\"Entry point for syncing warehouse stock levels from the vendor feed.\"\"\"\n\nimport logging\n\nfrom api_client import fetch_stock_updates\nfrom parser import parse_updates\nfrom store import InventoryStore\n\n\ndef run_sync(base_url, db_path, since_token=\"0\"):\n    store = InventoryStore(db_path)\n    token = since_token\n    applied = 0\n    try:\n        while True:\n            payload = fetch_stock_updates(base_url, token)\n            updates = parse_updates(payload)\n            if not updates:\n                break\n            for update in updates:\n                store.apply_update(update)\n                applied += 1\n            token = payload.get(\"next_token\")\n            if not token:\n                break\n    finally:\n        store.close()\n    return applied\n\n\ndef main():\n    import argparse\n\n    argparser = argparse.ArgumentParser(\n        description=\"Sync warehouse stock levels from the vendor feed\"\n    )\n    argparser.add_argument(\"base_url\")\n    argparser.add_argument(\"db_path\")\n    argparser.add_argument(\"--since\", default=\"0\")\n    args = argparser.parse_args()\n\n    logging.basicConfig(level=logging.INFO)\n    count = run_sync(args.base_url, args.db_path, args.since)\n    print(f\"applied {count} stock updates\")\n\n\nif __name__ == \"__main__\":\n    main()\n"
+    }
+  ],
+  "defect_keys": [
+    "silently swallow",
+    "swallowed silently",
+    "fails silently",
+    "silently ignored",
+    "sqlite3.integrityerror"
+  ],
+  "covariates": {
+    "locality_hops": 3,
+    "files_spanned": 4,
+    "distractor_count": 3,
+    "cue_directness": "indirect"
+  },
+  "size_bytes": 5482
+}

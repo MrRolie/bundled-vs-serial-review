@@ -1,0 +1,36 @@
+{
+  "id": "mf-units-01",
+  "item_class": "multi_file",
+  "defect_class": "units",
+  "files": [
+    {
+      "path": "pricing.py",
+      "content": "\"\"\"Core arithmetic for turning raw order data into billable amounts.\"\"\"\n\n\ndef line_item_subtotal(unit_price, quantity):\n    \"\"\"Return the pre-tax, pre-discount cost of a single line item.\"\"\"\n    return unit_price * quantity\n\n\ndef apply_discount(subtotal, discount_percent):\n    \"\"\"Apply a percentage discount (e.g. 15 for 15%) to a subtotal.\"\"\"\n    return subtotal * (1 - discount_percent)\n\n\ndef apply_tax(amount, tax_rate_percent):\n    \"\"\"Apply a percentage tax rate (e.g. 8.25 for 8.25%) to an amount.\"\"\"\n    return amount * (1 + tax_rate_percent / 100)\n",
+      "language": "python"
+    },
+    {
+      "path": "invoice.py",
+      "content": "\"\"\"Builds a priced invoice from raw order line items.\"\"\"\n\nfrom pricing import line_item_subtotal, apply_discount, apply_tax\n\n\nclass LineItem:\n    def __init__(self, sku, unit_price, quantity, discount_percent=0.0):\n        self.sku = sku\n        self.unit_price = unit_price\n        self.quantity = quantity\n        self.discount_percent = discount_percent\n\n\nclass Invoice:\n    def __init__(self, order_id):\n        self.order_id = order_id\n        self.line_totals = []\n        self.subtotal = 0.0\n        self.total = 0.0\n\n    def add_line(self, sku, amount):\n        self.line_totals.append((sku, amount))\n        self.subtotal += amount\n\n\ndef build_invoice(order_id, items, tax_rate_percent):\n    \"\"\"Price every line item, applying its discount, then apply tax to the order subtotal.\"\"\"\n    invoice = Invoice(order_id)\n    for item in items:\n        subtotal = line_item_subtotal(item.unit_price, item.quantity)\n        discounted = apply_discount(subtotal, item.discount_percent)\n        invoice.add_line(item.sku, discounted)\n\n    invoice.total = apply_tax(invoice.subtotal, tax_rate_percent)\n    return invoice\n",
+      "language": "python"
+    },
+    {
+      "path": "billing_report.py",
+      "content": "\"\"\"Generates a plain-text billing summary for a customer order.\"\"\"\n\nfrom invoice import LineItem, build_invoice\n\n\ndef generate_report(order_id, raw_items, tax_rate_percent):\n    \"\"\"Turn raw order data into a customer-facing invoice summary, discounts and tax applied.\"\"\"\n    items = [\n        LineItem(row[\"sku\"], row[\"unit_price\"], row[\"quantity\"], row.get(\"discount_percent\", 0.0))\n        for row in raw_items\n    ]\n    invoice = build_invoice(order_id, items, tax_rate_percent)\n\n    lines = [\"Invoice for order {}\".format(order_id)]\n    for sku, amount in invoice.line_totals:\n        lines.append(\"  {:<12} {:>10.2f}\".format(sku, amount))\n    lines.append(\"Subtotal: {:.2f}\".format(invoice.subtotal))\n    lines.append(\"Total (incl. tax): {:.2f}\".format(invoice.total))\n    return \"\\n\".join(lines)\n",
+      "language": "python"
+    }
+  ],
+  "defect_keys": [
+    "by 100",
+    "divide by 100",
+    "as a fraction",
+    "percent as a fraction",
+    "would compute"
+  ],
+  "covariates": {
+    "locality_hops": 2,
+    "files_spanned": 3,
+    "distractor_count": 1,
+    "cue_directness": "direct"
+  },
+  "size_bytes": 2476
+}

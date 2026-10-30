@@ -1,0 +1,23 @@
+{
+  "id": "sf-comparison-01",
+  "item_class": "single_function",
+  "defect_class": "comparison",
+  "files": [
+    {
+      "path": "example.py",
+      "content": "\"\"\"Order fulfillment checks for the storefront checkout flow.\"\"\"\n\nfrom dataclasses import dataclass\n\n\nLOW_STOCK_THRESHOLD = 5\n\n\n@dataclass\nclass Product:\n    sku: str\n    quantity: int\n    reorder_point: int\n\n\n@dataclass\nclass Customer:\n    name: str\n    balance: float\n    credit_limit: float\n    loyalty_years: int\n\n\n@dataclass\nclass OrderItem:\n    product: Product\n    quantity: int\n    unit_price: float\n\n\ndef has_sufficient_stock(item: OrderItem) -> bool:\n    \"\"\"True if on-hand inventory can cover the requested quantity.\"\"\"\n    return item.product.quantity >= item.quantity\n\n\ndef needs_restock(product: Product) -> bool:\n    \"\"\"True once a product has dropped to or below its reorder point.\"\"\"\n    return product.quantity <= product.reorder_point\n\n\ndef apply_loyalty_discount(customer: Customer, order_total: float) -> float:\n    \"\"\"Long-standing customers get a modest discount on their order.\"\"\"\n    if customer.loyalty_years >= 3:\n        return order_total * 0.95\n    return order_total\n\n\ndef process_order(customer: Customer, items: list[OrderItem]) -> dict:\n    \"\"\"Validate stock and credit for an order, returning a decision summary.\"\"\"\n    out_of_stock = [\n        item.product.sku for item in items if not has_sufficient_stock(item)\n    ]\n    if out_of_stock:\n        return {\"approved\": False, \"reason\": \"out_of_stock\", \"skus\": out_of_stock}\n\n    subtotal = sum(item.unit_price * item.quantity for item in items)\n    discounted_total = apply_loyalty_discount(customer, subtotal)\n\n    remaining_credit = customer.credit_limit - customer.balance\n    if discounted_total <= remaining_credit:\n        return {\n            \"approved\": False,\n            \"reason\": \"credit_limit_exceeded\",\n            \"total\": discounted_total,\n        }\n\n    restock_alerts = [\n        item.product.sku for item in items if needs_restock(item.product)\n    ]\n\n    return {\n        \"approved\": True,\n        \"total\": discounted_total,\n        \"restock_alerts\": restock_alerts,\n    }\n"
+    }
+  ],
+  "defect_keys": [
+    "credit limit",
+    "remaining credit",
+    "exceeds the limit"
+  ],
+  "covariates": {
+    "locality_hops": 0,
+    "files_spanned": 1,
+    "distractor_count": 2,
+    "cue_directness": "indirect"
+  },
+  "size_bytes": 1977
+}

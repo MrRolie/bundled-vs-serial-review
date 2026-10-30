@@ -1,0 +1,25 @@
+{
+  "id": "sf-sign-06",
+  "item_class": "single_function",
+  "defect_class": "sign",
+  "files": [
+    {
+      "path": "irrigation_scheduler.py",
+      "content": "\"\"\"Soil-moisture-based irrigation scheduling for drip zones.\n\nEach zone tracks a running soil moisture balance (mm of water held in the\nroot zone). Once the balance drops to or below the wilting point, the\nscheduler opens the zone's valve long enough to bring the balance back to\nfield capacity, given how quickly its emitters can actually deliver water.\n\"\"\"\n\nFIELD_CAPACITY = 100.0  # mm the root zone can hold before runoff starts\nWILT_POINT = 30.0  # mm balance at or below which crop stress begins\nBASE_DELIVERY_MM_PER_MIN = 0.6  # emitter output at the pump's own elevation\nPRESSURE_LOSS_PER_M = 0.015  # fraction of delivery lost per meter a zone sits above the pump\nMAX_CYCLE_MIN = 45.0  # longest a single valve is allowed to stay open\n\n\ndef _apply_daily_adjustments(balance, rainfall_mm, et_mm):\n    balance += rainfall_mm\n    balance -= et_mm\n    return max(0.0, min(FIELD_CAPACITY, balance))\n\n\ndef _effective_delivery_rate(elevation_gain_m):\n    \"\"\"Delivery rate for a zone that sits elevation_gain_m above the pump.\"\"\"\n    return BASE_DELIVERY_MM_PER_MIN * (1 + PRESSURE_LOSS_PER_M * elevation_gain_m)\n\n\ndef compute_watering_duration(zone_state, rainfall_mm, et_mm, elevation_gain_m):\n    \"\"\"Return minutes to run a zone's valve today, updating zone_state in place.\n\n    zone_state holds 'balance' (mm) and 'last_runtime_min' from the previous cycle.\n    \"\"\"\n    updated_balance = _apply_daily_adjustments(\n        zone_state[\"balance\"], rainfall_mm, et_mm\n    )\n    zone_state[\"balance\"] = updated_balance\n\n    if updated_balance > WILT_POINT:\n        zone_state[\"last_runtime_min\"] = 0.0\n        return 0.0\n\n    deficit = FIELD_CAPACITY - updated_balance\n    rate = _effective_delivery_rate(elevation_gain_m)\n    minutes = deficit / rate\n    minutes = min(minutes, MAX_CYCLE_MIN)\n\n    zone_state[\"last_runtime_min\"] = minutes\n    return minutes\n"
+    }
+  ],
+  "defect_keys": [
+    "wrong direction",
+    "flow rate",
+    "pressure loss",
+    "sign flipped",
+    "increases"
+  ],
+  "covariates": {
+    "locality_hops": 1,
+    "files_spanned": 1,
+    "distractor_count": 2,
+    "cue_directness": "indirect"
+  },
+  "size_bytes": 1859
+}

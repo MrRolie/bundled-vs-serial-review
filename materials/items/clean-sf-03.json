@@ -1,0 +1,19 @@
+{
+  "id": "clean-sf-03",
+  "item_class": "single_function",
+  "defect_class": "clean",
+  "files": [
+    {
+      "path": "compost_turning.py",
+      "content": "\"\"\"Decide whether a compost pile needs to be turned.\n\nRules of thumb encoded here (standard hot-composting practice):\n  * If the pile is at or above 65C it is overheating and killing off the\n    beneficial thermophilic organisms -- turn immediately to cool/aerate it.\n  * If the pile has plateaued at a moderate temperature (recent readings\n    within a tight band, average below 50C) for more than 4 days since the\n    last turn, it has likely gone anaerobic or run out of easy oxygen --\n    turn to reinvigorate it.\n  * Regardless of temperature, turn at least every 14 days as routine\n    maintenance so the outer, cooler material cycles through the hot core.\n\"\"\"\n\nfrom dataclasses import dataclass\nfrom datetime import datetime\nfrom typing import List, Optional\n\nOVERHEAT_C = 65.0\nPLATEAU_C = 50.0\nPLATEAU_BAND_C = 2.0\nPLATEAU_DAYS = 4\nMAINTENANCE_DAYS = 14\n\n\n@dataclass\nclass TemperatureReading:\n    taken_at: datetime\n    celsius: float\n\n\n@dataclass\nclass TurnDecision:\n    should_turn: bool\n    reason: str\n\n\ndef _recent_average(readings: List[TemperatureReading], count: int) -> Optional[float]:\n    \"\"\"Average of the most recent `count` readings (or fewer, if that's all there is).\"\"\"\n    if not readings:\n        return None\n    ordered = sorted(readings, key=lambda r: r.taken_at)\n    window = ordered[-count:]\n    return sum(r.celsius for r in window) / len(window)\n\n\ndef _is_plateaued(readings: List[TemperatureReading], count: int = 3) -> bool:\n    if len(readings) < count:\n        return False\n    ordered = sorted(readings, key=lambda r: r.taken_at)\n    window = ordered[-count:]\n    spread = max(r.celsius for r in window) - min(r.celsius for r in window)\n    return spread <= PLATEAU_BAND_C\n\n\ndef decide_turn_action(\n    readings: List[TemperatureReading],\n    last_turned: datetime,\n    now: datetime,\n) -> TurnDecision:\n    \"\"\"Return whether a pile should be turned right now, and why.\"\"\"\n    days_since_turn = (now - last_turned).total_seconds() / 86400.0\n\n    latest = max(readings, key=lambda r: r.taken_at) if readings else None\n    if latest is not None and latest.celsius >= OVERHEAT_C:\n        return TurnDecision(\n            True,\n            f\"pile at {latest.celsius:.1f}C, at/above overheat threshold \"\n            f\"({OVERHEAT_C:.1f}C) -- turn now to cool and aerate\",\n        )\n\n    avg_recent = _recent_average(readings, 3)\n    if (\n        avg_recent is not None\n        and avg_recent < PLATEAU_C\n        and _is_plateaued(readings)\n        and days_since_turn > PLATEAU_DAYS\n    ):\n        return TurnDecision(\n            True,\n            f\"temperature plateaued around {avg_recent:.1f}C for over \"\n            f\"{PLATEAU_DAYS} days -- turn to restore airflow\",\n        )\n\n    if days_since_turn >= MAINTENANCE_DAYS:\n        return TurnDecision(\n            True,\n            f\"{days_since_turn:.1f} days since last turn -- routine \"\n            f\"maintenance turn is due\",\n        )\n\n    return TurnDecision(False, \"conditions nominal, no turn needed yet\")\n"
+    }
+  ],
+  "defect_keys": [],
+  "covariates": {
+    "locality_hops": null,
+    "files_spanned": 1,
+    "distractor_count": 3,
+    "cue_directness": null
+  },
+  "size_bytes": 2999
+}

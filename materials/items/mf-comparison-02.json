@@ -1,0 +1,39 @@
+{
+  "id": "mf-comparison-02",
+  "item_class": "multi_file",
+  "defect_class": "comparison",
+  "files": [
+    {
+      "path": "models.py",
+      "content": "\"\"\"Data models for the task scheduling package.\"\"\"\n\nfrom dataclasses import dataclass, field\nimport itertools\n\n_id_counter = itertools.count(1)\n\n\n@dataclass\nclass Task:\n    \"\"\"A unit of work waiting to be executed by the scheduler.\n\n    Attributes:\n        name: Human-readable label for logging.\n        priority: Higher values indicate more important work; used only\n            to break ties when two tasks are due at the same moment.\n        deadline: Unix timestamp by which the task should ideally run.\n        next_attempt_at: Unix timestamp before which the task is not\n            eligible to run (used to space out retries).\n        retries: Number of times this task has already been attempted.\n        max_retries: Maximum number of attempts before the task is\n            abandoned.\n    \"\"\"\n\n    name: str\n    priority: int\n    deadline: float\n    next_attempt_at: float = 0.0\n    retries: int = 0\n    max_retries: int = 5\n    task_id: int = field(default_factory=lambda: next(_id_counter))\n\n    def __repr__(self) -> str:\n        return f\"Task(id={self.task_id}, name={self.name!r}, due={self.deadline})\"\n"
+    },
+    {
+      "path": "priority.py",
+      "content": "\"\"\"Logic for deciding which of two ready tasks should run next.\"\"\"\n\nfrom models import Task\n\n\ndef is_more_urgent(candidate: Task, current_best: Task) -> bool:\n    \"\"\"Return True if `candidate` should be scheduled ahead of `current_best`.\n\n    A task that is due sooner takes priority over one that still has\n    time to spare. When two tasks are due at the same moment, the one\n    with the higher `priority` value wins the tie.\n    \"\"\"\n    if candidate.deadline != current_best.deadline:\n        return candidate.deadline > current_best.deadline\n    return candidate.priority > current_best.priority\n"
+    },
+    {
+      "path": "scheduler.py",
+      "content": "\"\"\"In-memory scheduler that tracks tasks and hands them out in urgency order.\"\"\"\n\nfrom typing import List, Optional\n\nfrom models import Task\nfrom priority import is_more_urgent\n\n\nclass TaskScheduler:\n    \"\"\"Holds a pool of tasks and returns the most urgent one on demand.\"\"\"\n\n    def __init__(self) -> None:\n        self._tasks: List[Task] = []\n\n    def add_task(self, task: Task) -> None:\n        self._tasks.append(task)\n\n    def ready_tasks(self, now: float) -> List[Task]:\n        \"\"\"Tasks that are eligible to run at the given time.\"\"\"\n        return [t for t in self._tasks if t.next_attempt_at <= now]\n\n    def _select_most_urgent(self, candidates: List[Task]) -> Task:\n        best = candidates[0]\n        for candidate in candidates[1:]:\n            if is_more_urgent(candidate, best):\n                best = candidate\n        return best\n\n    def pop_next_task(self, now: float) -> Optional[Task]:\n        \"\"\"Remove and return the task that should run next, if any.\"\"\"\n        candidates = self.ready_tasks(now)\n        if not candidates:\n            return None\n        chosen = self._select_most_urgent(candidates)\n        self._tasks.remove(chosen)\n        return chosen\n\n    def __len__(self) -> int:\n        return len(self._tasks)\n"
+    },
+    {
+      "path": "runner.py",
+      "content": "\"\"\"Entry point that drains due tasks from a scheduler.\"\"\"\n\nfrom typing import Callable, List\n\nfrom models import Task\nfrom scheduler import TaskScheduler\n\n\ndef compute_delay(retries: int, base: float = 2.0, cap: float = 300.0) -> float:\n    \"\"\"Exponential backoff delay in seconds, capped so it never grows unbounded.\"\"\"\n    delay = base ** retries\n    return min(delay, cap)\n\n\ndef schedule_retry(task: Task, now: float) -> None:\n    \"\"\"Bump the retry counter and push the task's next eligible time out.\"\"\"\n    task.retries += 1\n    task.next_attempt_at = now + compute_delay(task.retries)\n\n\ndef has_exceeded_retries(task: Task) -> bool:\n    \"\"\"True once a task has used up its retry budget and should be dropped.\"\"\"\n    return task.retries >= task.max_retries\n\n\ndef process_due_tasks(\n    scheduler: TaskScheduler,\n    now: float,\n    executor: Callable[[Task], bool],\n) -> List[Task]:\n    \"\"\"Run every ready task once, most urgent first.\n\n    Tasks whose executor call fails are rescheduled with exponential\n    backoff unless they have exhausted their retry budget, in which\n    case they are dropped. Returns the tasks that were abandoned.\n    \"\"\"\n    dropped: List[Task] = []\n    while True:\n        task = scheduler.pop_next_task(now)\n        if task is None:\n            break\n\n        succeeded = executor(task)\n        if succeeded:\n            continue\n\n        if has_exceeded_retries(task):\n            dropped.append(task)\n            continue\n\n        schedule_retry(task, now)\n        scheduler.add_task(task)\n\n    return dropped\n"
+    }
+  ],
+  "defect_keys": [
+    "earliest deadline",
+    "latest deadline",
+    "wrong direction",
+    "later deadline",
+    "larger deadline",
+    "prefers the task",
+    "is_more_urgent claims"
+  ],
+  "covariates": {
+    "locality_hops": 3,
+    "files_spanned": 4,
+    "distractor_count": 4,
+    "cue_directness": "direct"
+  },
+  "size_bytes": 4512
+}

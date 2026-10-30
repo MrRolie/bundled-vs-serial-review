@@ -1,0 +1,34 @@
+{
+  "id": "mf-sign-01",
+  "item_class": "multi_file",
+  "defect_class": "sign",
+  "files": [
+    {
+      "path": "models.py",
+      "content": "\"\"\"Data model for tracking tax lots per security.\"\"\"\n\nfrom dataclasses import dataclass, field\nfrom typing import List, Tuple\n\n\n@dataclass\nclass Lot:\n    \"\"\"A single tax lot: a block of shares acquired at a specific price.\"\"\"\n\n    quantity: float\n    cost_basis: float  # dollars paid per share for this block\n\n\n@dataclass\nclass Position:\n    \"\"\"Tracks all open lots for one symbol, oldest lot first.\"\"\"\n\n    symbol: str\n    lots: List[Lot] = field(default_factory=list)\n\n    def add_lot(self, quantity: float, price: float) -> None:\n        if quantity <= 0:\n            raise ValueError(\"quantity must be positive\")\n        self.lots.append(Lot(quantity=quantity, cost_basis=price))\n\n    def total_quantity(self) -> float:\n        return sum(lot.quantity for lot in self.lots)\n\n    def consume_fifo(self, quantity: float) -> List[Tuple[float, float]]:\n        \"\"\"Remove `quantity` shares oldest-first, returning (qty, price) pairs consumed.\"\"\"\n        held = self.total_quantity()\n        if quantity > held:\n            raise ValueError(\n                f\"cannot sell {quantity} shares of {self.symbol}; only {held} held\"\n            )\n\n        consumed: List[Tuple[float, float]] = []\n        remaining = quantity\n        while remaining > 1e-9 and self.lots:\n            lot = self.lots[0]\n            if lot.quantity <= remaining + 1e-9:\n                consumed.append((lot.quantity, lot.cost_basis))\n                remaining -= lot.quantity\n                self.lots.pop(0)\n            else:\n                consumed.append((remaining, lot.cost_basis))\n                lot.quantity -= remaining\n                remaining = 0.0\n        return consumed\n\n    def apply_return_of_capital(self, amount_per_share: float) -> None:\n        \"\"\"Adjust each open lot's basis for a non-dividend cash distribution.\"\"\"\n        for lot in self.lots:\n            lot.cost_basis += amount_per_share\n"
+    },
+    {
+      "path": "pricing.py",
+      "content": "\"\"\"Business-logic layer: computes P&L and applies corporate actions to positions.\"\"\"\n\nfrom models import Position\n\n\ndef realized_pnl(position: Position, quantity: float, sale_price: float) -> float:\n    \"\"\"Sell `quantity` shares FIFO and return the realized gain or loss.\"\"\"\n    consumed = position.consume_fifo(quantity)\n    pnl = 0.0\n    for qty, price_paid in consumed:\n        proceeds = qty * sale_price\n        cost = qty * price_paid\n        pnl += proceeds - cost\n    return pnl\n\n\ndef unrealized_pnl(position: Position, current_price: float) -> float:\n    \"\"\"Return the mark-to-market gain or loss across all open lots.\"\"\"\n    pnl = 0.0\n    for lot in position.lots:\n        market_value = lot.quantity * current_price\n        cost = lot.quantity * lot.cost_basis\n        pnl += market_value - cost\n    return pnl\n\n\ndef average_cost(position: Position) -> float:\n    \"\"\"Return the quantity-weighted average price paid per share.\"\"\"\n    total_qty = position.total_quantity()\n    if total_qty == 0:\n        return 0.0\n    total_paid = sum(lot.quantity * lot.cost_basis for lot in position.lots)\n    return total_paid / total_qty\n\n\ndef apply_corporate_action(position: Position, action_type: str, amount_per_share: float) -> None:\n    \"\"\"Apply a corporate action to every open lot in `position`.\n\n    A return-of-capital payment isn't taxable when received; it instead\n    lowers the basis carried on the lots, so the deferred gain surfaces\n    later when the shares are eventually sold.\n    \"\"\"\n    if action_type == \"return_of_capital\":\n        position.apply_return_of_capital(amount_per_share)\n    elif action_type == \"split\":\n        raise NotImplementedError(\"stock splits are not yet supported\")\n    else:\n        raise ValueError(f\"unsupported corporate action: {action_type}\")\n"
+    },
+    {
+      "path": "ledger.py",
+      "content": "\"\"\"Entry point: replays a stream of transactions against a portfolio.\"\"\"\n\nfrom typing import Dict, List\nfrom models import Position\nfrom pricing import realized_pnl, unrealized_pnl, average_cost, apply_corporate_action\n\n\nclass PortfolioLedger:\n    \"\"\"Maintains positions across symbols and replays transactions against them.\"\"\"\n\n    def __init__(self) -> None:\n        self.positions: Dict[str, Position] = {}\n        self.realized_total: float = 0.0\n\n    def _position_for(self, symbol: str) -> Position:\n        if symbol not in self.positions:\n            self.positions[symbol] = Position(symbol=symbol)\n        return self.positions[symbol]\n\n    def record_transactions(self, transactions: List[dict]) -> None:\n        for txn in transactions:\n            position = self._position_for(txn[\"symbol\"])\n            txn_type = txn[\"type\"]\n            if txn_type == \"buy\":\n                position.add_lot(txn[\"quantity\"], txn[\"price\"])\n            elif txn_type == \"sell\":\n                self.realized_total += realized_pnl(position, txn[\"quantity\"], txn[\"price\"])\n            elif txn_type == \"corporate_action\":\n                apply_corporate_action(position, txn[\"action\"], txn[\"amount_per_share\"])\n            else:\n                raise ValueError(f\"unknown transaction type: {txn_type}\")\n\n    def summary(self, current_prices: Dict[str, float]) -> dict:\n        \"\"\"Return realized P&L to date plus a snapshot of each open position.\"\"\"\n        positions_summary = []\n        for symbol, position in self.positions.items():\n            if position.total_quantity() == 0:\n                continue\n            positions_summary.append({\n                \"symbol\": symbol,\n                \"quantity\": position.total_quantity(),\n                \"average_cost\": average_cost(position),\n                \"unrealized_pnl\": unrealized_pnl(position, current_prices.get(symbol, 0.0)),\n            })\n        return {\n            \"realized_pnl\": self.realized_total,\n            \"positions\": positions_summary,\n        }\n"
+    }
+  ],
+  "defect_keys": [
+    "cost basis",
+    "return of capital",
+    "wrong direction",
+    "increase instead of decrease",
+    "increases",
+    "subtract"
+  ],
+  "covariates": {
+    "locality_hops": 2,
+    "files_spanned": 3,
+    "distractor_count": 2,
+    "cue_directness": "indirect"
+  },
+  "size_bytes": 5699
+}

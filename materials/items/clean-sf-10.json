@@ -1,0 +1,19 @@
+{
+  "id": "clean-sf-10",
+  "item_class": "single_function",
+  "defect_class": "clean",
+  "files": [
+    {
+      "path": "restock_planner.py",
+      "content": "\"\"\"\nRestock planning for a vending-machine route.\n\nGiven the on-truck inventory (organized into dated lots) and the current\nstate of each machine slot, build a per-slot restock plan that:\n  - tops off slots up to their par level, never past physical capacity\n  - draws from the oldest (soonest-to-expire) lot first, so short-dated\n    stock gets pushed out to machines before it expires in the warehouse\n  - never proposes loading more product than the technician's cart can\n    physically hold on this trip\n\"\"\"\nfrom __future__ import annotations\n\nimport math\nfrom dataclasses import dataclass\nfrom datetime import date\nfrom typing import Dict, List, Tuple\n\n\n@dataclass\nclass Lot:\n    lot_id: str\n    quantity: int\n    expires_on: date\n\n\n@dataclass\nclass Slot:\n    slot_id: str\n    sku: str\n    capacity: int\n    current_count: int\n    par_level: int\n\n\n@dataclass\nclass RestockLine:\n    slot_id: str\n    sku: str\n    draws: List[Tuple[str, int]]\n    units_loaded: int\n\n\ndef build_restock_plan(\n    slots: List[Slot],\n    van_inventory: Dict[str, List[Lot]],\n    unit_volume: Dict[str, float],\n    cart_capacity_volume: float,\n    today: date,\n) -> List[RestockLine]:\n    \"\"\"Decide what to load into each slot for this restock run.\n\n    `van_inventory` maps sku -> list of Lot (mutated in place as stock is\n    drawn down). `unit_volume` maps every sku present in `slots` to the\n    volume of one unit, used to respect the technician's cart capacity.\n    Slots are serviced in order of largest absolute deficit first, since\n    those are the ones closest to a stockout.\n    \"\"\"\n    plan: List[RestockLine] = []\n    remaining_volume = cart_capacity_volume\n\n    needy_slots = [s for s in slots if s.current_count < s.par_level]\n    needy_slots.sort(key=lambda s: s.par_level - s.current_count, reverse=True)\n\n    for slot in needy_slots:\n        room_in_slot = slot.capacity - slot.current_count\n        deficit = min(slot.par_level - slot.current_count, room_in_slot)\n        if deficit <= 0:\n            continue\n\n        lots = van_inventory.get(slot.sku, [])\n        # FEFO: draw from the lot expiring soonest so it doesn't rot on the truck.\n        lots.sort(key=lambda lot: lot.expires_on)\n\n        vol_per_unit = unit_volume[slot.sku]\n        draws: List[Tuple[str, int]] = []\n        units_loaded = 0\n\n        for lot in lots:\n            if deficit <= 0:\n                break\n            if lot.expires_on < today or lot.quantity <= 0:\n                continue\n\n            if vol_per_unit > 0:\n                affordable = math.floor(remaining_volume / vol_per_unit)\n                if affordable <= 0:\n                    break\n            else:\n                affordable = deficit\n\n            take = min(deficit, lot.quantity, affordable)\n            if take <= 0:\n                continue\n\n            lot.quantity -= take\n            deficit -= take\n            units_loaded += take\n            remaining_volume -= take * vol_per_unit\n            draws.append((lot.lot_id, take))\n\n        if units_loaded > 0:\n            plan.append(RestockLine(slot.slot_id, slot.sku, draws, units_loaded))\n\n    return plan\n"
+    }
+  ],
+  "defect_keys": [],
+  "covariates": {
+    "locality_hops": null,
+    "files_spanned": 1,
+    "distractor_count": 3,
+    "cue_directness": null
+  },
+  "size_bytes": 3123
+}

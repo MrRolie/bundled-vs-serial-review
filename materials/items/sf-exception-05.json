@@ -1,0 +1,26 @@
+{
+  "id": "sf-exception-05",
+  "item_class": "single_function",
+  "defect_class": "exception",
+  "files": [
+    {
+      "path": "solar_ingest.py",
+      "content": "\"\"\"Ingest per-inverter telemetry into the day's production log.\"\"\"\n\nimport csv\nimport os\nfrom datetime import datetime\n\nINVERTER_COUNT = 12\nINVERTER_MAX_KW = 5.5\n\n\ndef _parse_reading(raw):\n    \"\"\"Turn a raw telemetry dict into (timestamp, inverter_id, kw).\"\"\"\n    ts = datetime.fromisoformat(raw[\"timestamp\"])\n    inverter_id = int(raw[\"inverter_id\"])\n    kw = float(raw[\"kw\"])\n    if not (0 <= inverter_id < INVERTER_COUNT):\n        raise ValueError(\"unknown inverter id %d\" % inverter_id)\n    if kw < 0:\n        raise ValueError(\"negative output reading: %r\" % kw)\n    return ts, inverter_id, kw\n\n\ndef ingest_inverter_batch(readings, log_path):\n    \"\"\"Append a batch of inverter telemetry to the running daily log.\n\n    Each item in ``readings`` is a dict with 'timestamp', 'inverter_id',\n    and 'kw' keys pulled from the field gateway poll. Any reading that\n    arrives with a missing field, an unknown inverter id, or a corrupted\n    value is skipped so one bad sample doesn't interrupt logging for the\n    rest of the batch. Returns the total kW logged along with counts of\n    accepted and skipped readings.\n    \"\"\"\n    total_kw = 0.0\n    accepted = 0\n    skipped = 0\n\n    file_exists = os.path.exists(log_path)\n    with open(log_path, \"a\", newline=\"\") as f:\n        writer = csv.writer(f)\n        if not file_exists:\n            writer.writerow([\"timestamp\", \"inverter_id\", \"kw\"])\n\n        for raw in readings:\n            try:\n                ts, inverter_id, kw = _parse_reading(raw)\n                if kw > INVERTER_MAX_KW:\n                    # a stuck sensor occasionally reports well above\n                    # nameplate; clamp instead of rejecting the sample\n                    kw = INVERTER_MAX_KW\n                writer.writerow([ts.isoformat(), inverter_id, kw])\n                total_kw += kw\n                accepted += 1\n            except Exception:\n                skipped += 1\n                continue\n\n    if accepted == 0 and skipped > 0:\n        raise RuntimeError(\"every reading in the batch was rejected\")\n\n    return total_kw, accepted, skipped\n"
+    }
+  ],
+  "defect_keys": [
+    "silently swallowed",
+    "too broadly",
+    "write failure",
+    "exception handler",
+    "docstring states that readings",
+    "are simply skipped"
+  ],
+  "covariates": {
+    "locality_hops": 0,
+    "files_spanned": 1,
+    "distractor_count": 6,
+    "cue_directness": "direct"
+  },
+  "size_bytes": 2077
+}

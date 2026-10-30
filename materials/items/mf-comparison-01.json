@@ -1,0 +1,27 @@
+{
+  "id": "mf-comparison-01",
+  "item_class": "multi_file",
+  "defect_class": "comparison",
+  "files": [
+    {
+      "path": "breaker.py",
+      "content": "import time\n\n\nclass CircuitBreaker:\n    def __init__(self, failure_threshold=5, recovery_timeout=30.0, success_threshold=2):\n        self.failure_threshold = failure_threshold\n        self.recovery_timeout = recovery_timeout\n        self.success_threshold = success_threshold\n        self.state = \"closed\"\n        self.failure_count = 0\n        self.success_count = 0\n        self.last_failure_time = None\n\n    def record_success(self):\n        if self.state == \"half_open\":\n            self.success_count += 1\n            if self.success_count >= self.success_threshold:\n                self._reset()\n        elif self.state == \"closed\":\n            self.failure_count = 0\n\n    def record_failure(self):\n        self.last_failure_time = time.monotonic()\n        if self.state == \"half_open\":\n            self._trip()\n            return\n        self.failure_count += 1\n        if self.failure_count >= self.failure_threshold:\n            self._trip()\n\n    def _trip(self):\n        self.state = \"open\"\n        self.success_count = 0\n\n    def _reset(self):\n        self.state = \"closed\"\n        self.failure_count = 0\n        self.success_count = 0\n\n    def allow_request(self):\n        if self.state == \"closed\":\n            return True\n\n        if self.state == \"open\":\n            elapsed = time.monotonic() - self.last_failure_time\n            if elapsed <= self.recovery_timeout:\n                self.state = \"half_open\"\n                self.success_count = 0\n                return True\n            return False\n\n        return True\n"
+    },
+    {
+      "path": "client.py",
+      "content": "import time\n\nfrom breaker import CircuitBreaker\n\n\nclass ServiceUnavailableError(Exception):\n    pass\n\n\nclass ServiceClient:\n    def __init__(self, transport, max_retries=3, request_timeout=5.0):\n        self.transport = transport\n        self.max_retries = max_retries\n        self.request_timeout = request_timeout\n        self.breaker = CircuitBreaker(failure_threshold=5, recovery_timeout=30.0, success_threshold=2)\n\n    def call(self, payload):\n        if not self.breaker.allow_request():\n            raise ServiceUnavailableError(\"upstream service is currently unavailable\")\n\n        attempt = 0\n        delay = 0.5\n        while True:\n            attempt += 1\n            start = time.monotonic()\n            try:\n                result = self.transport.send(payload)\n            except Exception:\n                self.breaker.record_failure()\n                if attempt >= self.max_retries:\n                    raise\n                time.sleep(delay)\n                delay *= 2\n                continue\n\n            elapsed = time.monotonic() - start\n            if elapsed > self.request_timeout:\n                self.breaker.record_failure()\n                if attempt >= self.max_retries:\n                    raise TimeoutError(\"request exceeded configured timeout\")\n                time.sleep(delay)\n                delay *= 2\n                continue\n\n            self.breaker.record_success()\n            return result\n"
+    }
+  ],
+  "defect_keys": [
+    "recovery timeout",
+    "half open",
+    "circuit breaker"
+  ],
+  "covariates": {
+    "locality_hops": 1,
+    "files_spanned": 2,
+    "distractor_count": 2,
+    "cue_directness": "indirect"
+  },
+  "size_bytes": 2970
+}

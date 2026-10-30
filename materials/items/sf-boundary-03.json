@@ -1,0 +1,25 @@
+{
+  "id": "sf-boundary-03",
+  "item_class": "single_function",
+  "defect_class": "boundary",
+  "files": [
+    {
+      "path": "invoicing.py",
+      "content": "\"\"\"Monthly subscription invoice generation with proration and volume discounts.\"\"\"\n\nfrom dataclasses import dataclass\nfrom datetime import date\nfrom typing import List, Optional\n\n\n@dataclass\nclass LineItem:\n    description: str\n    quantity: int\n    unit_price: float\n\n\ndef volume_discount_rate(quantity: int) -> float:\n    \"\"\"Return the discount rate applicable to a given order quantity.\"\"\"\n    tiers = [\n        (0, 10, 0.0),\n        (10, 50, 0.05),\n        (50, None, 0.10),\n    ]\n    for lower, upper, rate in tiers:\n        if quantity >= lower and (upper is None or quantity < upper):\n            return rate\n    return 0.0\n\n\ndef prorated_subscription_charge(monthly_rate: float, start_date: date, end_date: date,\n                                  days_in_month: int) -> float:\n    \"\"\"Charge for the portion of a billing cycle a customer was actually\n    subscribed, counting every day from service start through service end.\"\"\"\n    days_used = (end_date - start_date).days\n    return round(monthly_rate * days_used / days_in_month, 2)\n\n\ndef generate_invoice(customer_name: str, subscription_start: date, subscription_end: date,\n                      monthly_rate: float, days_in_month: int,\n                      line_items: List[LineItem]) -> dict:\n    \"\"\"Build a full invoice for a customer, combining a prorated subscription\n    charge for the days the account was active this cycle (subscription_start\n    through subscription_end, both of which are billable service days) with\n    any additional metered line items, each discounted according to the\n    quantity purchased.\"\"\"\n    subscription_charge = prorated_subscription_charge(\n        monthly_rate, subscription_start, subscription_end, days_in_month\n    )\n\n    item_charges = []\n    subtotal = subscription_charge\n    for item in line_items:\n        discount = volume_discount_rate(item.quantity)\n        line_total = round(item.quantity * item.unit_price * (1 - discount), 2)\n        item_charges.append({\"description\": item.description, \"total\": line_total})\n        subtotal += line_total\n\n    tax = round(subtotal * 0.0825, 2)\n    return {\n        \"customer\": customer_name,\n        \"subscription_charge\": subscription_charge,\n        \"line_items\": item_charges,\n        \"subtotal\": subtotal,\n        \"tax\": tax,\n        \"total\": round(subtotal + tax, 2),\n    }\n"
+    }
+  ],
+  "defect_keys": [
+    "off by one",
+    "one day",
+    "date range",
+    "day count",
+    "the prorated_subscription_charge function calculates"
+  ],
+  "covariates": {
+    "locality_hops": 1,
+    "files_spanned": 1,
+    "distractor_count": 1,
+    "cue_directness": "indirect"
+  },
+  "size_bytes": 2335
+}

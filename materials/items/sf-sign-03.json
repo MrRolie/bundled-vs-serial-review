@@ -1,0 +1,26 @@
+{
+  "id": "sf-sign-03",
+  "item_class": "single_function",
+  "defect_class": "sign",
+  "files": [
+    {
+      "path": "hold_desk.py",
+      "content": "from dataclasses import dataclass\nfrom datetime import date, timedelta\n\nMAX_RENEWALS = 2\nLOAN_PERIOD_DAYS = 21\nDAILY_FINE_CENTS = 25\nGRACE_DAYS = 3\n\n\n@dataclass\nclass Hold:\n    patron_id: str\n    isbn: str\n    position: int\n    placed_on: date\n\n\n@dataclass\nclass Loan:\n    patron_id: str\n    isbn: str\n    due_date: date\n    renewed: int = 0\n\n\nclass LendingDesk:\n    def __init__(self):\n        self.holds = []\n        self.loans = []\n        self.balances = {}\n\n    def place_hold(self, patron_id, isbn):\n        existing = [h for h in self.holds if h.isbn == isbn]\n        next_position = len(existing) + 1\n        hold = Hold(patron_id=patron_id, isbn=isbn, position=next_position, placed_on=date.today())\n        self.holds.append(hold)\n        return hold\n\n    def cancel_hold(self, patron_id, isbn):\n        target = next(\n            (h for h in self.holds if h.patron_id == patron_id and h.isbn == isbn),\n            None,\n        )\n        if target is None:\n            return\n        self.holds.remove(target)\n        for hold in self.holds:\n            if hold.isbn == isbn and hold.position > target.position:\n                hold.position += 1\n        self.holds.sort(key=lambda h: (h.isbn, h.position))\n\n    def next_in_line(self, isbn):\n        candidates = [h for h in self.holds if h.isbn == isbn]\n        if not candidates:\n            return None\n        return min(candidates, key=lambda h: h.position)\n\n    def assess_return_fine(self, patron_id, isbn, returned_on):\n        loan = next(\n            (l for l in self.loans if l.patron_id == patron_id and l.isbn == isbn),\n            None,\n        )\n        if loan is None:\n            return 0\n        days_late = (returned_on - loan.due_date).days - GRACE_DAYS\n        if days_late <= 0:\n            self.loans.remove(loan)\n            return 0\n        fine = days_late * DAILY_FINE_CENTS\n        self.balances[patron_id] = self.balances.get(patron_id, 0) + fine\n        self.loans.remove(loan)\n        return fine\n\n    def renew_loan(self, patron_id, isbn):\n        loan = next(\n            (l for l in self.loans if l.patron_id == patron_id and l.isbn == isbn),\n            None,\n        )\n        if loan is None or loan.renewed >= MAX_RENEWALS:\n            return None\n        if any(h.isbn == isbn for h in self.holds):\n            return None\n        loan.due_date = loan.due_date + timedelta(days=LOAN_PERIOD_DAYS)\n        loan.renewed += 1\n        return loan.due_date\n"
+    }
+  ],
+  "defect_keys": [
+    "queue position",
+    "wrong direction",
+    "position up by one",
+    "increment instead of decrement",
+    "decremented",
+    "the code increments"
+  ],
+  "covariates": {
+    "locality_hops": 1,
+    "files_spanned": 1,
+    "distractor_count": 6,
+    "cue_directness": "indirect"
+  },
+  "size_bytes": 2452
+}

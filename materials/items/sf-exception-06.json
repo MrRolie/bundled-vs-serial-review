@@ -1,0 +1,26 @@
+{
+  "id": "sf-exception-06",
+  "item_class": "single_function",
+  "defect_class": "exception",
+  "files": [
+    {
+      "path": "permits.py",
+      "content": "import datetime\nfrom dataclasses import dataclass\n\nGRACE_PERIOD_DAYS = 14\nMAX_RENEWAL_DAYS = 365\nBASE_RATE_PER_DAY = 0.50\n\n\nclass PermitError(Exception):\n    pass\n\n\n@dataclass\nclass Account:\n    holder: str\n    balance: float\n\n\ndef get_current_permit(records, plate):\n    return records[plate]\n\n\ndef charge_renewal_fee(account, amount):\n    if account.balance < amount:\n        raise PermitError(\"insufficient balance to cover renewal fee\")\n    account.balance -= amount\n    return True\n\n\ndef renew_permit(records, account, plate, requested_days):\n    if requested_days <= 0 or requested_days > MAX_RENEWAL_DAYS:\n        raise ValueError(\"requested_days out of range\")\n\n    today = datetime.date.today()\n    try:\n        permit = get_current_permit(records, plate)\n        expires_on = datetime.date.fromisoformat(permit[\"expires_on\"])\n    except KeyError:\n        expires_on = today\n\n    lapsed_days = (today - expires_on).days\n    fee_multiplier = 1.5 if lapsed_days > GRACE_PERIOD_DAYS else 1.0\n    fee = round(requested_days * BASE_RATE_PER_DAY * fee_multiplier, 2)\n\n    try:\n        charge_renewal_fee(account, fee)\n        new_expiry = max(today, expires_on) + datetime.timedelta(days=requested_days)\n        records[plate] = {\n            \"plate\": plate,\n            \"expires_on\": new_expiry.isoformat(),\n            \"renewed_on\": today.isoformat(),\n        }\n        return records[plate]\n    except Exception:\n        return None\n\n\ndef describe_renewal(records, account, plate, requested_days):\n    result = renew_permit(records, account, plate, requested_days)\n    if result is None:\n        return f\"Could not renew permit for {plate}. Please try again or contact support.\"\n    return f\"Permit for {plate} renewed through {result['expires_on']}.\"\n"
+    }
+  ],
+  "defect_keys": [
+    "already charged",
+    "swallows the error",
+    "broad except",
+    "no rollback",
+    "catches keyerror",
+    "before updating the permit"
+  ],
+  "covariates": {
+    "locality_hops": 1,
+    "files_spanned": 1,
+    "distractor_count": 0,
+    "cue_directness": "indirect"
+  },
+  "size_bytes": 1758
+}

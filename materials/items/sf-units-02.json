@@ -1,0 +1,25 @@
+{
+  "id": "sf-units-02",
+  "item_class": "single_function",
+  "defect_class": "units",
+  "files": [
+    {
+      "path": "recipe_scaling.py",
+      "content": "\"\"\"Scale a recipe's ingredients, bake time, and pan size to a new serving count.\"\"\"\n\nfrom dataclasses import dataclass, replace\nfrom typing import List\n\n\n@dataclass\nclass Ingredient:\n    name: str\n    amount: float\n    unit: str  # \"g\", \"ml\", \"cup\", \"tbsp\", \"tsp\", \"count\"\n\n\n@dataclass\nclass Recipe:\n    name: str\n    servings: int\n    ingredients: List[Ingredient]\n    cook_time_minutes: float\n    oven_temp_f: float\n    pan_diameter_in: float\n\n\ndef _adjust_for_altitude(oven_temp_f: float, altitude_ft: float) -> float:\n    \"\"\"Bump oven temperature for high-altitude baking.\"\"\"\n    if altitude_ft <= 2000:\n        return oven_temp_f\n    extra_degrees = (altitude_ft - 2000) / 500.0\n    return oven_temp_f + extra_degrees\n\n\ndef scale_recipe(recipe: Recipe, target_servings: int, altitude_ft: float = 0.0) -> Recipe:\n    \"\"\"Scale ingredient amounts, bake time, and pan size for a new serving count.\"\"\"\n    if target_servings <= 0:\n        raise ValueError(\"target_servings must be positive\")\n\n    ratio = target_servings / recipe.servings\n\n    scaled_ingredients = [\n        replace(ing, amount=ing.amount * ratio) for ing in recipe.ingredients\n    ]\n\n    # bake time scales sub-linearly with batch size since heat still has to\n    # penetrate the same way; approximate with the cube root of the ratio\n    time_factor = ratio ** (1.0 / 3.0)\n    scaled_time = recipe.cook_time_minutes * time_factor\n\n    scaled_temp = _adjust_for_altitude(recipe.oven_temp_f, altitude_ft)\n\n    liquid_total = 0.0\n    for ing in scaled_ingredients:\n        if ing.unit in (\"cup\", \"tbsp\", \"tsp\"):\n            liquid_total += ing.amount\n\n    pan_diameter = recipe.pan_diameter_in\n    if liquid_total > 6.0 and pan_diameter < 10.0:\n        pan_diameter = 10.0\n\n    return Recipe(\n        name=recipe.name,\n        servings=target_servings,\n        ingredients=scaled_ingredients,\n        cook_time_minutes=scaled_time,\n        oven_temp_f=scaled_temp,\n        pan_diameter_in=pan_diameter,\n    )\n\n\ndef describe_scaled_recipe(recipe: Recipe, target_servings: int, altitude_ft: float = 0.0) -> str:\n    \"\"\"Return a human-readable summary of a scaled recipe.\"\"\"\n    scaled = scale_recipe(recipe, target_servings, altitude_ft)\n    lines = [f\"{scaled.name} (serves {scaled.servings})\"]\n    for ing in scaled.ingredients:\n        lines.append(f\"  {ing.amount:.2f} {ing.unit} {ing.name}\")\n    lines.append(f\"Bake at {scaled.oven_temp_f:.0f}F for {scaled.cook_time_minutes:.0f} min\")\n    lines.append(f\"Pan diameter: {scaled.pan_diameter_in:.1f} in\")\n    return \"\\n\".join(lines)\n"
+    }
+  ],
+  "defect_keys": [
+    "without converting",
+    "unit conversion",
+    "cups and tablespoons",
+    "different units",
+    "volume units"
+  ],
+  "covariates": {
+    "locality_hops": 0,
+    "files_spanned": 1,
+    "distractor_count": 1,
+    "cue_directness": "direct"
+  },
+  "size_bytes": 2549
+}

@@ -1,0 +1,28 @@
+{
+  "id": "sf-units-05",
+  "item_class": "single_function",
+  "defect_class": "units",
+  "files": [
+    {
+      "path": "grant_disbursement.py",
+      "content": "\"\"\"Grant disbursement engine: computes safe-to-release tranche amounts.\"\"\"\n\nfrom dataclasses import dataclass\nfrom datetime import datetime\n\nCENTS_PER_DOLLAR = 100\nDEFAULT_COOLDOWN_DAYS = 14\nLOW_BALANCE_ALERT_THRESHOLD_DOLLARS = 500\n\n\n@dataclass\nclass GrantAward:\n    grant_id: str\n    total_amount_cents: int\n    disbursed_cents: int\n    processing_fee_percent: float  # e.g. 2.5 means 2.5%\n    max_tranche_cents: int\n    last_disbursement_at: datetime\n    cooldown_days: int = DEFAULT_COOLDOWN_DAYS\n\n\ndef format_cents_as_dollars(cents: int) -> str:\n    return f\"${cents / CENTS_PER_DOLLAR:,.2f}\"\n\n\ndef compute_next_disbursement(award: GrantAward, requested_cents: int, now: datetime) -> dict:\n    \"\"\"\n    Work out how much of a grant can be released right now: subtract the\n    administrative processing fee, respect the cooldown window and the\n    per-tranche cap, and flag the award if its remaining balance is running\n    low so finance can plan the next funding round.\n    \"\"\"\n    remaining_cents = award.total_amount_cents - award.disbursed_cents\n    if remaining_cents <= 0:\n        return {\"amount_cents\": 0, \"reason\": \"grant fully disbursed\", \"low_balance\": False}\n\n    elapsed_seconds = (now - award.last_disbursement_at).total_seconds()\n    cooldown_seconds = award.cooldown_days * 24 * 60 * 60\n    if elapsed_seconds < cooldown_seconds:\n        return {\"amount_cents\": 0, \"reason\": \"cooldown period not elapsed\", \"low_balance\": False}\n\n    fee_fraction = award.processing_fee_percent / 100\n    tranche_cents = min(requested_cents, remaining_cents, award.max_tranche_cents)\n    fee_cents = round(tranche_cents * fee_fraction)\n    net_cents = tranche_cents - fee_cents\n\n    post_disbursement_remaining = remaining_cents - net_cents\n    low_balance = post_disbursement_remaining < LOW_BALANCE_ALERT_THRESHOLD_DOLLARS\n\n    print(\n        f\"Grant {award.grant_id}: releasing {format_cents_as_dollars(net_cents)}, \"\n        f\"fee {format_cents_as_dollars(fee_cents)}, \"\n        f\"remaining {format_cents_as_dollars(post_disbursement_remaining)}\"\n    )\n\n    return {\n        \"amount_cents\": net_cents,\n        \"fee_cents\": fee_cents,\n        \"reason\": \"approved\",\n        \"low_balance\": low_balance,\n    }\n"
+    }
+  ],
+  "defect_keys": [
+    "dollars and cents",
+    "factor of 100",
+    "unit mismatch",
+    "cents instead of dollars",
+    "without converting",
+    "in cents) directly",
+    "directly against",
+    "instead of the intended"
+  ],
+  "covariates": {
+    "locality_hops": 0,
+    "files_spanned": 1,
+    "distractor_count": 4,
+    "cue_directness": "direct"
+  },
+  "size_bytes": 2212
+}

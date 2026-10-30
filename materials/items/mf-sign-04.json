@@ -1,0 +1,36 @@
+{
+  "id": "mf-sign-04",
+  "item_class": "multi_file",
+  "defect_class": "sign",
+  "files": [
+    {
+      "path": "service.py",
+      "content": "\"\"\"Membership lifecycle operations: holds, renewals, and billing.\"\"\"\n\nfrom dataclasses import dataclass\nfrom datetime import date\n\nimport billing\n\n\n@dataclass\nclass Member:\n    member_id: str\n    plan_monthly_price: float\n    current_period_end: date\n    loyalty_streak_months: int = 0\n    hold_days_accrued: int = 0\n    balance_due: float = 0.0\n    status: str = \"active\"\n\n\ndef place_on_hold(member: Member, days: int) -> None:\n    \"\"\"Pauses a member's usage tracking, banking the days to be credited back at renewal.\"\"\"\n    if days <= 0:\n        raise ValueError(\"hold length must be positive\")\n    member.hold_days_accrued += days\n    member.status = \"on_hold\"\n\n\ndef process_renewal(member: Member, today: date) -> billing.Invoice:\n    \"\"\"Renews a member for their next billing cycle, pushing their membership further out to cover any time spent paused.\"\"\"\n    invoice = billing.calculate_renewal_invoice(member, today)\n    member.current_period_end = invoice.new_period_end\n    member.balance_due += invoice.amount_due\n    member.hold_days_accrued = 0\n    member.status = \"active\"\n    return invoice\n"
+    },
+    {
+      "path": "billing.py",
+      "content": "\"\"\"Invoice calculation for membership renewals.\"\"\"\n\nfrom dataclasses import dataclass\nfrom datetime import date\n\nimport freeze\n\nLATE_FEE_PER_DAY = 2.0\nLOYALTY_DISCOUNT_PER_YEAR = 0.05\nMAX_LOYALTY_DISCOUNT = 0.25\n\n\n@dataclass\nclass Invoice:\n    amount_due: float\n    new_period_end: date\n    days_past_due: int\n\n\ndef calculate_renewal_invoice(member, today: date) -> Invoice:\n    \"\"\"Builds the charge for a member's next cycle, including any late fee and loyalty discount, and works out when the new cycle should expire.\"\"\"\n    days_past_due = max(0, (today - member.current_period_end).days)\n    late_fee = days_past_due * LATE_FEE_PER_DAY\n\n    years_active = member.loyalty_streak_months // 12\n    discount = min(MAX_LOYALTY_DISCOUNT, years_active * LOYALTY_DISCOUNT_PER_YEAR)\n    discounted_price = member.plan_monthly_price * (1 - discount)\n\n    new_period_end = freeze.resolve_membership_window(member, today)\n\n    amount_due = round(discounted_price + late_fee, 2)\n    return Invoice(amount_due=amount_due, new_period_end=new_period_end, days_past_due=days_past_due)\n"
+    },
+    {
+      "path": "freeze.py",
+      "content": "\"\"\"Figures out the new membership period, taking holds into account.\"\"\"\n\nfrom datetime import date, timedelta\n\nimport proration\n\nCYCLE_LENGTH_DAYS = 30\n\n\ndef resolve_membership_window(member, today: date) -> date:\n    \"\"\"Computes the member's next period boundary, starting from whichever is later -- the old boundary or today -- and stretching it out for any paused days.\"\"\"\n    baseline = max(member.current_period_end, today) + timedelta(days=CYCLE_LENGTH_DAYS)\n    return proration.apply_hold_adjustment(baseline, member.hold_days_accrued)\n"
+    },
+    {
+      "path": "proration.py",
+      "content": "\"\"\"Small date-shifting helpers shared by the billing pipeline.\"\"\"\n\nfrom datetime import timedelta\n\n\ndef apply_hold_adjustment(base_date, hold_length_days):\n    \"\"\"Moves a membership boundary to reflect time the member couldn't use the gym.\"\"\"\n    return base_date - timedelta(days=hold_length_days)\n"
+    }
+  ],
+  "defect_keys": [
+    "hold days",
+    "subtract",
+    "period end",
+    "wrong direction"
+  ],
+  "covariates": {
+    "locality_hops": 3,
+    "files_spanned": 4,
+    "distractor_count": 2,
+    "cue_directness": "direct"
+  },
+  "size_bytes": 3019
+}

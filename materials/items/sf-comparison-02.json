@@ -1,0 +1,27 @@
+{
+  "id": "sf-comparison-02",
+  "item_class": "single_function",
+  "defect_class": "comparison",
+  "files": [
+    {
+      "path": "docking.py",
+      "content": "\"\"\"Bike-share docking: finalize a bike return, update the station's\ninventory, and settle the rider's bill for the completed trip.\"\"\"\n\nfrom dataclasses import dataclass, field\nfrom typing import List\n\nGEOFENCE_RADIUS_M = 15\nLOW_BATTERY_PCT = 20\n\n\nclass DockingError(Exception):\n    pass\n\n\n@dataclass\nclass Bike:\n    bike_id: str\n    is_electric: bool\n    battery_level: int\n    needs_maintenance: bool = False\n\n\n@dataclass\nclass Ride:\n    bike_id: str\n    duration_minutes: int\n    distance_from_station_m: float\n    flagged_lost: bool = False\n    fee_cents: int = 0\n\n\n@dataclass\nclass Plan:\n    free_minutes: int\n    max_ride_minutes: int\n    overage_rate_cents: int\n\n\n@dataclass\nclass Dock:\n    dock_id: str\n    lock_engaged: bool\n    supports_charging: bool\n\n\n@dataclass\nclass Station:\n    station_id: str\n    capacity: int\n    bikes_present: int\n    available_charging_docks: int\n    docked_bikes: List[str] = field(default_factory=list)\n\n\ndef complete_dock_event(bike, station, dock, ride, plan):\n    \"\"\"Register a returned bike at its station and close out the ride,\n    including any fee owed for time beyond the plan's covered minutes.\"\"\"\n\n    if ride.distance_from_station_m > GEOFENCE_RADIUS_M:\n        raise DockingError(\"bike is too far from the station to dock\")\n\n    if station.bikes_present >= station.capacity:\n        raise DockingError(\"station has no open docks\")\n\n    needs_charging_dock = bike.is_electric and bike.battery_level < LOW_BATTERY_PCT\n    if needs_charging_dock and station.available_charging_docks <= 0:\n        raise DockingError(\"no charging dock free for a low battery bike\")\n\n    if needs_charging_dock and not dock.supports_charging:\n        raise DockingError(\"assigned dock cannot charge this bike\")\n\n    if not dock.lock_engaged:\n        raise DockingError(\"dock lock did not engage\")\n\n    station.bikes_present += 1\n    station.docked_bikes.append(bike.bike_id)\n    if needs_charging_dock:\n        station.available_charging_docks -= 1\n\n    if ride.duration_minutes > plan.max_ride_minutes:\n        ride.flagged_lost = True\n\n    if bike.battery_level < LOW_BATTERY_PCT:\n        bike.needs_maintenance = True\n\n    if ride.duration_minutes > plan.max_ride_minutes:\n        overage_minutes = ride.duration_minutes - plan.max_ride_minutes\n        ride.fee_cents = overage_minutes * plan.overage_rate_cents\n\n    return ride\n"
+    }
+  ],
+  "defect_keys": [
+    "free minutes",
+    "wrong threshold",
+    "lost-bike cutoff",
+    "abandonment cutoff",
+    "the fee calculation",
+    "plan.free_minutes`. the docstring",
+    "plan.max_ride_minutes as the threshold"
+  ],
+  "covariates": {
+    "locality_hops": 0,
+    "files_spanned": 1,
+    "distractor_count": 6,
+    "cue_directness": "direct"
+  },
+  "size_bytes": 2362
+}

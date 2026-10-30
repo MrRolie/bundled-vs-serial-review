@@ -1,0 +1,24 @@
+{
+  "id": "sf-boundary-06",
+  "item_class": "single_function",
+  "defect_class": "boundary",
+  "files": [
+    {
+      "path": "route_sampling.py",
+      "content": "\"\"\"Utilities for sampling a GPS route polyline at fixed distance intervals,\nused to generate evenly spaced markers for turn-by-turn map rendering.\"\"\"\n\nimport math\n\nEARTH_RADIUS_M = 6371000.0\n\n\ndef _haversine(a, b):\n    lat1, lon1 = math.radians(a[0]), math.radians(a[1])\n    lat2, lon2 = math.radians(b[0]), math.radians(b[1])\n    dlat = lat2 - lat1\n    dlon = lon2 - lon1\n    h = (math.sin(dlat / 2) ** 2\n         + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2)\n    return 2 * EARTH_RADIUS_M * math.asin(math.sqrt(h))\n\n\ndef _build_cumulative_distances(waypoints):\n    cumulative = [0.0]\n    for i in range(1, len(waypoints)):\n        cumulative.append(cumulative[-1] + _haversine(waypoints[i - 1], waypoints[i]))\n    return cumulative\n\n\ndef _locate_segment(cumulative, target_dist):\n    \"\"\"Return the index i of the route leg that target_dist falls on.\"\"\"\n    lo, hi = 0, len(cumulative) - 3\n    while lo < hi:\n        mid = (lo + hi) // 2\n        if cumulative[mid + 1] < target_dist:\n            lo = mid + 1\n        else:\n            hi = mid\n    return lo\n\n\ndef _interpolate(waypoints, cumulative, segment_idx, target_dist):\n    seg_start = cumulative[segment_idx]\n    seg_end = cumulative[segment_idx + 1]\n    seg_len = seg_end - seg_start\n    frac = 0.0 if seg_len == 0 else (target_dist - seg_start) / seg_len\n    lat1, lon1 = waypoints[segment_idx]\n    lat2, lon2 = waypoints[segment_idx + 1]\n    return (lat1 + frac * (lat2 - lat1), lon1 + frac * (lon2 - lon1))\n\n\ndef sample_route_at_intervals(waypoints, interval_m):\n    \"\"\"Return points spaced roughly interval_m metres apart along the route.\n    The first sample is always the origin and the last is always the\n    destination waypoint, so downstream renderers never see a truncated\n    route even if interval_m does not evenly divide the total length.\"\"\"\n    if len(waypoints) < 2:\n        return list(waypoints)\n\n    cumulative = _build_cumulative_distances(waypoints)\n    total_length = cumulative[-1]\n\n    num_samples = int(total_length // interval_m)\n    samples = []\n    for i in range(num_samples):\n        target_dist = min(total_length, max(0.0, i * interval_m))\n        segment_idx = _locate_segment(cumulative, target_dist)\n        samples.append(_interpolate(waypoints, cumulative, segment_idx, target_dist))\n\n    samples.append(waypoints[-1])\n    return samples\n"
+    }
+  ],
+  "defect_keys": [
+    "last segment",
+    "upper bound",
+    "off by one",
+    "final leg"
+  ],
+  "covariates": {
+    "locality_hops": 1,
+    "files_spanned": 1,
+    "distractor_count": 4,
+    "cue_directness": "indirect"
+  },
+  "size_bytes": 2351
+}

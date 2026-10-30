@@ -1,0 +1,43 @@
+{
+  "id": "mf-units-02",
+  "item_class": "multi_file",
+  "defect_class": "units",
+  "files": [
+    {
+      "path": "config.py",
+      "content": "\"\"\"Shared configuration values for the transcode upload worker.\"\"\"\n\nBANDWIDTH_LIMIT_KBPS = 800\nCHUNK_SIZE_KB = 256\nJOB_TIMEOUT_MS = 45_000\nRETRY_BACKOFF_MS = 1_500\nMAX_RETRIES = 3\nSLA_SUCCESS_THRESHOLD = 0.98\nSTORAGE_ENDPOINT = \"storage.internal.example\"\n"
+    },
+    {
+      "path": "metrics.py",
+      "content": "\"\"\"Tracks per-job timing and batch success metrics.\"\"\"\nimport time\n\nimport config\n\n\nclass JobMetrics:\n    def __init__(self, job_id):\n        self.job_id = job_id\n        self._start = None\n        self._end = None\n        self.succeeded = False\n\n    def start(self):\n        self._start = time.monotonic()\n\n    def stop(self, succeeded):\n        self._end = time.monotonic()\n        self.succeeded = succeeded\n\n    @property\n    def duration_seconds(self):\n        if self._start is None or self._end is None:\n            return 0.0\n        return self._end - self._start\n\n    def exceeded_timeout(self):\n        timeout_seconds = config.JOB_TIMEOUT_MS / 1000\n        return self.duration_seconds > timeout_seconds\n\n\ndef summarize_batch(job_metrics):\n    total = len(job_metrics)\n    if total == 0:\n        return 1.0\n    succeeded = sum(1 for m in job_metrics if m.succeeded)\n    success_rate = succeeded / total\n    return success_rate\n\n\ndef meets_sla(job_metrics):\n    return summarize_batch(job_metrics) >= config.SLA_SUCCESS_THRESHOLD\n"
+    },
+    {
+      "path": "uploader.py",
+      "content": "\"\"\"Uploads transcoded output files to remote storage in bandwidth-limited chunks.\"\"\"\nimport time\n\nimport config\n\n\ndef _read_chunks(file_obj, chunk_size_bytes):\n    while True:\n        data = file_obj.read(chunk_size_bytes)\n        if not data:\n            break\n        yield data\n\n\ndef wait_for_bandwidth(chunk_size_bytes, rate_kbps):\n    if rate_kbps <= 0:\n        return\n    delay_seconds = chunk_size_bytes / rate_kbps\n    time.sleep(delay_seconds)\n\n\ndef send_chunk(chunk, rate_kbps, sink):\n    wait_for_bandwidth(len(chunk), rate_kbps)\n    sink.write(chunk)\n\n\ndef upload_file(job, sink):\n    chunk_size_bytes = config.CHUNK_SIZE_KB * 1024\n    bytes_sent = 0\n    with open(job.local_path, \"rb\") as f:\n        for chunk in _read_chunks(f, chunk_size_bytes):\n            send_chunk(chunk, config.BANDWIDTH_LIMIT_KBPS, sink)\n            bytes_sent += len(chunk)\n    return bytes_sent\n"
+    },
+    {
+      "path": "scheduler.py",
+      "content": "\"\"\"Runs individual upload jobs with retry and backoff handling.\"\"\"\nimport io\nimport time\n\nimport config\nimport metrics\nimport uploader\n\n\nclass UploadError(Exception):\n    pass\n\n\ndef run_job(job):\n    job_metrics = metrics.JobMetrics(job.job_id)\n    job_metrics.start()\n    attempt = 0\n    succeeded = False\n    while attempt <= config.MAX_RETRIES and not succeeded:\n        try:\n            sink = io.BytesIO()\n            uploader.upload_file(job, sink)\n            succeeded = True\n        except (OSError, UploadError):\n            attempt += 1\n            if attempt > config.MAX_RETRIES:\n                break\n            backoff_seconds = config.RETRY_BACKOFF_MS / 1000 * attempt\n            time.sleep(backoff_seconds)\n    job_metrics.stop(succeeded)\n    return job_metrics\n"
+    },
+    {
+      "path": "worker.py",
+      "content": "\"\"\"Coordinates transcode upload jobs for a batch and reports on SLA compliance.\"\"\"\nfrom dataclasses import dataclass\n\nimport config\nimport metrics\nimport scheduler\n\n\n@dataclass\nclass UploadJob:\n    job_id: str\n    local_path: str\n\n\ndef build_jobs(paths):\n    return [UploadJob(job_id=f\"job-{i}\", local_path=p) for i, p in enumerate(paths)]\n\n\ndef process_batch(jobs):\n    job_metrics = []\n    for job in jobs:\n        result = scheduler.run_job(job)\n        job_metrics.append(result)\n        if result.exceeded_timeout():\n            print(f\"{job.job_id} exceeded the configured timeout\")\n    return job_metrics\n\n\ndef report(job_metrics):\n    success_rate = metrics.summarize_batch(job_metrics)\n    print(f\"batch success rate: {success_rate:.2%}\")\n    if metrics.meets_sla(job_metrics):\n        print(\"batch meets SLA target\")\n    else:\n        print(\"batch failed to meet SLA target\")\n\n\ndef main(paths):\n    jobs = build_jobs(paths)\n    job_metrics = process_batch(jobs)\n    report(job_metrics)\n\n\nif __name__ == \"__main__\":\n    import sys\n    main(sys.argv[1:])\n"
+    }
+  ],
+  "defect_keys": [
+    "bytes and kilobytes",
+    "kilobytes to bytes",
+    "without converting",
+    "kb per second",
+    "kilobits",
+    "off by a factor of",
+    "byte count"
+  ],
+  "covariates": {
+    "locality_hops": 4,
+    "files_spanned": 5,
+    "distractor_count": 6,
+    "cue_directness": "none"
+  },
+  "size_bytes": 4025
+}

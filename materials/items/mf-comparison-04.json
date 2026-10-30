@@ -1,0 +1,37 @@
+{
+  "id": "mf-comparison-04",
+  "item_class": "multi_file",
+  "defect_class": "comparison",
+  "files": [
+    {
+      "path": "models.py",
+      "content": "\"\"\"Domain models for aquifer well monitoring.\"\"\"\n\nfrom dataclasses import dataclass\nfrom datetime import date\nfrom typing import Optional\n\n\n@dataclass(frozen=True)\nclass Well:\n    well_id: str\n    permit_allocation_m3: float\n    static_level_m: float\n    critical_level_m: float\n    recovery_margin_m: float = 0.5\n\n\n@dataclass(frozen=True)\nclass Reading:\n    well_id: str\n    reading_date: date\n    depth_to_water_m: float\n    extraction_volume_m3: float\n\n\ndef is_recovered(well: Well, latest_depth_m: float) -> bool:\n    \"\"\"Return True once the water table has settled back near its undisturbed level.\"\"\"\n    return latest_depth_m <= well.critical_level_m + well.recovery_margin_m\n"
+    },
+    {
+      "path": "readings.py",
+      "content": "\"\"\"Helpers for aggregating and querying well readings.\"\"\"\n\nfrom datetime import date\nfrom typing import List, Optional\n\nfrom models import Reading, Well, is_recovered\n\n\ndef latest_reading(readings: List[Reading]) -> Optional[Reading]:\n    \"\"\"Return the most recent reading in the list, or None if there are no readings.\"\"\"\n    if not readings:\n        return None\n    return max(readings, key=lambda r: r.reading_date)\n\n\ndef year_to_date_extraction(readings: List[Reading], as_of: date) -> float:\n    \"\"\"Sum extraction volumes for readings recorded within the current calendar year.\"\"\"\n    return sum(r.extraction_volume_m3 for r in readings if r.reading_date.year == as_of.year)\n\n\ndef recovery_status(well: Well, readings: List[Reading]) -> bool:\n    \"\"\"Check whether the well's water level has returned close to its baseline after pumping.\"\"\"\n    latest = latest_reading(readings)\n    if latest is None:\n        return False\n    return is_recovered(well, latest.depth_to_water_m)\n"
+    },
+    {
+      "path": "compliance.py",
+      "content": "\"\"\"Permit compliance evaluation for monitored wells.\"\"\"\n\nfrom datetime import date\nfrom typing import Dict, List\n\nfrom models import Well, Reading\nimport readings as readings_mod\n\n\ndef extraction_status(well: Well, well_readings: List[Reading], as_of: date) -> bool:\n    \"\"\"Return True if year-to-date extraction is within the well's permit allocation.\"\"\"\n    ytd = readings_mod.year_to_date_extraction(well_readings, as_of)\n    return ytd <= well.permit_allocation_m3\n\n\ndef needs_shutoff(well: Well, well_readings: List[Reading]) -> bool:\n    \"\"\"Flag wells whose water table has dropped past the regulatory shutoff depth.\"\"\"\n    latest = readings_mod.latest_reading(well_readings)\n    if latest is None:\n        return False\n    return latest.depth_to_water_m >= well.critical_level_m\n\n\ndef evaluate_well(well: Well, well_readings: List[Reading], as_of: date) -> Dict:\n    \"\"\"Combine extraction, recovery, and shutoff checks into one status record.\"\"\"\n    return {\n        \"well_id\": well.well_id,\n        \"extraction_ok\": extraction_status(well, well_readings, as_of),\n        \"recovery_ok\": readings_mod.recovery_status(well, well_readings),\n        \"needs_shutoff\": needs_shutoff(well, well_readings),\n    }\n"
+    },
+    {
+      "path": "report.py",
+      "content": "\"\"\"Generate periodic compliance reports for a set of monitored wells.\"\"\"\n\nfrom datetime import date\nfrom typing import Dict, List\n\nfrom models import Well, Reading\nimport compliance\n\n\ndef generate_compliance_report(\n    wells: List[Well],\n    readings_by_well: Dict[str, List[Reading]],\n    as_of: date = None,\n) -> List[Dict]:\n    \"\"\"Determine, for each well, whether extraction stays within permit and the water level has recovered after pumping.\"\"\"\n    as_of = as_of or date.today()\n    report = []\n    for well in wells:\n        well_readings = readings_by_well.get(well.well_id, [])\n        report.append(compliance.evaluate_well(well, well_readings, as_of))\n    return report\n\n\ndef summarize(report: List[Dict]) -> str:\n    \"\"\"Build a short human-readable summary of any wells that need attention.\"\"\"\n    flagged = [\n        r for r in report\n        if not r[\"extraction_ok\"] or not r[\"recovery_ok\"] or r[\"needs_shutoff\"]\n    ]\n    lines = [f\"{len(report)} wells evaluated, {len(flagged)} require attention.\"]\n    for r in flagged:\n        issues = []\n        if not r[\"extraction_ok\"]:\n            issues.append(\"extraction exceeds permit allocation\")\n        if not r[\"recovery_ok\"]:\n            issues.append(\"water level has not recovered\")\n        if r[\"needs_shutoff\"]:\n            issues.append(\"depth at or beyond critical shutoff level\")\n        lines.append(f\"  {r['well_id']}: {', '.join(issues)}\")\n    return \"\\n\".join(lines)\n"
+    }
+  ],
+  "defect_keys": [
+    "wrong baseline",
+    "static level",
+    "still dangerously",
+    "shutoff threshold). this",
+    "instead of static_level_m"
+  ],
+  "covariates": {
+    "locality_hops": 3,
+    "files_spanned": 4,
+    "distractor_count": 0,
+    "cue_directness": "direct"
+  },
+  "size_bytes": 4321
+}

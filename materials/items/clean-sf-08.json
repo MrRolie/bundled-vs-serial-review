@@ -1,0 +1,19 @@
+{
+  "id": "clean-sf-08",
+  "item_class": "single_function",
+  "defect_class": "clean",
+  "files": [
+    {
+      "path": "ticketing.py",
+      "content": "\"\"\"Ticket booking logic for a museum's timed-entry system.\"\"\"\n\nfrom datetime import date\n\nTICKET_PRICES_CENTS = {\n    \"adult\": 1800,\n    \"child\": 900,\n    \"senior\": 1200,\n    \"student\": 1400,\n}\n\nFREE_CHILD_MAX_AGE = 5  # visitors this age or younger enter free\nMAX_CAPACITY_PER_SLOT = 40\nGROUP_DISCOUNT_THRESHOLD = 10  # ticket count at/above which discount kicks in\nGROUP_DISCOUNT_RATE = 0.10\n\n\nclass BookingError(Exception):\n    pass\n\n\ndef _ticket_price_cents(visitor):\n    \"\"\"Return the price in cents for a single visitor dict.\"\"\"\n    visitor_type = visitor[\"type\"]\n    if visitor_type not in TICKET_PRICES_CENTS:\n        raise BookingError(f\"unknown ticket type: {visitor_type}\")\n\n    if visitor_type == \"child\" and visitor.get(\"age\") is not None:\n        if visitor[\"age\"] <= FREE_CHILD_MAX_AGE:\n            return 0\n\n    return TICKET_PRICES_CENTS[visitor_type]\n\n\ndef book_tickets(visit_date, time_slot, visitors, existing_bookings, today=None):\n    \"\"\"Attempt to book tickets for a timed entry slot.\n\n    visit_date: date of the visit\n    time_slot: string key identifying the entry slot, e.g. \"10:00\"\n    visitors: list of dicts like {\"type\": \"adult\"} or {\"type\": \"child\", \"age\": 4}\n    existing_bookings: dict mapping time_slot -> number of tickets already sold\n\n    Returns a dict with a price breakdown and confirmation details.\n    Raises BookingError if the date is invalid or the slot is full.\n    \"\"\"\n    if today is None:\n        today = date.today()\n    if visit_date < today:\n        raise BookingError(\"cannot book tickets for a past date\")\n\n    if not visitors:\n        raise BookingError(\"at least one visitor is required\")\n\n    already_booked = existing_bookings.get(time_slot, 0)\n    requested = len(visitors)\n    if already_booked + requested > MAX_CAPACITY_PER_SLOT:\n        remaining = MAX_CAPACITY_PER_SLOT - already_booked\n        raise BookingError(\n            f\"only {max(remaining, 0)} spots remain in the {time_slot} slot\"\n        )\n\n    line_items = []\n    subtotal_cents = 0\n    for visitor in visitors:\n        price = _ticket_price_cents(visitor)\n        line_items.append({\"type\": visitor[\"type\"], \"price_cents\": price})\n        subtotal_cents += price\n\n    discount_applied = False\n    total_cents = subtotal_cents\n    if requested >= GROUP_DISCOUNT_THRESHOLD:\n        total_cents = round(subtotal_cents * (1 - GROUP_DISCOUNT_RATE))\n        discount_applied = True\n\n    return {\n        \"visit_date\": visit_date,\n        \"time_slot\": time_slot,\n        \"line_items\": line_items,\n        \"subtotal_cents\": subtotal_cents,\n        \"total_cents\": total_cents,\n        \"discount_applied\": discount_applied,\n        \"tickets_booked\": requested,\n    }\n"
+    }
+  ],
+  "defect_keys": [],
+  "covariates": {
+    "locality_hops": null,
+    "files_spanned": 1,
+    "distractor_count": 1,
+    "cue_directness": null
+  },
+  "size_bytes": 2686
+}

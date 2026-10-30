@@ -1,0 +1,39 @@
+{
+  "id": "mf-units-04",
+  "item_class": "multi_file",
+  "defect_class": "units",
+  "files": [
+    {
+      "path": "models.py",
+      "content": "\"\"\"Data structures shared across the radio scheduling package.\"\"\"\n\nfrom dataclasses import dataclass, field\nfrom typing import List\n\n\n@dataclass\nclass Track:\n    title: str\n    artist: str\n    duration_ms: int\n    category: str  # \"music\", \"ad\", \"liner\", \"id\"\n\n\n@dataclass\nclass HourBlock:\n    hour_index: int\n    tracks: List[Track] = field(default_factory=list)\n    target_ad_ratio: float = 0.18  # fraction of the hour reserved for spots\n\n\ndef format_duration(duration_ms: int) -> str:\n    \"\"\"Render a millisecond duration as mm:ss for the on-air log.\"\"\"\n    total_seconds = duration_ms // 1000\n    minutes, seconds = divmod(total_seconds, 60)\n    return f\"{minutes:02d}:{seconds:02d}\"\n"
+    },
+    {
+      "path": "playlist.py",
+      "content": "\"\"\"Loads and normalizes playlist entries for scheduling.\"\"\"\n\nfrom typing import List, Dict, Any\n\nfrom models import Track, HourBlock\n\n\ndef load_playlist(raw_entries: List[Dict[str, Any]]) -> List[Track]:\n    \"\"\"Turn raw catalog rows (duration given in whole seconds) into Track objects.\"\"\"\n    tracks = []\n    for entry in raw_entries:\n        duration_ms = int(entry[\"duration_seconds\"] * 1000)\n        tracks.append(\n            Track(\n                title=entry[\"title\"],\n                artist=entry.get(\"artist\", \"Unknown\"),\n                duration_ms=duration_ms,\n                category=entry.get(\"category\", \"music\"),\n            )\n        )\n    return tracks\n\n\ndef split_into_hours(tracks: List[Track], hour_count: int) -> List[HourBlock]:\n    \"\"\"Distribute tracks roughly evenly across the requested number of hour blocks.\"\"\"\n    blocks = [HourBlock(hour_index=i) for i in range(hour_count)]\n    for i, track in enumerate(tracks):\n        blocks[i % hour_count].tracks.append(track)\n    return blocks\n"
+    },
+    {
+      "path": "scheduler.py",
+      "content": "\"\"\"Builds the minute-by-minute broadcast log for a single hour block.\"\"\"\n\nfrom typing import List, Tuple\n\nfrom models import Track, HourBlock\n\nHOUR_SECONDS = 3600\nCROSSFADE_MS = 500  # overlap trimmed from the tail of each outgoing track\n\n\ndef _accumulate_duration(tracks: List[Track]) -> float:\n    \"\"\"Sum how much airtime, in seconds, a run of back-to-back tracks actually occupies.\"\"\"\n    elapsed_seconds = 0.0\n    previous = None\n    for track in tracks:\n        elapsed_seconds += track.duration_ms / 1000.0\n        if previous is not None:\n            elapsed_seconds -= CROSSFADE_MS\n        previous = track\n    return elapsed_seconds\n\n\ndef build_hourly_log(hour_block: HourBlock) -> Tuple[List[Track], float]:\n    \"\"\"\n    Assemble the sequence of tracks that fills a broadcast hour, stopping\n    once the running airtime would spill past the top of the hour.\n    \"\"\"\n    scheduled: List[Track] = []\n    running_total = 0.0\n    for track in hour_block.tracks:\n        candidate = scheduled + [track]\n        projected = _accumulate_duration(candidate)\n        if projected > HOUR_SECONDS:\n            break\n        scheduled.append(track)\n        running_total = projected\n    return scheduled, running_total\n"
+    },
+    {
+      "path": "compliance.py",
+      "content": "\"\"\"Validates a scheduled hour against station ad limits, and drives the overall build.\"\"\"\n\nfrom typing import List, Dict, Any\n\nfrom models import Track, HourBlock\nfrom playlist import load_playlist, split_into_hours\nfrom scheduler import build_hourly_log, HOUR_SECONDS\n\n\ndef check_ad_ratio(hour_block: HourBlock, scheduled: List[Track]) -> bool:\n    \"\"\"Confirm the ads scheduled in this hour stay within the station's contracted ratio.\"\"\"\n    ad_seconds = sum(t.duration_ms / 1000.0 for t in scheduled if t.category == \"ad\")\n    allowed_seconds = HOUR_SECONDS * hour_block.target_ad_ratio\n    return ad_seconds <= allowed_seconds\n\n\ndef generate_daily_log(raw_entries: List[Dict[str, Any]], hour_count: int = 24) -> Dict[int, dict]:\n    \"\"\"Build a full day of hourly broadcast logs from a raw catalog export.\"\"\"\n    tracks = load_playlist(raw_entries)\n    hour_blocks = split_into_hours(tracks, hour_count)\n\n    report = {}\n    for block in hour_blocks:\n        scheduled, running_total = build_hourly_log(block)\n        report[block.hour_index] = {\n            \"scheduled\": scheduled,\n            \"airtime_seconds\": running_total,\n            \"within_ad_ratio\": check_ad_ratio(block, scheduled),\n        }\n    return report\n"
+    }
+  ],
+  "defect_keys": [
+    "converted to seconds",
+    "milliseconds to seconds",
+    "seconds and milliseconds",
+    "unit mismatch",
+    "directly from elapsed_seconds",
+    "instead of 0.5 seconds",
+    "is subtracted directly"
+  ],
+  "covariates": {
+    "locality_hops": 3,
+    "files_spanned": 4,
+    "distractor_count": 3,
+    "cue_directness": "direct"
+  },
+  "size_bytes": 4143
+}

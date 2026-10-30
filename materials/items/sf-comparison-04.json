@@ -1,0 +1,27 @@
+{
+  "id": "sf-comparison-04",
+  "item_class": "single_function",
+  "defect_class": "comparison",
+  "files": [
+    {
+      "path": "glyph_atlas.py",
+      "content": "\"\"\"Glyph rasterizer and shelf-based atlas packer for a UI text renderer.\"\"\"\n\nfrom dataclasses import dataclass\n\n\n@dataclass\nclass Bitmap:\n    char: str\n    width: int\n    height: int\n    advance: float\n\n\ndef _rasterize_glyph(char, font_size, hinting=True):\n    \"\"\"Approximate glyph metrics the way a scanline rasterizer would produce them.\n\n    Real engines would consult glyph outlines from the font file; here we\n    derive plausible pixel dimensions from the character code and size so\n    the packer can be exercised without a font backend.\n    \"\"\"\n    base = 0.6 + (ord(char) % 7) * 0.05\n    width = max(1, round(font_size * base))\n    height = max(1, round(font_size * (0.75 + (ord(char) % 5) * 0.03)))\n    if hinting:\n        width = round(width)\n        height = round(height)\n    advance = width * 1.08\n    return Bitmap(char, width, height, advance)\n\n\nclass ShelfAtlas:\n    \"\"\"Packs rasterized glyph bitmaps into rows ('shelves') of a fixed-size texture.\"\"\"\n\n    def __init__(self, atlas_width, atlas_height):\n        self.atlas_width = atlas_width\n        self.atlas_height = atlas_height\n        self.cursor_x = 0\n        self.cursor_y = 0\n        self.shelf_height = 0\n        self.placements = {}\n\n    def place(self, bmp):\n        if self.cursor_x + bmp.width > self.atlas_width:\n            self._advance_row(bmp)\n\n        pos = (self.cursor_x, self.cursor_y)\n        self.placements[bmp.char] = pos\n        self.cursor_x += bmp.width\n        self.shelf_height = max(self.shelf_height, bmp.height)\n        return pos\n\n    def _advance_row(self, bmp):\n        self.cursor_y += self.shelf_height\n        self.cursor_x = 0\n        self.shelf_height = 0\n        if self.cursor_y + bmp.height > self.atlas_width:\n            raise ValueError(f\"atlas exhausted while placing {bmp.char!r}\")\n\n\ndef pack_glyphs(text, font_size, atlas_width=512, atlas_height=512):\n    \"\"\"Rasterize each unique character in text and pack it into a texture atlas.\"\"\"\n    atlas = ShelfAtlas(atlas_width, atlas_height)\n    layout = {}\n    seen = set()\n    for char in text:\n        if char in seen:\n            continue\n        seen.add(char)\n        bmp = _rasterize_glyph(char, font_size)\n        x, y = atlas.place(bmp)\n        layout[char] = {\n            \"x\": x,\n            \"y\": y,\n            \"width\": bmp.width,\n            \"height\": bmp.height,\n            \"advance\": bmp.advance,\n        }\n    return layout\n"
+    }
+  ],
+  "defect_keys": [
+    "width instead of height",
+    "wrong axis",
+    "horizontal instead of vertical",
+    "checks width not height",
+    "and bmp.height are vertical",
+    "overflow check compares",
+    "atlas_width instead of"
+  ],
+  "covariates": {
+    "locality_hops": 2,
+    "files_spanned": 1,
+    "distractor_count": 1,
+    "cue_directness": "none"
+  },
+  "size_bytes": 2404
+}

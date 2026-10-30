@@ -1,0 +1,19 @@
+{
+  "id": "clean-sf-04",
+  "item_class": "single_function",
+  "defect_class": "clean",
+  "files": [
+    {
+      "path": "archive_retention.py",
+      "content": "\"\"\"\nArchive retention policy engine.\n\nDetermines which archived records are eligible for permanent deletion\nbased on category-specific retention windows, a global minimum floor,\nand legal hold overrides.\n\"\"\"\n\nfrom dataclasses import dataclass\nfrom datetime import datetime, timedelta\nfrom typing import Iterable, List, Optional\n\n# No record may be purged before this many days, regardless of category\n# policy -- this is a compliance floor negotiated with legal, not a\n# suggested default, so it is always enforced on top of the category rule.\nMINIMUM_RETENTION_DAYS = 30\n\nDEFAULT_CATEGORY_RETENTION_DAYS = {\n    \"invoice\": 2555,        # 7 years\n    \"support_ticket\": 730,  # 2 years\n    \"audit_log\": 3650,      # 10 years\n    \"temp_export\": 14,\n}\n\n\n@dataclass(frozen=True)\nclass ArchiveRecord:\n    record_id: str\n    category: str\n    created_at: datetime\n    legal_hold: bool = False\n\n\ndef _retention_days_for(category: str, overrides: dict) -> int:\n    \"\"\"Look up the retention window for a category: caller-supplied\n    overrides win, then the built-in default table, then the global\n    floor for categories nobody has classified yet.\"\"\"\n    if category in overrides:\n        return overrides[category]\n    return DEFAULT_CATEGORY_RETENTION_DAYS.get(category, MINIMUM_RETENTION_DAYS)\n\n\ndef select_purge_candidates(\n    records: Iterable[ArchiveRecord],\n    as_of: datetime,\n    category_overrides: Optional[dict] = None,\n) -> List[str]:\n    \"\"\"\n    Return the record_ids of archive records eligible for permanent\n    deletion as of `as_of`.\n\n    A record is eligible when:\n      - it is not under legal hold, and\n      - its age (as_of - created_at) is greater than or equal to\n        max(category retention window, MINIMUM_RETENTION_DAYS)\n\n    `as_of` must be timezone-aware; naive datetimes raise ValueError so\n    callers can't accidentally compare against the wrong epoch. Records\n    are expected to carry timezone-aware `created_at` values, since\n    they originate from the same ingestion pipeline as `as_of`.\n    \"\"\"\n    if as_of.tzinfo is None:\n        raise ValueError(\"as_of must be timezone-aware\")\n\n    overrides = category_overrides or {}\n    candidates = []\n\n    for record in records:\n        if record.legal_hold:\n            continue\n\n        effective_days = max(\n            _retention_days_for(record.category, overrides),\n            MINIMUM_RETENTION_DAYS,\n        )\n        cutoff = record.created_at + timedelta(days=effective_days)\n\n        if cutoff <= as_of:\n            candidates.append(record.record_id)\n\n    return candidates\n"
+    }
+  ],
+  "defect_keys": [],
+  "covariates": {
+    "locality_hops": null,
+    "files_spanned": 1,
+    "distractor_count": 4,
+    "cue_directness": null
+  },
+  "size_bytes": 2565
+}

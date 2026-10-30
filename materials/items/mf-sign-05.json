@@ -1,0 +1,43 @@
+{
+  "id": "mf-sign-05",
+  "item_class": "multi_file",
+  "defect_class": "sign",
+  "files": [
+    {
+      "path": "sensors.py",
+      "content": "\"\"\"Sensor reading utilities for apiary telemetry nodes.\n\nEach hive is fitted with a load-cell scale, a brood-nest temperature\nprobe, and a capacitive humidity sensor. Nodes upload one sample per\nhour over LoRa; this module models the receiving side of that link.\n\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import Dict, Tuple\n\n# Reference temperature the calibration constants below were measured at.\nCALIBRATION_REFERENCE_TEMP_C = 25.0\n\n# Raw load-cell readings run this many kilograms high for every degree\n# Celsius the hive interior sits above the reference temperature, an\n# artifact of the strain gauge's thermal expansion. Calibration removes\n# that excess before any weight-based analysis runs.\nWEIGHT_THERMAL_COEFFICIENT_KG_PER_C = 0.015\n\n# Raw humidity readings run this many percentage points low for every\n# degree above the reference temperature, since the capacitive element's\n# output falls off as it warms. Calibration restores the true value.\nHUMIDITY_TEMP_COEFFICIENT_PCT_PER_C = 0.08\n\n\n@dataclass\nclass HiveSensorReading:\n    hive_id: str\n    timestamp: int  # unix seconds\n    weight_kg_raw: float\n    temp_c: float\n    humidity_pct_raw: float\n\n\n_TELEMETRY_LOG: Dict[Tuple[str, int], HiveSensorReading] = {}\n\n\ndef record_sample(reading: HiveSensorReading) -> None:\n    \"\"\"Store an uploaded sample, as if it had just arrived over LoRa.\"\"\"\n    _TELEMETRY_LOG[(reading.hive_id, reading.timestamp)] = reading\n\n\ndef read_hive_sample(hive_id: str, timestamp: int) -> HiveSensorReading:\n    \"\"\"Fetch the sample recorded for a hive at an exact timestamp.\"\"\"\n    key = (hive_id, timestamp)\n    if key not in _TELEMETRY_LOG:\n        raise KeyError(f\"no telemetry recorded for hive {hive_id} at {timestamp}\")\n    return _TELEMETRY_LOG[key]\n\n\ndef latest_sample_before(hive_id: str, timestamp: int) -> HiveSensorReading:\n    \"\"\"Fetch the most recent sample recorded at or before a timestamp.\"\"\"\n    candidates = [\n        reading\n        for (hid, ts), reading in _TELEMETRY_LOG.items()\n        if hid == hive_id and ts <= timestamp\n    ]\n    if not candidates:\n        raise KeyError(f\"no telemetry available for hive {hive_id} on or before {timestamp}\")\n    return max(candidates, key=lambda reading: reading.timestamp)\n"
+    },
+    {
+      "path": "calibration.py",
+      "content": "\"\"\"Calibration corrections for raw hive sensor readings.\n\nBoth the weight and humidity sensors drift with temperature. These\nfunctions remove that drift so the rest of the pipeline can work in\nphysical units without having to know about the underlying hardware.\n\"\"\"\n\nfrom sensors import (\n    CALIBRATION_REFERENCE_TEMP_C,\n    HUMIDITY_TEMP_COEFFICIENT_PCT_PER_C,\n    WEIGHT_THERMAL_COEFFICIENT_KG_PER_C,\n)\n\n\ndef corrected_weight(raw_weight_kg: float, temp_c: float) -> float:\n    \"\"\"Apply the load-cell's temperature calibration to a raw reading.\"\"\"\n    drift = WEIGHT_THERMAL_COEFFICIENT_KG_PER_C * (temp_c - CALIBRATION_REFERENCE_TEMP_C)\n    return raw_weight_kg + drift\n\n\ndef corrected_humidity(raw_humidity_pct: float, temp_c: float) -> float:\n    \"\"\"Apply the humidity sensor's temperature calibration to a raw reading.\"\"\"\n    suppression = HUMIDITY_TEMP_COEFFICIENT_PCT_PER_C * (temp_c - CALIBRATION_REFERENCE_TEMP_C)\n    corrected = raw_humidity_pct + suppression\n    return max(0.0, min(100.0, corrected))\n"
+    },
+    {
+      "path": "weight_analysis.py",
+      "content": "\"\"\"Derive nectar flow and honey-harvest metrics from corrected hive weight.\"\"\"\n\nfrom calibration import corrected_weight\nfrom sensors import latest_sample_before, read_hive_sample\n\nHIVE_TARE_WEIGHT_KG = {\n    \"apiary-1-hive-a\": 18.5,\n    \"apiary-1-hive-b\": 19.0,\n}\n\nMINIMUM_OVERWINTER_RESERVE_KG = 15.0\n\n\ndef compute_net_weight_change(hive_id: str, start_ts: int, end_ts: int) -> float:\n    \"\"\"Return the corrected weight change between two exact samples, in kg.\"\"\"\n    start_reading = read_hive_sample(hive_id, start_ts)\n    end_reading = read_hive_sample(hive_id, end_ts)\n    start_weight = corrected_weight(start_reading.weight_kg_raw, start_reading.temp_c)\n    end_weight = corrected_weight(end_reading.weight_kg_raw, end_reading.temp_c)\n    return end_weight - start_weight\n\n\ndef compute_nectar_flow_rate(hive_id: str, start_ts: int, end_ts: int) -> float:\n    \"\"\"Return the average rate of weight gain over a window, in g/hour.\"\"\"\n    elapsed_hours = (end_ts - start_ts) / 3600\n    if elapsed_hours <= 0:\n        raise ValueError(\"end_ts must be after start_ts\")\n    weight_change_kg = compute_net_weight_change(hive_id, start_ts, end_ts)\n    return (weight_change_kg * 1000) / elapsed_hours\n\n\ndef estimate_harvestable_honey(hive_id: str, timestamp: int) -> float:\n    \"\"\"Return how much honey, in kg, can safely be pulled from a hive.\"\"\"\n    reading = latest_sample_before(hive_id, timestamp)\n    total_weight = corrected_weight(reading.weight_kg_raw, reading.temp_c)\n    tare = HIVE_TARE_WEIGHT_KG.get(hive_id, 18.5)\n    stores_weight = total_weight - tare\n    harvestable = stores_weight - MINIMUM_OVERWINTER_RESERVE_KG\n    return max(0.0, harvestable)\n"
+    },
+    {
+      "path": "alerts.py",
+      "content": "\"\"\"Threshold checks that turn hive metrics into actionable alerts.\"\"\"\n\nfrom sensors import latest_sample_before\nfrom weight_analysis import compute_nectar_flow_rate, estimate_harvestable_honey\n\nSWARM_LOSS_THRESHOLD_KG = 1.2\nHARVEST_THRESHOLD_KG = 8.0\nCOLD_STRESS_THRESHOLD_C = 8.0\nSWARM_WINDOW_SECONDS = 48 * 3600\n\n\ndef evaluate_alerts(hive_id: str, now_ts: int) -> list:\n    \"\"\"Run every threshold check for a hive and return triggered alerts.\"\"\"\n    alerts = []\n\n    flow_rate_1h = compute_nectar_flow_rate(hive_id, now_ts - 3600, now_ts)\n    if flow_rate_1h < -50.0:\n        alerts.append(f\"{hive_id}: sustained weight loss, check for robbing\")\n\n    flow_rate_48h = compute_nectar_flow_rate(hive_id, now_ts - SWARM_WINDOW_SECONDS, now_ts)\n    weight_change_48h_kg = (flow_rate_48h * (SWARM_WINDOW_SECONDS / 3600)) / 1000\n    if weight_change_48h_kg < -SWARM_LOSS_THRESHOLD_KG:\n        alerts.append(\n            f\"{hive_id}: possible swarm event, weight dropped {abs(weight_change_48h_kg):.2f} kg\"\n        )\n\n    harvestable = estimate_harvestable_honey(hive_id, now_ts)\n    if harvestable > HARVEST_THRESHOLD_KG:\n        alerts.append(f\"{hive_id}: {harvestable:.1f} kg of honey ready to harvest\")\n\n    reading = latest_sample_before(hive_id, now_ts)\n    if reading.temp_c < COLD_STRESS_THRESHOLD_C:\n        alerts.append(f\"{hive_id}: brood nest temperature low ({reading.temp_c:.1f} C)\")\n\n    return alerts\n"
+    },
+    {
+      "path": "monitor.py",
+      "content": "\"\"\"Entry point for a single apiary monitoring cycle.\"\"\"\n\nfrom alerts import evaluate_alerts\nfrom sensors import HiveSensorReading, record_sample\n\n\ndef seed_demo_telemetry() -> None:\n    record_sample(HiveSensorReading(\"apiary-1-hive-a\", 1_699_827_200, 40.1, 18.0, 60.0))\n    record_sample(HiveSensorReading(\"apiary-1-hive-a\", 1_700_000_000, 42.0, 24.0, 55.0))\n    record_sample(HiveSensorReading(\"apiary-1-hive-a\", 1_700_003_600, 42.6, 27.5, 54.0))\n\n\ndef run_monitoring_cycle(hive_id: str, now_ts: int) -> dict:\n    \"\"\"Evaluate all alert conditions for a hive at the given time.\"\"\"\n    triggered_alerts = evaluate_alerts(hive_id, now_ts)\n    return {\"hive_id\": hive_id, \"checked_at\": now_ts, \"alerts\": triggered_alerts}\n\n\nif __name__ == \"__main__\":\n    seed_demo_telemetry()\n    report = run_monitoring_cycle(\"apiary-1-hive-a\", 1_700_003_600)\n    print(report)\n"
+    }
+  ],
+  "defect_keys": [
+    "be subtracted",
+    "added instead of subtracted",
+    "wrong sign",
+    "amplifies the drift",
+    "code adds it instead",
+    "instead of subtracting it",
+    "the corrected_weight function adds"
+  ],
+  "covariates": {
+    "locality_hops": 4,
+    "files_spanned": 5,
+    "distractor_count": 3,
+    "cue_directness": "indirect"
+  },
+  "size_bytes": 7185
+}

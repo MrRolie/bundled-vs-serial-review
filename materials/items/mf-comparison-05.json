@@ -1,0 +1,39 @@
+{
+  "id": "mf-comparison-05",
+  "item_class": "multi_file",
+  "defect_class": "comparison",
+  "files": [
+    {
+      "path": "loom.py",
+      "content": "\"\"\"Core data structures for describing a loom and the yarns it carries.\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import Dict, List, Set\n\n\n@dataclass\nclass Yarn:\n    name: str\n    material: str\n    diameter_mm: float\n    max_float_run: int\n    sett_epi: float\n\n\n@dataclass\nclass YarnSet:\n    warp_yarn: Yarn\n    weft_yarn: Yarn\n\n\n@dataclass\nclass Loom:\n    shaft_count: int\n    treadle_count: int\n    threading: List[int]\n    tieup: Dict[int, Set[int]]\n    treadling: List[int]\n\n    @property\n    def end_count(self) -> int:\n        return len(self.threading)\n\n    @property\n    def pick_count(self) -> int:\n        return len(self.treadling)\n"
+    },
+    {
+      "path": "weave.py",
+      "content": "\"\"\"Turns a loom's threading / tie-up / treadling into an interlacement grid.\"\"\"\n\nfrom loom import Loom\n\n\ndef build_interlacement_grid(loom: Loom):\n    \"\"\"Return a pick-by-end grid. True means the warp end is raised at that pick.\"\"\"\n    grid = []\n    for pick_index in range(loom.pick_count):\n        treadle = loom.treadling[pick_index]\n        raised_shafts = loom.tieup.get(treadle, set())\n        row = []\n        for end_index in range(loom.end_count):\n            shaft = loom.threading[end_index]\n            row.append(shaft in raised_shafts)\n        grid.append(row)\n    return grid\n"
+    },
+    {
+      "path": "floats.py",
+      "content": "\"\"\"Float-length checks for a woven structure.\n\nA float is a place where one thread system skips over several picks or ends\nwithout interlacing. Long floats snag in use, so each yarn carries its own\ntolerance and a draft is checked against it before it goes to the loom.\n\"\"\"\n\nfrom typing import List\n\nfrom loom import YarnSet\n\n\ndef find_max_float_run(cells: List[bool], target: bool) -> int:\n    \"\"\"Longest run of `target` within a single row or column of the grid.\"\"\"\n    longest = 0\n    current = 0\n    for cell in cells:\n        if cell == target:\n            current += 1\n            longest = max(longest, current)\n        else:\n            current = 0\n    return longest\n\n\ndef _column(grid, index):\n    return [row[index] for row in grid]\n\n\ndef warp_float_limit(yarn_set: YarnSet) -> int:\n    \"\"\"Longest run of raised warp the fabric can tolerate before it snags.\"\"\"\n    return yarn_set.weft_yarn.max_float_run\n\n\ndef weft_float_limit(yarn_set: YarnSet) -> int:\n    \"\"\"Longest run of raised weft the fabric can tolerate before it snags.\"\"\"\n    return yarn_set.weft_yarn.max_float_run\n\n\ndef check_float_limits(grid, yarn_set: YarnSet):\n    warnings = []\n    end_count = len(grid[0]) if grid else 0\n\n    warp_limit = warp_float_limit(yarn_set)\n    for end_index in range(end_count):\n        run = find_max_float_run(_column(grid, end_index), target=True)\n        if run > warp_limit:\n            warnings.append(\n                f\"warp float of {run} picks too long at end {end_index} \"\n                f\"(limit {warp_limit})\"\n            )\n\n    weft_limit = weft_float_limit(yarn_set)\n    for pick_index, row in enumerate(grid):\n        run = find_max_float_run(row, target=False)\n        if run > weft_limit:\n            warnings.append(\n                f\"weft float of {run} ends too long at pick {pick_index} \"\n                f\"(limit {weft_limit})\"\n            )\n\n    return warnings\n"
+    },
+    {
+      "path": "pattern.py",
+      "content": "\"\"\"High level workflow for evaluating a threading / treadling draft.\"\"\"\n\nfrom loom import Loom, YarnSet\nfrom weave import build_interlacement_grid\nfrom floats import check_float_limits\n\n\ndef run_structural_checks(grid, yarn_set: YarnSet):\n    return check_float_limits(grid, yarn_set)\n\n\ndef evaluate_draft(loom: Loom, yarn_set: YarnSet):\n    grid = build_interlacement_grid(loom)\n    warnings = run_structural_checks(grid, yarn_set)\n    return {\n        \"ends\": loom.end_count,\n        \"picks\": loom.pick_count,\n        \"warnings\": warnings,\n    }\n"
+    },
+    {
+      "path": "main.py",
+      "content": "\"\"\"Command line entry point: check a sample twill draft for float risk.\"\"\"\n\nfrom loom import Loom, Yarn, YarnSet\nfrom pattern import evaluate_draft\n\n\ndef build_sample_loom() -> Loom:\n    # 4-shaft straight draw threading repeated across 16 ends\n    threading = [i % 4 for i in range(16)]\n\n    tieup = {\n        0: {0, 1},\n        1: {1, 2},\n        2: {2, 3},\n        3: {3, 0},\n    }\n\n    # 2/2 twill treadling, walked across 16 picks\n    treadling = [i % 4 for i in range(16)]\n\n    return Loom(\n        shaft_count=4,\n        treadle_count=4,\n        threading=threading,\n        tieup=tieup,\n        treadling=treadling,\n    )\n\n\ndef build_sample_yarns() -> YarnSet:\n    warp_yarn = Yarn(\n        name=\"8/2 cotton\",\n        material=\"cotton\",\n        diameter_mm=0.4,\n        max_float_run=5,\n        sett_epi=20,\n    )\n    weft_yarn = Yarn(\n        name=\"mercerized cotton boucle\",\n        material=\"cotton\",\n        diameter_mm=0.9,\n        max_float_run=3,\n        sett_epi=20,\n    )\n    return YarnSet(warp_yarn=warp_yarn, weft_yarn=weft_yarn)\n\n\ndef main():\n    loom = build_sample_loom()\n    yarn_set = build_sample_yarns()\n    report = evaluate_draft(loom, yarn_set)\n\n    print(f\"draft: {report['ends']} ends x {report['picks']} picks\")\n    if report[\"warnings\"]:\n        print(\"float warnings:\")\n        for warning in report[\"warnings\"]:\n            print(f\"  - {warning}\")\n    else:\n        print(\"no float warnings\")\n\n\nif __name__ == \"__main__\":\n    main()\n"
+    }
+  ],
+  "defect_keys": [
+    "warp yarn",
+    "weft yarn",
+    "wrong yarn's limit"
+  ],
+  "covariates": {
+    "locality_hops": 4,
+    "files_spanned": 5,
+    "distractor_count": 1,
+    "cue_directness": "indirect"
+  },
+  "size_bytes": 5151
+}

@@ -1,0 +1,25 @@
+{
+  "id": "sf-sign-01",
+  "item_class": "single_function",
+  "defect_class": "sign",
+  "files": [
+    {
+      "path": "warehouse.py",
+      "content": "\"\"\"Utilities for replaying a warehouse shipment log against stock levels.\"\"\"\n\nfrom typing import Dict, List, Tuple\n\nLOW_STOCK_THRESHOLD = 10\n\n\ndef apply_event(stock: int, event: Dict) -> int:\n    \"\"\"Apply a single log entry and return the resulting stock level.\"\"\"\n    kind = event[\"type\"]\n    qty = event[\"qty\"]\n\n    if kind == \"ship\":\n        # Units leaving the warehouse to fulfill a customer order.\n        return stock + qty\n    if kind == \"return\":\n        # A customer sent an item back; it goes back onto the shelf.\n        return stock + qty\n    if kind == \"recount\":\n        # A physical count supersedes the running total entirely.\n        return qty\n\n    raise ValueError(f\"unknown event type: {kind}\")\n\n\ndef process_shipment_log(\n    initial_stock: int, events: List[Dict]\n) -> Tuple[int, List[int]]:\n    \"\"\"Replay a sequence of shipment events against a starting stock level.\n\n    Returns the final stock level and a per-event running total that can be\n    used to audit exactly when the count changed and by how much.\n    \"\"\"\n    stock = initial_stock\n    history = []\n    for event in events:\n        stock = apply_event(stock, event)\n        history.append(stock)\n    return stock, history\n\n\ndef low_stock_alerts(history: List[int]) -> List[int]:\n    \"\"\"Return the indices in the history where stock dipped below threshold.\"\"\"\n    return [i for i, level in enumerate(history) if level < LOW_STOCK_THRESHOLD]\n"
+    }
+  ],
+  "defect_keys": [
+    "wrong direction",
+    "instead of subtracting",
+    "adds to stock",
+    "sign error",
+    "should decrease"
+  ],
+  "covariates": {
+    "locality_hops": 1,
+    "files_spanned": 1,
+    "distractor_count": 2,
+    "cue_directness": "indirect"
+  },
+  "size_bytes": 1426
+}

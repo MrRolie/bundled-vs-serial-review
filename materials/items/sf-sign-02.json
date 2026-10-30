@@ -1,0 +1,28 @@
+{
+  "id": "sf-sign-02",
+  "item_class": "single_function",
+  "defect_class": "sign",
+  "files": [
+    {
+      "path": "transcode_plan.py",
+      "content": "\"\"\"Planning pass for the podcast transcoding pipeline.\n\nBefore an episode is handed to the encoder subprocess, we need to work out\nhow much gain to apply so the mix lands on the network's loudness target,\nwhere the chapter markers fall once the dead air at the edges is trimmed,\nand what bitrate keeps the file inside the CDN's per-minute size budget.\n\"\"\"\n\nimport math\nfrom dataclasses import dataclass\nfrom typing import List, Tuple\n\nTARGET_LUFS = -16.0\nTRUE_PEAK_CEILING_DB = -1.0\nMIN_BITRATE_KBPS = 64\nMAX_BITRATE_KBPS = 192\nREFERENCE_DURATION_MIN = 45.0\nBITRATE_STEP_PER_MIN = 1.5\nLRA_BASELINE = 8.0\n\n\n@dataclass\nclass LoudnessReport:\n    integrated_lufs: float\n    true_peak_dbfs: float\n    lra: float\n\n\ndef plan_transcode(\n    report: LoudnessReport,\n    chapters: List[Tuple[str, float]],\n    trim_start_s: float,\n    trim_end_s: float,\n    raw_duration_s: float,\n) -> dict:\n    \"\"\"Work out the gain, chapter offsets, and bitrate for one episode.\n\n    Assumes chapters are given as (title, start_seconds) pairs measured\n    against the untrimmed recording.\n    \"\"\"\n    trimmed_duration_s = raw_duration_s - trim_start_s - trim_end_s\n\n    gain_db = report.integrated_lufs - TARGET_LUFS\n\n    peak_after_gain = report.true_peak_dbfs + gain_db\n    if peak_after_gain > TRUE_PEAK_CEILING_DB:\n        gain_db = TRUE_PEAK_CEILING_DB - report.true_peak_dbfs\n\n    shifted_chapters = [\n        (title, start - trim_start_s)\n        for title, start in chapters\n        if start - trim_start_s >= 0\n    ]\n\n    extra_minutes = max(0.0, trimmed_duration_s / 60.0 - REFERENCE_DURATION_MIN)\n    bitrate_kbps = MAX_BITRATE_KBPS - extra_minutes * BITRATE_STEP_PER_MIN\n    bitrate_kbps = max(MIN_BITRATE_KBPS, min(MAX_BITRATE_KBPS, bitrate_kbps))\n\n    lra_headroom = report.lra - LRA_BASELINE\n    compressor_ratio = 1.0 + max(0.0, lra_headroom) / 10.0\n\n    gain_factor = 10 ** (gain_db / 20.0)\n\n    return {\n        \"gain_db\": round(gain_db, 2),\n        \"gain_factor\": round(gain_factor, 4),\n        \"bitrate_kbps\": int(round(bitrate_kbps)),\n        \"compressor_ratio\": round(compressor_ratio, 2),\n        \"trimmed_duration_s\": round(trimmed_duration_s, 2),\n        \"chapters\": shifted_chapters,\n    }\n\n\ndef describe_plan(plan: dict) -> str:\n    return (\n        f\"gain {plan['gain_db']:+.2f} dB, \"\n        f\"bitrate {plan['bitrate_kbps']} kbps, \"\n        f\"ratio {plan['compressor_ratio']}x, \"\n        f\"{len(plan['chapters'])} chapters kept\"\n    )\n"
+    }
+  ],
+  "defect_keys": [
+    "terms are reversed",
+    "target minus measured",
+    "flips the direction",
+    "away from -16 lufs",
+    "the sign",
+    "the gain calculation",
+    "calculation is inverted",
+    "negative gain"
+  ],
+  "covariates": {
+    "locality_hops": 0,
+    "files_spanned": 1,
+    "distractor_count": 5,
+    "cue_directness": "direct"
+  },
+  "size_bytes": 2439
+}

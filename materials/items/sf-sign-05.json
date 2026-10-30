@@ -1,0 +1,27 @@
+{
+  "id": "sf-sign-05",
+  "item_class": "single_function",
+  "defect_class": "sign",
+  "files": [
+    {
+      "path": "calorie_budget.py",
+      "content": "\"\"\"Daily calorie budget tracker for the nutrition log.\"\"\"\n\nfrom dataclasses import dataclass\n\n\n@dataclass\nclass DailyLog:\n    date: str\n    goal_calories: float\n    consumed_calories: float\n    exercise_calories: float\n\n\ndef compute_todays_allowance(today: DailyLog, yesterday: DailyLog) -> float:\n    \"\"\"\n    Calculate how many calories the user may still eat today, factoring\n    in exercise burned and any balance banked from yesterday's under- or\n    over-eating (finishing under goal should give extra room today;\n    finishing over goal should tighten it).\n    \"\"\"\n    allowance = today.goal_calories - today.consumed_calories\n    allowance += today.exercise_calories\n\n    yesterday_balance = yesterday.goal_calories - yesterday.consumed_calories\n    allowance -= yesterday_balance\n\n    return round(allowance, 1)\n\n\ndef summarize_macros(protein_g: float, fat_g: float, carb_g: float) -> dict:\n    \"\"\"Break down calories from macronutrient grams logged for the day.\"\"\"\n    protein_cal = protein_g * 4\n    fat_cal = fat_g * 9\n    carb_cal = carb_g * 4\n    total = protein_cal + fat_cal + carb_cal\n    return {\n        \"protein_calories\": protein_cal,\n        \"fat_calories\": fat_cal,\n        \"carb_calories\": carb_cal,\n        \"total_calories\": total,\n    }\n\n\ndef flag_if_allowance_exhausted(allowance: float) -> bool:\n    \"\"\"Return True once the remaining allowance has been fully used up.\"\"\"\n    return allowance <= 0\n"
+    }
+  ],
+  "defect_keys": [
+    "wrong direction",
+    "sign error",
+    "should be added",
+    "carryover sign",
+    "negative balance",
+    "allowance instead of",
+    "is positive"
+  ],
+  "covariates": {
+    "locality_hops": 0,
+    "files_spanned": 1,
+    "distractor_count": 1,
+    "cue_directness": "direct"
+  },
+  "size_bytes": 1424
+}

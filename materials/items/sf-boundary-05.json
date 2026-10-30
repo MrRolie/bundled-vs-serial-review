@@ -1,0 +1,27 @@
+{
+  "id": "sf-boundary-05",
+  "item_class": "single_function",
+  "defect_class": "boundary",
+  "files": [
+    {
+      "path": "telemetry_events.py",
+      "content": "\"\"\"Utilities for flagging sustained over-temperature events in cold-chain sensor logs.\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import List\n\n\n@dataclass\nclass Reading:\n    timestamp: float  # seconds since epoch\n    temperature_c: float\n\n\ndef moving_average(values: List[float], span: int) -> List[float]:\n    \"\"\"Return a trailing moving average with the given span.\"\"\"\n    averages = []\n    for i in range(len(values)):\n        start = max(0, i - span + 1)\n        window = values[start:i + 1]\n        averages.append(sum(window) / len(window))\n    return averages\n\n\ndef is_out_of_range(temp_c: float, low_c: float, high_c: float) -> bool:\n    \"\"\"Return True if temp_c falls outside the inclusive [low_c, high_c] band.\"\"\"\n    return temp_c < low_c or temp_c > high_c\n\n\ndef find_sustained_overheat_events(readings: List[Reading], interval_s: float,\n                                    min_duration_s: float, threshold_c: float) -> List[Reading]:\n    \"\"\"\n    Scan a chronologically ordered, evenly spaced sensor log and return the\n    reading that opens each stretch during which the temperature stayed at\n    or above threshold_c for at least min_duration_s.\n    \"\"\"\n    if not readings:\n        return []\n\n    span = int(min_duration_s // interval_s)\n    if span <= 0:\n        return []\n\n    starts = []\n    n = len(readings)\n    for i in range(n - span + 1):\n        window = readings[i:i + span]\n        if all(r.temperature_c >= threshold_c for r in window):\n            starts.append(readings[i])\n    return starts\n"
+    }
+  ],
+  "defect_keys": [
+    "one sample short",
+    "off by one",
+    "fencepost error",
+    "intervals not samples",
+    "the span calculation",
+    "computes span",
+    "interval_s=10"
+  ],
+  "covariates": {
+    "locality_hops": 0,
+    "files_spanned": 1,
+    "distractor_count": 3,
+    "cue_directness": "direct"
+  },
+  "size_bytes": 1529
+}

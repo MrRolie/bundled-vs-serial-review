@@ -1,0 +1,33 @@
+{
+  "id": "mf-sign-03",
+  "item_class": "multi_file",
+  "defect_class": "sign",
+  "files": [
+    {
+      "path": "fleet.py",
+      "content": "\"\"\"Vehicle state tracking for waste collection trucks.\"\"\"\n\nDIESEL_DENSITY_KG_PER_L = 0.85\n\n\nclass FleetTruck:\n    \"\"\"Holds mutable weight and fuel state for one collection truck.\"\"\"\n\n    def __init__(self, truck_id, curb_weight_kg, fuel_liters):\n        self.truck_id = truck_id\n        self.curb_weight_kg = curb_weight_kg\n        self.fuel_liters = fuel_liters\n        self.payload_kg = 0.0\n        self.gross_weight_kg = curb_weight_kg + fuel_liters * DIESEL_DENSITY_KG_PER_L\n\n    def consume_fuel(self, liters):\n        if liters > self.fuel_liters:\n            liters = self.fuel_liters\n        burned_weight_kg = liters * DIESEL_DENSITY_KG_PER_L\n        self.fuel_liters -= liters\n        self.gross_weight_kg += burned_weight_kg\n        return burned_weight_kg\n\n    def add_payload(self, kg):\n        self.payload_kg += kg\n        self.gross_weight_kg += kg\n\n    def compact_load(self, ratio):\n        \"\"\"Runs the packer blade; drained leachate leaves the truck.\"\"\"\n        reclaimed_kg = self.payload_kg * (1 - ratio)\n        self.payload_kg *= ratio\n        self.gross_weight_kg -= reclaimed_kg\n        return reclaimed_kg\n"
+    },
+    {
+      "path": "routing.py",
+      "content": "\"\"\"Route simulation: fuel burn between stops and pickup weight accrual.\"\"\"\n\nFUEL_BURN_RATE_L_PER_KM = 0.38\nCOMPACTION_RATIO = 0.65\n\nAVG_BIN_FILL_FRACTION = {\n    \"empty\": 0.1,\n    \"half\": 0.5,\n    \"full\": 0.9,\n    \"overflow\": 1.15,\n}\n\nBIN_CAPACITY_KG = {\n    \"residential\": 45,\n    \"commercial\": 240,\n    \"dumpster\": 900,\n}\n\n\ndef build_route(truck, stops):\n    leg_log = []\n    for stop in stops:\n        distance_km = stop[\"distance_from_prev_km\"]\n        truck.consume_fuel(distance_km * FUEL_BURN_RATE_L_PER_KM)\n\n        pickup_kg = estimate_pickup_weight(stop)\n        truck.add_payload(pickup_kg)\n\n        if stop.get(\"compactable\", True):\n            truck.compact_load(COMPACTION_RATIO)\n\n        leg_log.append({\n            \"stop_id\": stop[\"stop_id\"],\n            \"pickup_kg\": pickup_kg,\n            \"gross_weight_kg\": truck.gross_weight_kg,\n            \"fuel_liters\": truck.fuel_liters,\n        })\n    return leg_log\n\n\ndef estimate_pickup_weight(stop):\n    fill_fraction = AVG_BIN_FILL_FRACTION[stop[\"fill_level\"]]\n    capacity_kg = BIN_CAPACITY_KG[stop[\"bin_type\"]]\n    return round(fill_fraction * capacity_kg, 1)\n"
+    },
+    {
+      "path": "dispatch.py",
+      "content": "\"\"\"Daily route planning and weight-compliance check for the collection fleet.\"\"\"\n\nfrom fleet import FleetTruck\nfrom routing import build_route\n\nROAD_WEIGHT_LIMIT_KG = 11500\n\n\ndef plan_daily_route(stops, truck_id=\"T-14\"):\n    truck = FleetTruck(truck_id=truck_id, curb_weight_kg=6800, fuel_liters=180)\n    leg_log = build_route(truck, stops)\n\n    overweight_legs = [\n        leg for leg in leg_log if leg[\"gross_weight_kg\"] > ROAD_WEIGHT_LIMIT_KG\n    ]\n    if overweight_legs:\n        return {\n            \"truck_id\": truck_id,\n            \"status\": \"reroute_required\",\n            \"flagged_legs\": overweight_legs,\n        }\n    return {\"truck_id\": truck_id, \"status\": \"cleared\", \"flagged_legs\": []}\n\n\ndef summarize_route(result):\n    if result[\"status\"] == \"cleared\":\n        return f\"Truck {result['truck_id']} cleared all legs under the bridge weight limit.\"\n    flagged = \", \".join(str(leg[\"stop_id\"]) for leg in result[\"flagged_legs\"])\n    return f\"Truck {result['truck_id']} needs reroute -- overweight near stops: {flagged}\"\n"
+    }
+  ],
+  "defect_keys": [
+    "fuel weight",
+    "subtract",
+    "gross weight",
+    "burned fuel",
+    "make the truck lighter"
+  ],
+  "covariates": {
+    "locality_hops": 2,
+    "files_spanned": 3,
+    "distractor_count": 1,
+    "cue_directness": "none"
+  },
+  "size_bytes": 3288
+}

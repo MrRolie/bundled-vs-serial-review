@@ -1,0 +1,25 @@
+{
+  "id": "sf-units-01",
+  "item_class": "single_function",
+  "defect_class": "units",
+  "files": [
+    {
+      "path": "worker_health.py",
+      "content": "\"\"\"Utilities for monitoring background worker heartbeats.\"\"\"\n\nimport time\n\n\ndef seconds_since(timestamp):\n    \"\"\"Return the number of seconds elapsed since the given unix timestamp.\"\"\"\n    return time.time() - timestamp\n\n\ndef grace_period_seconds(grace_minutes):\n    \"\"\"Convert a startup grace period expressed in minutes to seconds.\"\"\"\n    return grace_minutes * 60\n\n\ndef find_stale_workers(workers, timeout_ms=30000, grace_minutes=2):\n    \"\"\"Return the names of workers that haven't reported a heartbeat\n    within the configured timeout window.\n\n    Each worker dict is expected to have 'name', 'last_heartbeat'\n    (a unix timestamp), and optionally 'started_at' (a unix timestamp\n    marking when the worker process began). Workers still inside their\n    startup grace period are skipped so freshly launched workers aren't\n    flagged before they've had a chance to send their first heartbeat.\n    \"\"\"\n    stale = []\n    grace = grace_period_seconds(grace_minutes)\n\n    for worker in workers:\n        if \"started_at\" in worker:\n            uptime = seconds_since(worker[\"started_at\"])\n            if uptime < grace:\n                continue\n\n        elapsed = seconds_since(worker[\"last_heartbeat\"])\n        if elapsed > timeout_ms:\n            stale.append(worker[\"name\"])\n\n    return stale\n\n\ndef summarize_worker_pool(workers, timeout_ms=30000, grace_minutes=2):\n    \"\"\"Build a small report describing the health of a worker pool.\"\"\"\n    stale_names = find_stale_workers(workers, timeout_ms=timeout_ms, grace_minutes=grace_minutes)\n    total = len(workers)\n    healthy = total - len(stale_names)\n\n    return {\n        \"total_workers\": total,\n        \"healthy_workers\": healthy,\n        \"stale_workers\": stale_names,\n    }\n"
+    }
+  ],
+  "defect_keys": [
+    "milliseconds",
+    "seconds vs milliseconds",
+    "unit conversion",
+    "off by 1000",
+    "directly"
+  ],
+  "covariates": {
+    "locality_hops": 1,
+    "files_spanned": 1,
+    "distractor_count": 1,
+    "cue_directness": "direct"
+  },
+  "size_bytes": 1729
+}

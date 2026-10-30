@@ -1,0 +1,24 @@
+{
+  "id": "sf-comparison-05",
+  "item_class": "single_function",
+  "defect_class": "comparison",
+  "files": [
+    {
+      "path": "weighbridge.py",
+      "content": "\"\"\"Weighbridge compliance checks for outbound cargo trucks.\"\"\"\n\nFEDERAL_GROSS_LIMIT = 80000\nFEDERAL_STEER_AXLE_LIMIT = 12000\nFEDERAL_DRIVE_AXLE_LIMIT = 34000\nSCALE_TOLERANCE = 400\n\n\ndef evaluate_weighbridge_reading(\n    gross_weight,\n    tare_weight,\n    steer_axle_weight,\n    drive_axle_weight,\n    max_payload=45000,\n):\n    \"\"\"Check a completed weighbridge reading against the gross, axle, and\n    payload limits and return the list of any limits the load exceeds.\n\n    gross_weight and tare_weight come straight off the scale ticket in\n    pounds; steer_axle_weight and drive_axle_weight are the individual\n    axle-group readings taken during the same pass.\n    \"\"\"\n    net_weight = gross_weight - tare_weight\n    violations = []\n\n    # Scale readings drift a little between calibrations, so give the\n    # gross and payload checks some slack before flagging a violation.\n    if gross_weight > FEDERAL_GROSS_LIMIT + SCALE_TOLERANCE:\n        violations.append(\"gross_overweight\")\n\n    if net_weight > max_payload + SCALE_TOLERANCE:\n        violations.append(\"payload_overweight\")\n\n    if steer_axle_weight > FEDERAL_DRIVE_AXLE_LIMIT:\n        violations.append(\"steer_axle_overweight\")\n\n    if drive_axle_weight > FEDERAL_STEER_AXLE_LIMIT:\n        violations.append(\"drive_axle_overweight\")\n\n    return {\n        \"net_weight\": net_weight,\n        \"violations\": violations,\n        \"cleared\": len(violations) == 0,\n    }\n"
+    }
+  ],
+  "defect_keys": [
+    "axle limit",
+    "steer axle",
+    "drive axle",
+    "cross-wired"
+  ],
+  "covariates": {
+    "locality_hops": 0,
+    "files_spanned": 1,
+    "distractor_count": 2,
+    "cue_directness": "direct"
+  },
+  "size_bytes": 1423
+}

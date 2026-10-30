@@ -1,0 +1,43 @@
+{
+  "id": "mf-units-05",
+  "item_class": "multi_file",
+  "defect_class": "units",
+  "files": [
+    {
+      "path": "orchard.py",
+      "content": "\"\"\"Data model for orchard blocks and trees.\"\"\"\n\nfrom dataclasses import dataclass, field\nfrom typing import List\n\nHECTARES_PER_ACRE = 0.404686\n\n\n@dataclass\nclass Block:\n    name: str\n    variety: str\n    tree_count: int\n    area_acres: float\n    capacitance_raw: float\n    watermark_raw: float\n    avg_fruit_mass_g: float\n\n    @property\n    def area_hectares(self) -> float:\n        return self.area_acres * HECTARES_PER_ACRE\n\n\n@dataclass\nclass Orchard:\n    name: str\n    blocks: List[Block] = field(default_factory=list)\n\n    def total_trees(self) -> int:\n        return sum(b.tree_count for b in self.blocks)\n"
+    },
+    {
+      "path": "sensors.py",
+      "content": "\"\"\"Soil moisture sensor readings and calibration for the orchard network.\"\"\"\n\nCAPACITANCE_SLOPE = 0.00042\nCAPACITANCE_OFFSET = -0.018\n\n\ndef read_capacitance_probe(raw_counts: float) -> float:\n    \"\"\"Convert a capacitance probe's raw ADC count into volumetric water\n    content, expressed as a fraction of soil volume (0.0 to 1.0).\"\"\"\n    vwc = raw_counts * CAPACITANCE_SLOPE + CAPACITANCE_OFFSET\n    return max(0.0, min(1.0, vwc))\n\n\ndef read_watermark_sensor(raw_centibars: float) -> float:\n    \"\"\"Convert a Watermark gypsum-block tension reading in centibars to\n    a percent of field capacity, using the manufacturer's calibration\n    curve for loam soils.\"\"\"\n    if raw_centibars <= 5:\n        return 100.0\n    if raw_centibars >= 200:\n        return 0.0\n    return 100.0 * (200 - raw_centibars) / 195\n"
+    },
+    {
+      "path": "yield_model.py",
+      "content": "\"\"\"Yield estimation model combining sensor data with per-tree fruit set.\"\"\"\n\nfrom orchard import Block\nfrom sensors import read_capacitance_probe, read_watermark_sensor\n\nWILTING_POINT = 0.30\nFIELD_CAPACITY = 0.45\n\nBASE_FRUIT_PER_TREE = {\n    \"gala\": 180,\n    \"fuji\": 160,\n    \"honeycrisp\": 140,\n}\n\n\ndef average_soil_moisture(block: Block) -> float:\n    \"\"\"Blend the two soil moisture sensors deployed in each block into\n    a single figure for use by the water stress model.\"\"\"\n    probe_value = read_capacitance_probe(block.capacitance_raw)\n    watermark_value = read_watermark_sensor(block.watermark_raw)\n    return (probe_value + watermark_value) / 2.0\n\n\ndef compute_water_stress_factor(block: Block) -> float:\n    \"\"\"Return a 0-1 multiplier where 1.0 means no water stress and 0.0\n    means the block is at or below the wilting point.\"\"\"\n    moisture = average_soil_moisture(block)\n    usable_range = FIELD_CAPACITY - WILTING_POINT\n    stress = (moisture - WILTING_POINT) / usable_range\n    return max(0.0, min(1.0, stress))\n\n\ndef estimate_block_yield(block: Block) -> float:\n    \"\"\"Estimate total harvestable fruit mass, in kilograms, for a block.\"\"\"\n    base_per_tree = BASE_FRUIT_PER_TREE.get(block.variety, 150)\n    stress_factor = compute_water_stress_factor(block)\n    fruit_count = base_per_tree * block.tree_count * stress_factor\n    total_mass_g = fruit_count * block.avg_fruit_mass_g\n    return total_mass_g / 1000.0\n"
+    },
+    {
+      "path": "report.py",
+      "content": "\"\"\"Generate human-readable yield reports for an orchard.\"\"\"\n\nfrom orchard import Orchard\nfrom yield_model import estimate_block_yield\n\nKG_PER_BIN = 400.0\n\n\ndef generate_orchard_report(orchard: Orchard) -> str:\n    lines = [f\"Yield report for {orchard.name}\"]\n    total_kg = 0.0\n    for block in orchard.blocks:\n        block_kg = estimate_block_yield(block)\n        total_kg += block_kg\n        bins_needed = block_kg / KG_PER_BIN\n        lines.append(\n            f\"  {block.name} ({block.variety}): {block_kg:.1f} kg \"\n            f\"(~{bins_needed:.1f} bins), {block.tree_count} trees\"\n        )\n    total_hectares = sum(b.area_hectares for b in orchard.blocks)\n    lines.append(f\"Total estimated yield: {total_kg:.1f} kg\")\n    lines.append(f\"Total planted area: {total_hectares:.2f} ha\")\n    return \"\\n\".join(lines)\n"
+    },
+    {
+      "path": "main.py",
+      "content": "\"\"\"Entry point: build a sample orchard and print its yield report.\"\"\"\n\nfrom orchard import Orchard, Block\nfrom report import generate_orchard_report\n\n\ndef build_sample_orchard() -> Orchard:\n    orchard = Orchard(name=\"Rivergate Orchard\")\n    orchard.blocks.append(\n        Block(\n            name=\"North Gala\",\n            variety=\"gala\",\n            tree_count=420,\n            area_acres=12.5,\n            capacitance_raw=850.0,\n            watermark_raw=60.0,\n            avg_fruit_mass_g=180.0,\n        )\n    )\n    orchard.blocks.append(\n        Block(\n            name=\"South Honeycrisp\",\n            variety=\"honeycrisp\",\n            tree_count=310,\n            area_acres=9.0,\n            capacitance_raw=790.0,\n            watermark_raw=95.0,\n            avg_fruit_mass_g=210.0,\n        )\n    )\n    return orchard\n\n\ndef main() -> None:\n    orchard = build_sample_orchard()\n    print(generate_orchard_report(orchard))\n\n\nif __name__ == \"__main__\":\n    main()\n"
+    }
+  ],
+  "defect_keys": [
+    "different scale",
+    "without conversion",
+    "mixed units",
+    "water stress calculation",
+    "directly produces",
+    "percentage",
+    "converting one to match"
+  ],
+  "covariates": {
+    "locality_hops": 4,
+    "files_spanned": 5,
+    "distractor_count": 4,
+    "cue_directness": "indirect"
+  },
+  "size_bytes": 4631
+}

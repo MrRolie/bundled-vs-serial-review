@@ -1,0 +1,40 @@
+{
+  "id": "mf-sign-02",
+  "item_class": "multi_file",
+  "defect_class": "sign",
+  "files": [
+    {
+      "path": "loan.py",
+      "content": "\"\"\"Loan configuration and payment calculation for the amortization tool.\"\"\"\n\nfrom dataclasses import dataclass\n\n\n@dataclass\nclass Loan:\n    principal: float\n    annual_rate: float\n    term_months: int\n    annual_tax: float = 0.0\n    annual_insurance: float = 0.0\n    extra_payment: float = 0.0\n\n    @property\n    def monthly_payment(self) -> float:\n        r = self.annual_rate / 12\n        n = self.term_months\n        if r == 0:\n            return self.principal / n\n        factor = (1 + r) ** n\n        return self.principal * r * factor / (factor - 1)\n"
+    },
+    {
+      "path": "interest.py",
+      "content": "\"\"\"Interest accrual and escrow account updates for a single period.\"\"\"\n\nfrom loan import Loan\n\n\ndef compute_interest(balance: float, annual_rate: float) -> float:\n    return balance * (annual_rate / 12)\n\n\ndef roll_balance(balance: float, principal_due: float, extra_paid: float) -> float:\n    return balance - principal_due - extra_paid\n\n\ndef apply_escrow(escrow_balance: float, loan: Loan, period: int):\n    deposit = (loan.annual_tax + loan.annual_insurance) / 12\n    escrow_balance += deposit\n\n    disbursed = 0.0\n    if period % 6 == 0:\n        disbursed = (loan.annual_tax + loan.annual_insurance) / 2\n        escrow_balance = _settle_disbursement(escrow_balance, disbursed)\n\n    return escrow_balance, disbursed\n\n\ndef _settle_disbursement(escrow_balance: float, disbursed: float) -> float:\n    return escrow_balance + disbursed\n"
+    },
+    {
+      "path": "payment.py",
+      "content": "\"\"\"Applies one month's payment to the loan and updates the escrow account.\"\"\"\n\nfrom dataclasses import dataclass\n\nimport interest\nfrom loan import Loan\n\n\n@dataclass\nclass PeriodState:\n    period: int\n    balance: float\n    escrow_balance: float\n\n\n@dataclass\nclass PeriodRecord:\n    period: int\n    interest_due: float\n    principal_due: float\n    extra_paid: float\n    balance: float\n    escrow_balance: float\n    escrow_disbursed: float\n\n\ndef process_period(state: PeriodState, loan: Loan):\n    interest_due = interest.compute_interest(state.balance, loan.annual_rate)\n    principal_due = loan.monthly_payment - interest_due\n\n    remaining_after_scheduled = state.balance - principal_due\n    extra_paid = min(loan.extra_payment, max(remaining_after_scheduled, 0.0))\n\n    new_balance = interest.roll_balance(state.balance, principal_due, extra_paid)\n    new_escrow, disbursed = interest.apply_escrow(state.escrow_balance, loan, state.period)\n\n    new_state = PeriodState(\n        period=state.period,\n        balance=max(new_balance, 0.0),\n        escrow_balance=new_escrow,\n    )\n    record = PeriodRecord(\n        period=state.period,\n        interest_due=interest_due,\n        principal_due=principal_due,\n        extra_paid=extra_paid,\n        balance=new_state.balance,\n        escrow_balance=new_escrow,\n        escrow_disbursed=disbursed,\n    )\n    return new_state, record\n"
+    },
+    {
+      "path": "schedule.py",
+      "content": "\"\"\"Builds a month-by-month amortization schedule for a loan.\"\"\"\n\nfrom dataclasses import replace\nfrom typing import List\n\nfrom loan import Loan\nimport payment\nfrom payment import PeriodState, PeriodRecord\n\n\ndef build_schedule(loan: Loan, escrow_cushion: float = 0.0) -> List[PeriodRecord]:\n    state = PeriodState(period=0, balance=loan.principal, escrow_balance=escrow_cushion)\n    records: List[PeriodRecord] = []\n\n    for period in range(1, loan.term_months + 1):\n        state = replace(state, period=period)\n        state, record = payment.process_period(state, loan)\n        records.append(record)\n        if state.balance <= 0:\n            break\n\n    return records\n"
+    },
+    {
+      "path": "main.py",
+      "content": "\"\"\"Command-line entry point for generating a loan amortization report.\"\"\"\n\nfrom loan import Loan\nimport schedule\n\n\ndef run():\n    loan = Loan(\n        principal=320000.0,\n        annual_rate=0.0625,\n        term_months=360,\n        annual_tax=4200.0,\n        annual_insurance=1560.0,\n        extra_payment=150.0,\n    )\n\n    records = schedule.build_schedule(loan, escrow_cushion=500.0)\n\n    payoff_period = records[-1].period\n    total_interest = sum(r.interest_due for r in records)\n    total_extra = sum(r.extra_paid for r in records)\n\n    print(f\"Loan payoff after {payoff_period} months (scheduled term: {loan.term_months})\")\n    print(f\"Monthly payment: ${loan.monthly_payment:,.2f}\")\n    print(f\"Total interest paid: ${total_interest:,.2f}\")\n    print(f\"Total extra principal paid: ${total_extra:,.2f}\")\n    print(f\"Final escrow account balance: ${records[-1].escrow_balance:,.2f}\")\n\n\nif __name__ == \"__main__\":\n    run()\n"
+    }
+  ],
+  "defect_keys": [
+    "escrow balance",
+    "instead of subtracting",
+    "disbursed amount",
+    "escrow disbursement"
+  ],
+  "covariates": {
+    "locality_hops": 4,
+    "files_spanned": 5,
+    "distractor_count": 5,
+    "cue_directness": "none"
+  },
+  "size_bytes": 4373
+}

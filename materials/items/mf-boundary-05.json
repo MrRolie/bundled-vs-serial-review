@@ -1,0 +1,41 @@
+{
+  "id": "mf-boundary-05",
+  "item_class": "multi_file",
+  "defect_class": "boundary",
+  "files": [
+    {
+      "path": "run_firing.py",
+      "content": "\"\"\"Entry point: simulate a bisque firing and print the resulting report.\"\"\"\n\nimport controller\nfrom schedule import FiringSchedule, FiringSegment\n\n\ndef build_bisque_schedule():\n    segments = [\n        FiringSegment(name=\"candle\", target_c=95, rate_c_per_hr=None, hold_minutes=60),\n        FiringSegment(name=\"ramp-to-300\", target_c=300, rate_c_per_hr=60),\n        FiringSegment(name=\"ramp-to-600\", target_c=600, rate_c_per_hr=150),\n        FiringSegment(name=\"ramp-to-cone04\", target_c=1015, rate_c_per_hr=180, hold_minutes=20),\n    ]\n    return FiringSchedule(start_c=20.0, segments=segments)\n\n\ndef main():\n    fs = build_bisque_schedule()\n    report = controller.run_firing(fs, tick_seconds=120.0)\n\n    preheat_segments = fs.segments[:1]\n    firing_segments = fs.segments[1:]\n    print(\"Preheat stages:\", [s.name for s in preheat_segments])\n    print(\"Firing stages:\", [s.name for s in firing_segments])\n\n    print(\"Firing report:\")\n    for key, value in report.items():\n        print(f\"  {key}: {value}\")\n\n\nif __name__ == \"__main__\":\n    main()\n"
+    },
+    {
+      "path": "controller.py",
+      "content": "\"\"\"Steps a kiln simulation through a firing schedule, tick by tick.\"\"\"\n\nimport time\n\nimport schedule as schedule_module\n\n\ndef run_firing(fs: \"schedule_module.FiringSchedule\", tick_seconds: float = 30.0, sleep: bool = False):\n    \"\"\"Run the simulated firing and return the summary report.\"\"\"\n    total = fs.total_duration()\n    tick_count = int(total // tick_seconds) + 1\n\n    samples = []\n    for i in range(tick_count):\n        elapsed = min(i * tick_seconds, total)\n        temp = fs.target_temperature(elapsed)\n        samples.append((elapsed, temp))\n        if sleep:\n            time.sleep(tick_seconds)\n\n    if samples[-1][0] < total:\n        samples.append((total, fs.target_temperature(total)))\n\n    return fs.summarize_firing(samples)\n"
+    },
+    {
+      "path": "schedule.py",
+      "content": "\"\"\"Firing schedule model: segment definitions and temperature interpolation.\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import List, Optional\n\nimport heatwork\n\n\n@dataclass\nclass FiringSegment:\n    name: str\n    target_c: float\n    rate_c_per_hr: Optional[float]\n    hold_minutes: float = 0.0\n\n\nclass FiringSchedule:\n    def __init__(self, start_c: float, segments: List[FiringSegment]):\n        self.start_c = start_c\n        self.segments = segments\n        self._boundaries = self._build_boundaries()\n\n    def _build_boundaries(self):\n        \"\"\"Compute (ramp_end, hold_end) elapsed seconds for each segment.\"\"\"\n        boundaries = []\n        prev_c = self.start_c\n        elapsed = 0.0\n        for seg in self.segments:\n            if seg.rate_c_per_hr:\n                ramp_seconds = abs(seg.target_c - prev_c) / seg.rate_c_per_hr * 3600.0\n            else:\n                ramp_seconds = 0.0\n            ramp_end = elapsed + ramp_seconds\n            hold_end = ramp_end + seg.hold_minutes * 60.0\n            boundaries.append((ramp_end, hold_end))\n            elapsed = hold_end\n            prev_c = seg.target_c\n        return boundaries\n\n    def total_duration(self) -> float:\n        return self._boundaries[-1][1] if self._boundaries else 0.0\n\n    def active_segment(self, elapsed: float) -> int:\n        \"\"\"Return the index of the segment covering `elapsed` seconds.\"\"\"\n        for i, (_, hold_end) in enumerate(self._boundaries):\n            if elapsed <= hold_end:\n                return i\n        return len(self.segments) - 1\n\n    def target_temperature(self, elapsed: float) -> float:\n        idx = self.active_segment(elapsed)\n        seg = self.segments[idx]\n        ramp_end, hold_end = self._boundaries[idx]\n        prev_c = self.start_c if idx == 0 else self.segments[idx - 1].target_c\n\n        if elapsed >= ramp_end:\n            return seg.target_c\n\n        seg_start = self._boundaries[idx - 1][1] if idx > 0 else 0.0\n        fraction = (elapsed - seg_start) / (ramp_end - seg_start)\n        return prev_c + fraction * (seg.target_c - prev_c)\n\n    def summarize_firing(self, samples):\n        \"\"\"Build the closing report for a completed simulation, via heatwork.evaluate.\"\"\"\n        return heatwork.evaluate(self, samples)\n"
+    },
+    {
+      "path": "heatwork.py",
+      "content": "\"\"\"Heatwork accumulation and cone-equivalent evaluation for a firing run.\"\"\"\n\nimport cone_chart\n\n\ndef _heatwork_rate(temp_c: float) -> float:\n    \"\"\"Simplified heatwork accrual rate, in arbitrary units per second.\n\n    Below 600 C essentially no heatwork accumulates; above that the rate\n    grows with temperature, loosely modeling the Orton cone behavior.\n    \"\"\"\n    if temp_c < 600:\n        return 0.0\n    return (temp_c - 600) ** 1.5 / 5000.0\n\n\ndef _integrate(samples):\n    \"\"\"Trapezoidal integration of heatwork rate over the recorded samples.\"\"\"\n    total = 0.0\n    for i in range(len(samples) - 1):\n        t0, temp0 = samples[i]\n        t1, temp1 = samples[i + 1]\n        rate0 = _heatwork_rate(temp0)\n        rate1 = _heatwork_rate(temp1)\n        total += (rate0 + rate1) / 2.0 * (t1 - t0)\n    return total\n\n\ndef evaluate(schedule, samples):\n    \"\"\"Summarize a firing run: total heatwork, cone reached, and peak temp.\"\"\"\n    total_units = _integrate(samples)\n    cone, margin = cone_chart.cone_for_heatwork(total_units)\n    return {\n        \"total_heatwork_units\": round(total_units, 2),\n        \"cone_reached\": cone,\n        \"margin_to_next_cone\": round(margin, 2),\n        \"peak_temperature_c\": max((t for _, t in samples), default=schedule.start_c),\n    }\n"
+    },
+    {
+      "path": "cone_chart.py",
+      "content": "\"\"\"Pyrometric cone reference table and heatwork-to-cone conversion.\n\nCone numbers describe how much a firing has bent a small ceramic test cone,\ncombining both peak temperature and time spent near that temperature. The\ntable below gives simplified heatwork-unit thresholds for the cones most\ncommonly targeted in bisque and glaze firing, ordered from coolest to\nhottest.\n\"\"\"\n\nCONE_TABLE = [\n    (\"06\", 38.0),\n    (\"04\", 72.0),\n    (\"02\", 110.0),\n    (\"4\", 165.0),\n    (\"6\", 210.0),\n    (\"10\", 275.0),\n]\n\n\ndef cone_for_heatwork(total_units):\n    \"\"\"Return the (cone_label, margin) reached for a given heatwork total.\n\n    The returned cone is the one whose threshold was met or exceeded; the\n    margin is the number of heatwork units still needed to reach the next\n    cone in the table, or the units carried past the table's ceiling.\n    \"\"\"\n    reached_label, reached_threshold = CONE_TABLE[0]\n    for i in range(len(CONE_TABLE) - 1):\n        label, threshold = CONE_TABLE[i]\n        if total_units >= threshold:\n            reached_label, reached_threshold = label, threshold\n        else:\n            break\n    next_index = CONE_TABLE.index((reached_label, reached_threshold)) + 1\n    if next_index < len(CONE_TABLE):\n        margin = CONE_TABLE[next_index][1] - total_units\n    else:\n        margin = total_units - reached_threshold\n    return reached_label, margin\n"
+    }
+  ],
+  "defect_keys": [
+    "excludes the last",
+    "highest cone",
+    "last table entry",
+    "final threshold",
+    "the final table entry"
+  ],
+  "covariates": {
+    "locality_hops": 4,
+    "files_spanned": 5,
+    "distractor_count": 6,
+    "cue_directness": "indirect"
+  },
+  "size_bytes": 6687
+}

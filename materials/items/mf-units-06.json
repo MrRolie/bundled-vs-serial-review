@@ -1,0 +1,29 @@
+{
+  "id": "mf-units-06",
+  "item_class": "multi_file",
+  "defect_class": "units",
+  "files": [
+    {
+      "path": "gantry_sensors.py",
+      "content": "\"\"\"Loop-sensor processing for a single toll gantry lane.\"\"\"\n\nimport time\nfrom dataclasses import dataclass\n\n\nLOOP_SPACING_M = 6.0\nCENTS_PER_DOLLAR = 100\n\nVEHICLE_CLASSES = {\n    2: \"car\",\n    3: \"light_truck\",\n    5: \"heavy_truck\",\n    6: \"bus\",\n}\n\n\n@dataclass\nclass LoopEvent:\n    loop_a_ms: int\n    loop_b_ms: int\n    axle_count: int\n    gross_weight_kg: float\n\n\ndef compute_speed_kph(event: LoopEvent) -> float:\n    dt_s = (event.loop_b_ms - event.loop_a_ms) / 1000.0\n    if dt_s <= 0:\n        raise ValueError(\"non-positive transit time between loops\")\n    speed_mps = LOOP_SPACING_M / dt_s\n    return speed_mps * 3.6\n\n\ndef classify_vehicle(event: LoopEvent) -> str:\n    return VEHICLE_CLASSES.get(event.axle_count, \"unclassified\")\n\n\ndef gross_weight_lbs(event: LoopEvent) -> float:\n    return event.gross_weight_kg * 2.20462\n\n\ndef cents_to_dollars(amount_cents: int) -> float:\n    return amount_cents / CENTS_PER_DOLLAR\n\n\ndef minutes_since_midnight(epoch_ms: int) -> int:\n    local = time.localtime(epoch_ms / 1000.0)\n    return local.tm_hour * 60 + local.tm_min\n\n\nclass GantryWindow:\n    \"\"\"Rolling count of vehicles crossing a gantry within a fixed sampling window.\"\"\"\n\n    def __init__(self, window_seconds: int = 300):\n        self.window_seconds = window_seconds\n        self._timestamps_ms = []\n\n    def record(self, epoch_ms: int) -> None:\n        self._timestamps_ms.append(epoch_ms)\n        cutoff = epoch_ms - self.window_seconds * 1000\n        self._timestamps_ms = [t for t in self._timestamps_ms if t >= cutoff]\n\n    def count(self) -> int:\n        return len(self._timestamps_ms)\n"
+    },
+    {
+      "path": "toll_pricing.py",
+      "content": "\"\"\"Dynamic toll pricing for a gantry lane, combining class rates with a congestion surcharge.\"\"\"\n\nfrom gantry_sensors import (\n    LoopEvent,\n    GantryWindow,\n    compute_speed_kph,\n    classify_vehicle,\n    gross_weight_lbs,\n    cents_to_dollars,\n    minutes_since_midnight,\n)\n\nBASE_RATE_CENTS = {\n    \"car\": 250,\n    \"light_truck\": 400,\n    \"heavy_truck\": 900,\n    \"bus\": 600,\n}\n\nOVERWEIGHT_LIMIT_LBS = 26000\nOVERWEIGHT_SURCHARGE_CENTS = 500\n\nPEAK_WINDOWS = [(6 * 60, 9 * 60 + 30), (16 * 60, 18 * 60 + 30)]\nPEAK_SURCHARGE_FRACTION = 0.20\n\n# lane throughput this gantry is rated for, vehicles/hour\nRATED_CAPACITY_VPH = 1800\n\n\ndef is_peak(epoch_ms: int) -> bool:\n    minute = minutes_since_midnight(epoch_ms)\n    return any(start <= minute <= end for start, end in PEAK_WINDOWS)\n\n\ndef congestion_multiplier(window: GantryWindow) -> float:\n    observed = window.count()\n    utilization = observed / RATED_CAPACITY_VPH\n    if utilization <= 1.0:\n        return 1.0\n    return 1.0 + min(utilization - 1.0, 1.0)\n\n\ndef compute_toll_cents(event: LoopEvent, window: GantryWindow, epoch_ms: int) -> int:\n    vehicle_class = classify_vehicle(event)\n    base = BASE_RATE_CENTS.get(vehicle_class, BASE_RATE_CENTS[\"car\"])\n\n    total = float(base)\n\n    if gross_weight_lbs(event) > OVERWEIGHT_LIMIT_LBS:\n        total += OVERWEIGHT_SURCHARGE_CENTS\n\n    if is_peak(epoch_ms):\n        total *= 1 + PEAK_SURCHARGE_FRACTION\n\n    total *= congestion_multiplier(window)\n\n    speed_kph = compute_speed_kph(event)\n    if speed_kph < 15:\n        total *= 1.10\n\n    return round(total)\n\n\ndef toll_dollars(event: LoopEvent, window: GantryWindow, epoch_ms: int) -> float:\n    return cents_to_dollars(compute_toll_cents(event, window, epoch_ms))\n\n\ndef process_crossing(event: LoopEvent, window: GantryWindow, epoch_ms: int) -> float:\n    window.record(epoch_ms)\n    return toll_dollars(event, window, epoch_ms)\n"
+    }
+  ],
+  "defect_keys": [
+    "5-minute window",
+    "hourly capacity",
+    "different time bases",
+    "divides the",
+    "hour) without converting"
+  ],
+  "covariates": {
+    "locality_hops": 1,
+    "files_spanned": 2,
+    "distractor_count": 5,
+    "cue_directness": "none"
+  },
+  "size_bytes": 3485
+}

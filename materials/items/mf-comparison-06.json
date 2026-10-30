@@ -1,0 +1,28 @@
+{
+  "id": "mf-comparison-06",
+  "item_class": "multi_file",
+  "defect_class": "comparison",
+  "files": [
+    {
+      "path": "vessel.py",
+      "content": "\"\"\"Core data model and stowage rules for a single ferry crossing.\"\"\"\n\nfrom dataclasses import dataclass\nfrom typing import Tuple\n\n\n@dataclass\nclass Vehicle:\n    plate: str\n    weight_kg: float\n    height_m: float\n    priority_tier: int  # 1 = reserved/commercial, 2 = standard booking, 3 = standby\n    arrival_order: int\n\n\n@dataclass\nclass Lane:\n    name: str\n    capacity_kg: float\n    clearance_m: float\n    current_load_kg: float = 0.0\n\n    def remaining_capacity_kg(self) -> float:\n        return self.capacity_kg - self.current_load_kg\n\n\ndef fits(vehicle: Vehicle, lane: Lane) -> bool:\n    \"\"\"Return True if the vehicle can be safely stowed in the lane.\"\"\"\n    if vehicle.height_m > lane.clearance_m:\n        return False\n    if vehicle.weight_kg > lane.remaining_capacity_kg():\n        return False\n    return True\n\n\ndef load_vehicle(vehicle: Vehicle, lane: Lane) -> None:\n    lane.current_load_kg += vehicle.weight_kg\n\n\ndef choose_target_lane(bow_lane: Lane, stern_lane: Lane) -> Tuple[Lane, Lane]:\n    \"\"\"Pick which of a matched bow/stern lane pair should take the next vehicle.\n\n    Returns the chosen lane first and the alternate lane second, so the\n    caller can fall back to the alternate if the chosen one can't fit\n    the vehicle being placed.\n    \"\"\"\n    if bow_lane.current_load_kg > stern_lane.current_load_kg:\n        return bow_lane, stern_lane\n    return stern_lane, bow_lane\n"
+    },
+    {
+      "path": "loading_planner.py",
+      "content": "\"\"\"Assigns queued vehicles to bow/stern lane pairs for a ferry crossing.\"\"\"\n\nfrom typing import List\n\nfrom vessel import Vehicle, Lane, fits, load_vehicle, choose_target_lane\n\n\ndef sort_queue(vehicles: List[Vehicle]) -> List[Vehicle]:\n    \"\"\"Board reserved/commercial traffic first, then standard, then standby.\"\"\"\n    return sorted(vehicles, key=lambda v: (v.priority_tier, v.arrival_order))\n\n\ndef plan_load(vehicles: List[Vehicle], bow_lanes: List[Lane], stern_lanes: List[Lane]) -> List[Vehicle]:\n    \"\"\"Walk the boarding queue and assign each vehicle to a lane.\n\n    Returns the vehicles that could not be placed on this crossing.\n    \"\"\"\n    unassigned = []\n    for vehicle in sort_queue(vehicles):\n        assigned = False\n        for bow_lane, stern_lane in zip(bow_lanes, stern_lanes):\n            target, other = choose_target_lane(bow_lane, stern_lane)\n            if fits(vehicle, target):\n                load_vehicle(vehicle, target)\n                assigned = True\n                break\n            if fits(vehicle, other):\n                load_vehicle(vehicle, other)\n                assigned = True\n                break\n        if not assigned:\n            unassigned.append(vehicle)\n    return unassigned\n\n\ndef summarize(bow_lanes: List[Lane], stern_lanes: List[Lane]) -> List[str]:\n    lines = []\n    for lane in [*bow_lanes, *stern_lanes]:\n        lines.append(f\"{lane.name}: {lane.current_load_kg:.0f} / {lane.capacity_kg:.0f} kg\")\n    return lines\n\n\nif __name__ == \"__main__\":\n    queue = [\n        Vehicle(\"AB-1234\", 1800, 1.6, priority_tier=2, arrival_order=1),\n        Vehicle(\"TRK-901\", 9200, 3.4, priority_tier=1, arrival_order=2),\n        Vehicle(\"CD-5678\", 1500, 1.5, priority_tier=2, arrival_order=3),\n        Vehicle(\"VAN-042\", 2600, 2.1, priority_tier=1, arrival_order=4),\n        Vehicle(\"EF-9012\", 1400, 1.5, priority_tier=3, arrival_order=5),\n    ]\n    bow = [Lane(\"bow-1\", capacity_kg=12000, clearance_m=4.5)]\n    stern = [Lane(\"stern-1\", capacity_kg=12000, clearance_m=4.5)]\n\n    leftover = plan_load(queue, bow, stern)\n    for line in summarize(bow, stern):\n        print(line)\n    if leftover:\n        print(f\"{len(leftover)} vehicle(s) held for the next sailing\")\n"
+    }
+  ],
+  "defect_keys": [
+    "heavier side",
+    "favor the lighter",
+    "already heavier",
+    "inverted comparison"
+  ],
+  "covariates": {
+    "locality_hops": 1,
+    "files_spanned": 2,
+    "distractor_count": 2,
+    "cue_directness": "none"
+  },
+  "size_bytes": 3602
+}

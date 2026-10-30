@@ -1,0 +1,25 @@
+{
+  "id": "sf-boundary-01",
+  "item_class": "single_function",
+  "defect_class": "boundary",
+  "files": [
+    {
+      "path": "example.py",
+      "content": "\"\"\"Utilities for slicing sorted event logs into reporting time windows.\"\"\"\n\nimport bisect\nfrom dataclasses import dataclass\nfrom datetime import datetime\n\n\n@dataclass\nclass LogEntry:\n    timestamp: datetime\n    message: str\n\n\ndef events_in_window(entries, window_start, window_end):\n    \"\"\"\n    Return the entries whose timestamps fall within [window_start, window_end],\n    inclusive on both ends. `entries` must already be sorted by timestamp.\n    \"\"\"\n    timestamps = [entry.timestamp for entry in entries]\n    start_idx = bisect.bisect_left(timestamps, window_start)\n    end_idx = bisect.bisect_left(timestamps, window_end)\n    return entries[start_idx:end_idx]\n\n\ndef entries_per_day(entries, day_start, num_days, day_length):\n    \"\"\"Group entries into `num_days` consecutive windows starting at day_start.\"\"\"\n    counts = []\n    for day in range(num_days):\n        start = day_start + day * day_length\n        end = start + day_length\n        counts.append(len(events_in_window(entries, start, end)))\n    return counts\n"
+    }
+  ],
+  "defect_keys": [
+    "off by one",
+    "bisect_right",
+    "inclusive range",
+    "exclusive of the end",
+    "excludes"
+  ],
+  "covariates": {
+    "locality_hops": 0,
+    "files_spanned": 1,
+    "distractor_count": 0,
+    "cue_directness": "direct"
+  },
+  "size_bytes": 1024
+}

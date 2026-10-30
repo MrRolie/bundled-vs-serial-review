@@ -1,0 +1,19 @@
+{
+  "id": "clean-sf-02",
+  "item_class": "single_function",
+  "defect_class": "clean",
+  "files": [
+    {
+      "path": "rate_limiter.py",
+      "content": "\"\"\"Thread-safe token-bucket rate limiter.\"\"\"\n\nimport threading\nimport time\nfrom dataclasses import dataclass\n\n\n@dataclass\nclass _BucketState:\n    tokens: float\n    last_refill: float\n\n\ndef make_token_bucket(rate: float, capacity: float):\n    \"\"\"Create a token-bucket rate limiter.\n\n    ``rate`` is the number of tokens added per second; ``capacity`` is the\n    maximum number of tokens the bucket can hold. Returns a callable\n    ``allow(cost=1.0) -> bool`` that atomically checks whether ``cost``\n    tokens are available and, if so, consumes them and returns True.\n    Otherwise it returns False without consuming any tokens.\n\n    The returned callable is safe to invoke from multiple threads\n    concurrently.\n    \"\"\"\n    if rate <= 0:\n        raise ValueError(\"rate must be positive\")\n    if capacity <= 0:\n        raise ValueError(\"capacity must be positive\")\n\n    state = _BucketState(tokens=capacity, last_refill=time.monotonic())\n    lock = threading.Lock()\n\n    def allow(cost: float = 1.0) -> bool:\n        if cost <= 0:\n            raise ValueError(\"cost must be positive\")\n\n        with lock:\n            now = time.monotonic()\n            elapsed = now - state.last_refill\n            # Refill first, capping at capacity so idle buckets don't\n            # accumulate an unbounded surplus of tokens.\n            state.tokens = min(capacity, state.tokens + elapsed * rate)\n            # Advance the clock regardless of outcome so a burst of\n            # rejected requests doesn't cause the next successful check\n            # to over-count elapsed time.\n            state.last_refill = now\n\n            if state.tokens >= cost:\n                state.tokens -= cost\n                return True\n            return False\n\n    return allow\n\n\ndef demo() -> None:\n    limiter = make_token_bucket(rate=5.0, capacity=10.0)\n\n    granted = 0\n    denied = 0\n    for _ in range(15):\n        if limiter():\n            granted += 1\n        else:\n            denied += 1\n\n    print(f\"initial burst: granted={granted} denied={denied}\")\n\n    time.sleep(1.0)\n    # After ~1s at rate=5/s we expect roughly 5 more tokens available.\n    refilled = sum(1 for _ in range(8) if limiter())\n    print(f\"after 1s refill: granted={refilled}\")\n\n\nif __name__ == \"__main__\":\n    demo()\n"
+    }
+  ],
+  "defect_keys": [],
+  "covariates": {
+    "locality_hops": null,
+    "files_spanned": 1,
+    "distractor_count": 3,
+    "cue_directness": null
+  },
+  "size_bytes": 2268
+}

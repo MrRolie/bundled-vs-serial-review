@@ -1,0 +1,37 @@
+{
+  "id": "mf-boundary-02",
+  "item_class": "multi_file",
+  "defect_class": "boundary",
+  "files": [
+    {
+      "path": "cli.py",
+      "content": "\"\"\"Command-line entry point for the request-latency window report tool.\"\"\"\n\nimport argparse\nimport sys\n\nimport report\n\n\ndef parse_args(argv):\n    parser = argparse.ArgumentParser(\n        description=\"Summarize request latency by time window\"\n    )\n    parser.add_argument(\"logfile\", help=\"Path to access log file\")\n    parser.add_argument(\n        \"--window-seconds\",\n        type=int,\n        default=60,\n        help=\"Size of each reporting window in seconds\",\n    )\n    return parser.parse_args(argv)\n\n\ndef load_records(path):\n    records = []\n    with open(path) as f:\n        for line in f:\n            line = line.strip()\n            if not line:\n                continue\n            parts = line.split(\",\")\n            if len(parts) != 3:\n                continue\n            timestamp_str, path_str, latency_str = parts\n            records.append(\n                report.Record(\n                    timestamp=float(timestamp_str),\n                    path=path_str,\n                    latency_ms=float(latency_str),\n                )\n            )\n    return records\n\n\ndef main(argv=None):\n    args = parse_args(argv if argv is not None else sys.argv[1:])\n    records = load_records(args.logfile)\n    for line in report.build_report(records, args.window_seconds):\n        print(line)\n\n\nif __name__ == \"__main__\":\n    main()\n"
+    },
+    {
+      "path": "report.py",
+      "content": "\"\"\"Builds a human readable latency report grouped by time window.\"\"\"\n\nfrom collections import namedtuple\n\nimport stats\nimport windows\n\nRecord = namedtuple(\"Record\", [\"timestamp\", \"path\", \"latency_ms\"])\n\n\ndef build_report(records, window_seconds):\n    if not records:\n        return [\"No records to report.\"]\n\n    start_time = min(r.timestamp for r in records)\n    end_time = max(r.timestamp for r in records)\n\n    lines = []\n    bounds = windows.window_bounds(start_time, end_time, window_seconds)\n    for index, (window_start, window_end) in enumerate(bounds):\n        window_records = windows.slice_window(records, window_start, window_end)\n        summary = stats.summarize(window_records)\n        lines.append(\n            \"window {index}: [{start:.0f}, {end:.0f}) count={count} \"\n            \"mean={mean_ms:.1f}ms p95={p95_ms:.1f}ms p99={p99_ms:.1f}ms\".format(\n                index=index,\n                start=window_start,\n                end=window_end,\n                **summary,\n            )\n        )\n    return lines\n"
+    },
+    {
+      "path": "windows.py",
+      "content": "\"\"\"Utilities for splitting a time range into fixed-size reporting windows.\"\"\"\n\n\ndef _compute_window_count(total_span, window_seconds):\n    return int(total_span // window_seconds)\n\n\ndef window_bounds(start_time, end_time, window_seconds):\n    \"\"\"Yield (window_start, window_end) pairs spanning start_time to end_time.\"\"\"\n    total_span = end_time - start_time\n    count = _compute_window_count(total_span, window_seconds)\n    for i in range(count):\n        window_start = start_time + i * window_seconds\n        yield (window_start, window_start + window_seconds)\n\n\ndef slice_window(records, window_start, window_end):\n    \"\"\"Return the records whose timestamp falls in [window_start, window_end).\"\"\"\n    return [r for r in records if window_start <= r.timestamp < window_end]\n"
+    },
+    {
+      "path": "stats.py",
+      "content": "\"\"\"Statistical summaries for grouped latency samples.\"\"\"\n\n\ndef mean(values):\n    if not values:\n        return 0.0\n    return sum(values) / len(values)\n\n\ndef percentile(values, pct):\n    \"\"\"Return the pct-th percentile of values using the nearest-rank method.\"\"\"\n    if not values:\n        return 0.0\n    ordered = sorted(values)\n    rank = max(1, int(round(pct / 100 * len(ordered))))\n    index = min(rank, len(ordered)) - 1\n    return ordered[index]\n\n\ndef summarize(records):\n    latencies = [r.latency_ms for r in records]\n    return {\n        \"count\": len(records),\n        \"mean_ms\": mean(latencies),\n        \"p50_ms\": percentile(latencies, 50),\n        \"p95_ms\": percentile(latencies, 95),\n        \"p99_ms\": percentile(latencies, 99),\n    }\n"
+    }
+  ],
+  "defect_keys": [
+    "last window",
+    "floor division",
+    "off-by-one",
+    "final window",
+    "generated"
+  ],
+  "covariates": {
+    "locality_hops": 3,
+    "files_spanned": 4,
+    "distractor_count": 4,
+    "cue_directness": "none"
+  },
+  "size_bytes": 3889
+}

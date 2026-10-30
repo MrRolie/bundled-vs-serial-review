@@ -1,0 +1,25 @@
+{
+  "id": "sf-exception-04",
+  "item_class": "single_function",
+  "defect_class": "exception",
+  "files": [
+    {
+      "path": "billing_summary.py",
+      "content": "\"\"\"Nightly billing summary for hotel front-desk exports.\"\"\"\n\nfrom __future__ import annotations\n\nimport datetime\nimport json\nfrom dataclasses import dataclass\n\nRATE_MULTIPLIERS = {\n    \"standard\": 1.0,\n    \"member\": 0.9,\n    \"corporate\": 0.85,\n    \"promo\": 0.75,\n}\n\nLATE_CHECKOUT_FEE = 25.0\n\n\n@dataclass\nclass Reservation:\n    guest_name: str\n    room_number: str\n    check_in: str\n    check_out: str\n    rate_plan: str = \"standard\"\n    late_checkout: bool = False\n\n\ndef load_reservations(path: str) -> list[Reservation]:\n    with open(path) as f:\n        raw = json.load(f)\n    return [Reservation(**r) for r in raw]\n\n\ndef _nights_between(check_in: str, check_out: str) -> int:\n    fmt = \"%Y-%m-%d\"\n    start = datetime.datetime.strptime(check_in, fmt)\n    end = datetime.datetime.strptime(check_out, fmt)\n    return (end - start).days\n\n\ndef _rate_multiplier(rate_plan: str) -> float:\n    try:\n        return RATE_MULTIPLIERS[rate_plan]\n    except KeyError:\n        return RATE_MULTIPLIERS[\"standard\"]\n\n\ndef _apply_rate_plan_and_validate(\n    reservation: Reservation, nights: int, base_rate: float\n) -> float:\n    if nights <= 0:\n        raise ValueError(\n            f\"reservation for room {reservation.room_number} has a non-positive \"\n            \"stay length\"\n        )\n    subtotal = nights * base_rate * _rate_multiplier(reservation.rate_plan)\n    if reservation.late_checkout:\n        subtotal += LATE_CHECKOUT_FEE\n    return round(subtotal, 2)\n\n\ndef compute_charge(reservation: Reservation, base_rate: float) -> float:\n    nights = _nights_between(reservation.check_in, reservation.check_out)\n    return _apply_rate_plan_and_validate(reservation, nights, base_rate)\n\n\ndef generate_billing_summary(path: str, base_rate: float) -> dict[str, float]:\n    \"\"\"Return a mapping of room number to total charge for the stay.\"\"\"\n    reservations = load_reservations(path)\n    totals: dict[str, float] = {}\n    for reservation in reservations:\n        amount = compute_charge(reservation, base_rate)\n        totals[reservation.room_number] = amount\n    return totals\n"
+    }
+  ],
+  "defect_keys": [
+    "zero-night",
+    "day-use",
+    "same-day booking",
+    "negative nights",
+    "surfacing"
+  ],
+  "covariates": {
+    "locality_hops": 2,
+    "files_spanned": 1,
+    "distractor_count": 5,
+    "cue_directness": "none"
+  },
+  "size_bytes": 2066
+}

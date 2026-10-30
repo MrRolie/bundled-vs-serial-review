@@ -1,0 +1,40 @@
+{
+  "id": "mf-exception-05",
+  "item_class": "multi_file",
+  "defect_class": "exception",
+  "files": [
+    {
+      "path": "capacity.py",
+      "content": "\"\"\"Weight-based capacity checks for elevator cars.\"\"\"\nimport logging\n\nlogger = logging.getLogger(__name__)\n\nMAX_CAR_WEIGHT_KG = 1150\nAVERAGE_RIDER_WEIGHT_KG = 75\n\n\nclass SensorNotReadyError(Exception):\n    \"\"\"Raised when the load cell hasn't finished settling after a stop.\"\"\"\n\n\nclass OverCapacityError(Exception):\n    \"\"\"Raised when boarding would push a car over its rated weight.\"\"\"\n\n\nclass CapacityMonitor:\n    \"\"\"Tracks a car's load cell and decides whether more riders can board.\"\"\"\n\n    def __init__(self):\n        self._last_readings = {}\n\n    def read_load_cell(self, car):\n        reading = car.poll_load_cell()\n        if reading is None:\n            raise SensorNotReadyError(\n                f\"load cell for car {car.car_id} has not settled yet\"\n            )\n        self._last_readings[car.car_id] = reading\n        return reading\n\n    def has_room_for(self, car, waiting_riders):\n        additional_weight = waiting_riders * AVERAGE_RIDER_WEIGHT_KG\n        try:\n            current_weight = self.read_load_cell(car)\n        except SensorNotReadyError:\n            logger.debug(\n                \"load cell for car %s not settled; deferring to the mechanical overload interlock\",\n                car.car_id,\n            )\n            return True\n        return current_weight + additional_weight <= MAX_CAR_WEIGHT_KG\n"
+    },
+    {
+      "path": "car.py",
+      "content": "\"\"\"Elevator car model: door control, motion, and dispatch handling.\"\"\"\nimport logging\nfrom enum import Enum, auto\n\nfrom capacity import CapacityMonitor, OverCapacityError\n\nlogger = logging.getLogger(__name__)\n\n\nclass CarStatus(Enum):\n    IDLE = auto()\n    IN_SERVICE = auto()\n    OUT_OF_SERVICE = auto()\n    MAINTENANCE = auto()\n\n\nclass DoorObstructionError(Exception):\n    \"\"\"Raised when the safety edge sensor detects something in the doorway.\"\"\"\n\n\nclass HardwareFault(Exception):\n    \"\"\"Raised when the door motor controller reports a real fault code.\"\"\"\n\n\nclass DispatchFailedError(Exception):\n    \"\"\"Raised when a car cannot be dispatched to a requested floor.\"\"\"\n\n\nclass Car:\n    def __init__(self, car_id, current_floor=1):\n        self.car_id = car_id\n        self.current_floor = current_floor\n        self.target_floor = None\n        self.status = CarStatus.IDLE\n        self.doors_open = True\n        self._motor_fault = False\n        self._obstruction_countdown = 0\n        self.capacity_monitor = CapacityMonitor()\n\n    def poll_load_cell(self):\n        return getattr(self, \"_simulated_weight\", 0)\n\n    def door_sensor_reading(self):\n        if self._obstruction_countdown > 0:\n            self._obstruction_countdown -= 1\n            return True\n        return False\n\n    def close_doors(self):\n        if self.door_sensor_reading():\n            raise DoorObstructionError(\n                f\"object detected in doorway of car {self.car_id}\"\n            )\n        if self._motor_fault:\n            raise HardwareFault(f\"door motor controller fault on car {self.car_id}\")\n        self.doors_open = False\n\n    def _attempt_door_close(self):\n        try:\n            self.close_doors()\n        except Exception as exc:\n            logger.warning(\"car %s pulled from the rotation: %s\", self.car_id, exc)\n            self.status = CarStatus.OUT_OF_SERVICE\n            raise DispatchFailedError(str(exc)) from exc\n\n    def dispatch_to(self, floor, waiting_riders=1):\n        if not self.capacity_monitor.has_room_for(self, waiting_riders):\n            raise OverCapacityError(\n                f\"car {self.car_id} cannot take on {waiting_riders} more riders\"\n            )\n        self.target_floor = floor\n        self._attempt_door_close()\n        self.current_floor = floor\n        self.doors_open = True\n        self.status = CarStatus.IDLE\n"
+    },
+    {
+      "path": "scheduler.py",
+      "content": "\"\"\"Assigns hall calls to the best available car.\"\"\"\nimport logging\n\nfrom car import CarStatus, DispatchFailedError\nfrom capacity import OverCapacityError\n\nlogger = logging.getLogger(__name__)\n\nAVAILABLE_STATUSES = (CarStatus.IDLE, CarStatus.IN_SERVICE)\n\n\nclass NoAvailableCarError(Exception):\n    \"\"\"Raised when no car can be assigned to a hall call.\"\"\"\n\n\nclass Scheduler:\n    def __init__(self, cars):\n        self.cars = cars\n\n    def _candidates(self, floor):\n        available = [c for c in self.cars if c.status in AVAILABLE_STATUSES]\n        return sorted(available, key=lambda c: abs(c.current_floor - floor))\n\n    def assign_car(self, floor, waiting_riders=1):\n        for car in self._candidates(floor):\n            try:\n                car.dispatch_to(floor, waiting_riders)\n                return car\n            except (DispatchFailedError, OverCapacityError) as exc:\n                logger.info(\n                    \"car %s could not take the hall call at floor %s (%s); trying the next candidate\",\n                    car.car_id, floor, exc,\n                )\n                continue\n        raise NoAvailableCarError(f\"no car available for hall call at floor {floor}\")\n\n\ndef return_to_service(car):\n    \"\"\"Reinstate a car after a technician has inspected it and cleared the fault.\"\"\"\n    car.status = CarStatus.IDLE\n"
+    },
+    {
+      "path": "dispatcher.py",
+      "content": "\"\"\"Top-level hall call handling for the building's elevator bank.\"\"\"\nimport logging\n\nfrom scheduler import Scheduler, NoAvailableCarError\n\nlogger = logging.getLogger(__name__)\n\n\nclass Dispatcher:\n    def __init__(self, cars):\n        self.scheduler = Scheduler(cars)\n        self.pending_calls = []\n\n    def handle_hall_call(self, floor, waiting_riders=1):\n        self.pending_calls.append(floor)\n        try:\n            car = self.scheduler.assign_car(floor, waiting_riders)\n        except NoAvailableCarError:\n            logger.error(\n                \"hall call at floor %s could not be served; no cars available\", floor\n            )\n            raise\n        finally:\n            self.pending_calls.remove(floor)\n        logger.info(\"car %s assigned to hall call at floor %s\", car.car_id, floor)\n        return car\n"
+    },
+    {
+      "path": "main.py",
+      "content": "\"\"\"Simulates a small elevator bank handling hall calls.\"\"\"\nimport logging\n\nfrom car import Car\nfrom dispatcher import Dispatcher\n\nlogging.basicConfig(level=logging.INFO)\n\n\ndef build_fleet():\n    return [\n        Car(car_id=1, current_floor=1),\n        Car(car_id=2, current_floor=5),\n        Car(car_id=3, current_floor=9),\n    ]\n\n\ndef main():\n    fleet = build_fleet()\n    dispatcher = Dispatcher(fleet)\n\n    dispatcher.handle_hall_call(floor=3, waiting_riders=2)\n    dispatcher.handle_hall_call(floor=6, waiting_riders=1)\n    dispatcher.handle_hall_call(floor=8, waiting_riders=3)\n\n\nif __name__ == \"__main__\":\n    main()\n"
+    }
+  ],
+  "defect_keys": [
+    "same except block",
+    "door obstruction",
+    "hardware fault",
+    "doorobstructionerror (a transient"
+  ],
+  "covariates": {
+    "locality_hops": 4,
+    "files_spanned": 5,
+    "distractor_count": 0,
+    "cue_directness": "indirect"
+  },
+  "size_bytes": 6460
+}

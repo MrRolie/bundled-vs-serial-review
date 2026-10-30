@@ -1,0 +1,27 @@
+{
+  "id": "sf-boundary-02",
+  "item_class": "single_function",
+  "defect_class": "boundary",
+  "files": [
+    {
+      "path": "warehouse_pull.py",
+      "content": "import bisect\nfrom dataclasses import dataclass\n\n\n@dataclass\nclass InventoryItem:\n    sku: str\n    lot_id: str\n    days_until_expiry: int\n    quantity: int\n\n\ndef items_needing_pull(inventory, action_window_days):\n    \"\"\"Return every inventory item that must be pulled from stock within\n    the given number of days, ordered soonest-to-expire first.\n    \"\"\"\n    sorted_items = sorted(inventory, key=lambda item: item.days_until_expiry)\n    thresholds = [item.days_until_expiry for item in sorted_items]\n    cutoff = bisect.bisect_left(thresholds, action_window_days)\n    return sorted_items[:cutoff]\n\n\ndef summarize_pull(items):\n    \"\"\"Split a pull list into already-expired lots and lots still on the\n    shelf but flagged for the window, and total up the units involved.\n    \"\"\"\n    expired = [item for item in items if item.days_until_expiry <= 0]\n    expiring_soon = [item for item in items if item.days_until_expiry > 0]\n    return {\n        \"expired_lots\": len(expired),\n        \"expiring_lots\": len(expiring_soon),\n        \"total_units\": sum(item.quantity for item in items),\n    }\n\n\ndef build_report(inventory, action_window_days):\n    picks = items_needing_pull(inventory, action_window_days)\n    summary = summarize_pull(picks)\n    lines = [\n        f\"{item.sku} (lot {item.lot_id}): {item.quantity} units, \"\n        f\"{item.days_until_expiry}d left\"\n        for item in picks\n    ]\n    return summary, lines\n"
+    }
+  ],
+  "defect_keys": [
+    "on the boundary day",
+    "expiring exactly on",
+    "off-by-one at the edge",
+    "exactly equals the cutoff",
+    "exactly action_window_days",
+    "bisect_right",
+    "expiring in exactly"
+  ],
+  "covariates": {
+    "locality_hops": 0,
+    "files_spanned": 1,
+    "distractor_count": 0,
+    "cue_directness": "direct"
+  },
+  "size_bytes": 1418
+}

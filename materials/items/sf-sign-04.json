@@ -1,0 +1,26 @@
+{
+  "id": "sf-sign-04",
+  "item_class": "single_function",
+  "defect_class": "sign",
+  "files": [
+    {
+      "path": "ticket_queue.py",
+      "content": "\"\"\"Utilities for ranking support tickets by urgency.\"\"\"\n\nimport datetime\nfrom dataclasses import dataclass\n\n\n@dataclass\nclass Ticket:\n    id: str\n    priority_weight: float\n    created_at: datetime.datetime\n    sla_deadline: datetime.datetime\n    snoozed_until: datetime.datetime = None\n\n\ndef sort_queue(tickets, now=None):\n    now = now or datetime.datetime.utcnow()\n    scored = rank_tickets(tickets, now)\n    scored.sort(key=lambda pair: pair[1], reverse=True)\n    return [ticket for ticket, _ in scored]\n\n\ndef rank_tickets(tickets, now):\n    return [(ticket, compute_urgency(ticket, now)) for ticket in tickets]\n\n\ndef compute_urgency(ticket, now):\n    hours_open = _hours_between(ticket.created_at, now)\n    hours_until_deadline = _hours_between(now, ticket.sla_deadline)\n\n    score = ticket.priority_weight * 10.0\n    score += hours_open * 0.5\n    score += hours_until_deadline * 0.5\n\n    if ticket.snoozed_until and ticket.snoozed_until > now:\n        remaining_snooze = _hours_between(now, ticket.snoozed_until)\n        score -= remaining_snooze * 2.0\n\n    return max(score, 0.0)\n\n\ndef _hours_between(start, end):\n    return (end - start).total_seconds() / 3600.0\n"
+    }
+  ],
+  "defect_keys": [
+    "time until deadline",
+    "sign error",
+    "closer to the deadline",
+    "backwards",
+    "adds hours",
+    "should be subtracted"
+  ],
+  "covariates": {
+    "locality_hops": 2,
+    "files_spanned": 1,
+    "distractor_count": 0,
+    "cue_directness": "none"
+  },
+  "size_bytes": 1171
+}

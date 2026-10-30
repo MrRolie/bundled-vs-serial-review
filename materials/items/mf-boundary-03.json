@@ -1,0 +1,32 @@
+{
+  "id": "mf-boundary-03",
+  "item_class": "multi_file",
+  "defect_class": "boundary",
+  "files": [
+    {
+      "path": "harmonics.py",
+      "content": "\"\"\"Harmonic synthesis of tide heights from constituent tables.\"\"\"\n\nimport math\n\nCONSTITUENT_SPEEDS = {\n    \"M2\": 28.9841042,\n    \"S2\": 30.0000000,\n    \"N2\": 28.4397295,\n    \"K1\": 15.0410686,\n    \"O1\": 13.9430356,\n}\n\n\ndef water_level(constituents, hour, mean_sea_level=0.0):\n    \"\"\"Return the predicted water level, in feet, at the given hour since epoch.\"\"\"\n    total = mean_sea_level\n    for name, amplitude, phase_deg in constituents:\n        speed = CONSTITUENT_SPEEDS[name]\n        total += amplitude * math.cos(math.radians(speed * hour - phase_deg))\n    return total\n\n\ndef synthesize_series(constituents, mean_sea_level, start_hour, num_hours):\n    \"\"\"Compute an hourly water-level series of length num_hours, starting at start_hour.\"\"\"\n    series = []\n    for offset in range(num_hours):\n        hour = start_hour + offset\n        series.append((hour, water_level(constituents, hour, mean_sea_level)))\n    return series\n"
+    },
+    {
+      "path": "stations.py",
+      "content": "\"\"\"Station registry and hourly series construction for tide prediction.\"\"\"\n\nfrom datetime import date\n\nimport harmonics\n\nEPOCH = date(2000, 1, 1)\n\n# Extra hours of sample padding added around a requested window so that\n# find_extrema has a neighboring sample to compare against at each edge.\nEDGE_MARGIN = 1\n\nSTATIONS = {\n    \"8518750\": {\n        \"name\": \"The Battery, NY\",\n        \"mean_sea_level\": 2.35,\n        \"constituents\": [\n            (\"M2\", 2.30, 96.0),\n            (\"S2\", 0.38, 118.0),\n            (\"N2\", 0.49, 78.0),\n            (\"K1\", 0.29, 143.0),\n            (\"O1\", 0.19, 121.0),\n        ],\n    },\n    \"9414290\": {\n        \"name\": \"San Francisco, CA\",\n        \"mean_sea_level\": 3.41,\n        \"constituents\": [\n            (\"M2\", 1.92, 240.0),\n            (\"S2\", 0.36, 262.0),\n            (\"N2\", 0.41, 214.0),\n            (\"K1\", 0.37, 189.0),\n            (\"O1\", 0.28, 172.0),\n        ],\n    },\n}\n\n\ndef load_station(station_id):\n    \"\"\"Look up a station's harmonic constituent table by NOAA station id.\"\"\"\n    try:\n        return STATIONS[station_id]\n    except KeyError:\n        raise ValueError(f\"unknown tide station: {station_id}\")\n\n\ndef hours_since_epoch(day):\n    \"\"\"Convert a calendar date to hours elapsed since the reference epoch.\"\"\"\n    return (day - EPOCH).days * 24\n\n\ndef _padding_window(start_hour, num_days):\n    \"\"\"Return the padded (start_hour, hour_count) needed so find_extrema\n    can evaluate the samples that sit at both edges of the requested window.\n    \"\"\"\n    padded_start = start_hour - EDGE_MARGIN\n    padded_hours = num_days * 24 + EDGE_MARGIN\n    return padded_start, padded_hours\n\n\ndef build_hourly_series(station, start_day, num_days):\n    \"\"\"Synthesize the padded hourly series covering start_day..start_day + num_days.\"\"\"\n    start_hour = hours_since_epoch(start_day)\n    padded_start, padded_hours = _padding_window(start_hour, num_days)\n    return harmonics.synthesize_series(\n        station[\"constituents\"],\n        station[\"mean_sea_level\"],\n        padded_start,\n        padded_hours,\n    )\n\n\ndef find_extrema(series):\n    \"\"\"Scan a padded hourly series for local high/low tide turning points.\"\"\"\n    extrema = []\n    for i in range(1, len(series) - 1):\n        _, prev_level = series[i - 1]\n        hour, level = series[i]\n        _, next_level = series[i + 1]\n        if level > prev_level and level > next_level:\n            extrema.append((hour, level, \"high\"))\n        elif level < prev_level and level < next_level:\n            extrema.append((hour, level, \"low\"))\n    return extrema\n"
+    },
+    {
+      "path": "report.py",
+      "content": "\"\"\"Public entry point: build a station's tide prediction table for a date range.\"\"\"\n\nfrom datetime import timedelta\n\nimport stations\n\n\ndef generate_tide_table(station_id, start_day, num_days):\n    \"\"\"Return the high/low tide events for the half-open window\n    [start_day, start_day + num_days) at the given station.\n    \"\"\"\n    station = stations.load_station(station_id)\n    series = stations.build_hourly_series(station, start_day, num_days)\n    extrema = stations.find_extrema(series)\n\n    window_start = stations.hours_since_epoch(start_day)\n    window_end = window_start + num_days * 24\n\n    return [\n        (hour, round(level, 2), kind)\n        for hour, level, kind in extrema\n        if window_start <= hour < window_end\n    ]\n\n\ndef format_table(events):\n    \"\"\"Render tide events as human-readable lines, e.g. '2026-07-26 05:00  4.12 ft high'.\"\"\"\n    lines = []\n    for hour, level, kind in events:\n        day_offset, hour_of_day = divmod(hour, 24)\n        day = stations.EPOCH + timedelta(days=day_offset)\n        lines.append(f\"{day.isoformat()} {hour_of_day:02d}:00  {level:5.2f} ft {kind}\")\n    return lines\n"
+    }
+  ],
+  "defect_keys": [
+    "last hour",
+    "no successor",
+    "one hour short",
+    "boundary index"
+  ],
+  "covariates": {
+    "locality_hops": 2,
+    "files_spanned": 3,
+    "distractor_count": 4,
+    "cue_directness": "none"
+  },
+  "size_bytes": 4594
+}

@@ -1,0 +1,25 @@
+{
+  "id": "sf-exception-02",
+  "item_class": "single_function",
+  "defect_class": "exception",
+  "files": [
+    {
+      "path": "manifest_reconcile.py",
+      "content": "\"\"\"Reconcile a vessel's cargo manifest against gate scale telemetry.\"\"\"\n\nfrom dataclasses import dataclass, field\nfrom typing import Dict, List, Optional, Tuple\n\n\nclass ManifestError(Exception):\n    pass\n\n\n@dataclass\nclass Container:\n    container_id: str\n    bill_of_lading: str\n    declared_weight_kg: float\n    scale_reading: Optional[str]  # raw telemetry string, None/empty if not yet weighed at the gate\n\n\n@dataclass\nclass ManifestReport:\n    pending_weigh: List[str] = field(default_factory=list)\n    discrepancies: List[Tuple[str, float]] = field(default_factory=list)\n    total_declared: float = 0.0\n    total_actual: float = 0.0\n    total_surcharge: float = 0.0\n\n\ndef reconcile_manifest(\n    containers: List[Container],\n    rate_schedule: Dict[str, float],\n    tolerance_kg: float = 50.0,\n) -> ManifestReport:\n    \"\"\"Cross-check declared cargo weights against gate scale readings and\n    flag containers that still need to be weighed or whose numbers don't\n    line up, so the terminal can chase them down before the vessel sails.\"\"\"\n    report = ManifestReport()\n\n    for container in containers:\n        try:\n            actual_weight = float(container.scale_reading)\n        except (TypeError, ValueError):\n            actual_weight = 0.0\n            report.pending_weigh.append(container.container_id)\n            continue\n\n        try:\n            surcharge_rate = rate_schedule[container.bill_of_lading]\n        except KeyError:\n            raise ManifestError(\n                f\"no rate schedule entry for bill of lading {container.bill_of_lading}\"\n            )\n\n        diff = actual_weight - container.declared_weight_kg\n        if abs(diff) > tolerance_kg:\n            report.discrepancies.append((container.container_id, diff))\n\n        report.total_declared += container.declared_weight_kg\n        report.total_actual += actual_weight\n        report.total_surcharge += actual_weight * surcharge_rate\n\n    report.discrepancies.sort(key=lambda item: abs(item[1]), reverse=True)\n    return report\n\n\ndef summarize(report: ManifestReport) -> str:\n    lines = [\n        f\"declared total: {report.total_declared:.1f} kg\",\n        f\"actual total:   {report.total_actual:.1f} kg\",\n        f\"surcharge:      {report.total_surcharge:.2f}\",\n    ]\n    if report.pending_weigh:\n        lines.append(f\"awaiting scale: {', '.join(report.pending_weigh)}\")\n    for container_id, diff in report.discrepancies:\n        direction = \"over\" if diff > 0 else \"under\"\n        lines.append(f\"{container_id}: {abs(diff):.1f} kg {direction} declared weight\")\n    return \"\\n\".join(lines)\n"
+    }
+  ],
+  "defect_keys": [
+    "except clause",
+    "typeerror and valueerror",
+    "treated as zero",
+    "swallows both",
+    "the complete manifest total"
+  ],
+  "covariates": {
+    "locality_hops": 0,
+    "files_spanned": 1,
+    "distractor_count": 3,
+    "cue_directness": "direct"
+  },
+  "size_bytes": 2583
+}
