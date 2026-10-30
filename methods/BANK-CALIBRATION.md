@@ -21,9 +21,10 @@ the numbers, not the build history. Per-item tables are in
   "naming-resistance" lever (defects easy to notice but hard to name
   precisely). Some items are finance-flavored: pilot items model tax lots per
   security, cache FX rates, amortize a loan, and price invoices. The pilot was
-  written on 2026-07-18 on the subscription-authenticated setup, which still
-  passed the CLI's scaffolding and the account email to the model
-  (`methods/HARNESS-STERILITY.md` §2). They are invented code with seeded defects, not code from any real
+  written on 2026-07-18 on the subscription-authenticated setup. As
+  `methods/HARNESS-STERILITY.md` §2 enumerates for that setup, it passed the CLI's
+  scaffolding and the account email to the model; that was not measured on the
+  2026-07-18 calls themselves. They are invented code with seeded defects, not code from any real
   system.
 - **Ground truth is mechanical.** Each defective item carries curated
   `defect_keys`; a catch is a FLAG verdict whose text contains at least one key

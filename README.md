@@ -248,9 +248,10 @@ journals and agent transcripts.
 from a real codebase. Some are finance-flavored (one item models tax lots per
 security; others cache FX rates, amortize a loan, price invoices). Those four
 are pilot items, whose prompt left the domain open; the pilot was written on
-2026-07-18 on the subscription-authenticated setup, which still passed the
-CLI's scaffolding and the account email to the model
-([Appendix B §2](methods/HARNESS-STERILITY.md)). A few main-cohort items also
+2026-07-18 on the subscription-authenticated setup. As Appendix B §2 enumerates for that
+setup ([Appendix B §2](methods/HARNESS-STERILITY.md)), it passed the CLI's
+scaffolding and the account email to the model; that was not measured on the
+2026-07-18 calls themselves. A few main-cohort items also
 bill or convert currency inside their assigned areas (subscription invoicing,
 membership renewals, auction bids). A search for finance words therefore finds
 hits, in the items and in the responses that discuss them; that vocabulary is
