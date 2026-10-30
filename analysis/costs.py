@@ -99,12 +99,38 @@ def assert_out_prices(cells: Mapping) -> None:
                 "records' own billing; re-pin before emitting the co-axis")
 
 
+def output_only_bound(cells: Mapping, catches: Mapping) -> dict:
+    """The caching-robustness bound cited in the README and RESULTS: the
+    serialized arm (S) priced at output tokens only (every input token free,
+    list out-price) per true catch, divided by the bundled arm's (P) realized
+    $ per true catch. Above 1, bundling stays cheaper per true catch even if
+    serialized input cost nothing. Not part of costs.json, which is the
+    artifact of record and predates this figure; written by --bounds-out."""
+    out = {}
+    for tier in TIERS:
+        _p_in, p_out = LIST_PRICES[tier]
+        k_s, k_p = catches.get((tier, "S"), 0), catches.get((tier, "P"), 0)
+        if not (k_s and k_p):
+            out[tier] = None  # undefined at zero catches, never imputed
+            continue
+        s_out = sum(d["output_tokens"] for d in cells[(tier, "S")]["dispatches"]) \
+            / 1e6 * p_out / k_s
+        p_real = sum(d["cost"] for d in cells[(tier, "P")]["dispatches"]) / k_p
+        out[tier] = {"S_output_only_usd_per_true_catch": round(s_out, 4),
+                     "P_realized_usd_per_true_catch": round(p_real, 4),
+                     "ratio": round(s_out / p_real, 4)}
+    return out
+
+
 def main(argv_in: Sequence[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--data-dir", type=Path, default=ROOT / "data/dispatches")
     ap.add_argument("--final", type=Path, required=True,
                     help="post-adjudication final rows (catch counts)")
     ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--bounds-out", type=Path,
+                    help="also write the output-only bound (S output-only $ per "
+                         "true catch / P realized $ per true catch) here")
     args = ap.parse_args(argv_in)
 
     cells: dict[tuple, dict] = defaultdict(lambda: {"dispatches": [], "units": 0})
@@ -173,6 +199,10 @@ def main(argv_in: Sequence[str] | None = None) -> int:
         ],
     }
     args.out.write_text(json.dumps(out, indent=1) + "\n")
+    if args.bounds_out:
+        args.bounds_out.write_text(
+            json.dumps({"output_only_bound": output_only_bound(cells, catches)},
+                       indent=1) + "\n")
     for k, v in table.items():
         print(f"{k}: realized ${v['realized_usd']:.2f} cold ${v['cache_cold_usd']:.2f} "
               f"catches {v['true_catches']} $/catch(realized) "

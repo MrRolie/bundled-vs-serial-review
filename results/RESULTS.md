@@ -45,6 +45,9 @@
 > written at 23:41:48; the rules predate every lane-2 verdict and every
 > corrected endpoint, but the first (preflight) dispatch was probably already
 > in flight. See the amendment's timing note.]
+> [ed.: "pre-registered" here means before the corrected lane's verdicts, not
+> before the data. The rules were written 2026-08-27, after all trial data and
+> after the first, superseded table; see README §The limit.]
 
 Registration: `registration/preregistration.md`
 (rev 2.4, LOCKED @ 7bbe83e) + amendments `2026-08-17-family-definitions.md`,
@@ -91,7 +94,10 @@ haiku-tier serialization benefit is *declared* (+0.083, F) or *unresolved*
 ## Fragility — measured, disclosed beside the verdict, never a re-decision
 
 Two independent axes were pre-registered or pre-declared as descriptive,
-and both move the primary. The seeded 10k run remains the verdict of
+and both move the primary. [ed.: "pre-registered" and "registered" in this
+section, including the co-reads in (a), mean before the corrected lane's
+verdicts, not before the data; see the note under the header and README
+§The limit.] The seeded 10k run remains the verdict of
 record; nothing here upgrades or demotes a member.
 
 **(a) Extraction latitude — registered co-reads (`data/results/coreads.json`,

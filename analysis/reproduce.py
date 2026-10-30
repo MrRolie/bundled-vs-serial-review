@@ -7,7 +7,9 @@ Chain (each step is a script in this directory):
   2. merge.py        + data/verdicts.jsonl (the adjudication verdicts, an INPUT)
                      -> post-adjudication rows; compared with data/scored-rows.jsonl
   3. endpoints.py    -> Holm family, member states, cells, stamps, FA co-read
-  4. costs.py        -> economics co-axis ($ and $/true-catch per arm x tier)
+  4. costs.py        -> economics co-axis ($ and $/true-catch per arm x tier),
+                     plus the output-only bound cited in the README (checked
+                     against the cited 2.65 / 1.26 / 1.55 to the printed digits)
   5. coreads.py      -> extraction co-reads V1/V2/V3 (+ legacy lines)
   6. descriptives.py -> registered descriptive reads
   7. lane_check.py   -> lane bookkeeping (queue, 130/130, 86/86, cost)
@@ -35,6 +37,9 @@ ROOT = HERE.parent
 DATA = ROOT / "data"
 RES = DATA / "results"
 H, S, O = "claude-haiku-4-5-20251001", "claude-sonnet-5", "claude-opus-5"
+# Cited in README.md (The result; Costs) and results/RESULTS.md (the cache note):
+# S output-only $ per true catch / P realized $ per true catch, two decimals.
+CITED_OUTPUT_ONLY = {H: "2.65", S: "1.26", O: "1.55"}
 
 
 def run(script: str, *args: str) -> None:
@@ -109,8 +114,15 @@ def main(argv: list[str] | None = None) -> int:
     run("endpoints.py", "--final", final, "--falsified-cleans", fals,
         "--out", str(out / "endpoints.json"))
     ep = compare("endpoints.json", out / "endpoints.json", RES / "endpoints.json", report)
-    run("costs.py", "--final", final, "--out", str(out / "costs.json"))
+    run("costs.py", "--final", final, "--out", str(out / "costs.json"),
+        "--bounds-out", str(out / "cost-bounds.json"))
     co = compare("costs.json", out / "costs.json", RES / "costs.json", report)
+    oob = json.loads((out / "cost-bounds.json").read_text())["output_only_bound"]
+    got_oo = {t: (f"{oob[t]['ratio']:.2f}" if oob.get(t) else None) for t in (H, S, O)}
+    report.append((f"output-only bound vs the cited {' / '.join(CITED_OUTPUT_ONLY[t] for t in (H, S, O))}"
+                   " (no artifact; checked to the printed digits)",
+                   "MATCHES" if got_oo == CITED_OUTPUT_ONLY else "DIFFERS",
+                   [f"got {got_oo[H]} / {got_oo[S]} / {got_oo[O]}"]))
     run("coreads.py", "--final", final, "--falsified-cleans", fals,
         "--out", str(out / "coreads.json"))
     cr = compare("coreads.json", out / "coreads.json", RES / "coreads.json", report)
@@ -145,7 +157,8 @@ def main(argv: list[str] | None = None) -> int:
                    "IDENTICAL" if not d else "DIFFERS", d))
 
     print(f"products written to {out}\n")
-    print("ARTIFACT COMPARISON (parsed JSON, exact)")
+    print("ARTIFACT COMPARISON (parsed JSON, exact; MATCHES = a cited figure "
+          "with no artifact, checked to its printed digits)")
     for name, verdict, detail in report:
         print(f"  {verdict:9s} {name}")
         for line in detail[:10]:
@@ -188,6 +201,8 @@ def main(argv: list[str] | None = None) -> int:
          f"{ep['band_read']['ci90'][1]:+.3f}]"),
         ("S/P $ per true catch", "3.0x / 2.1x / 2.2x (2.97/2.14/2.24)",
          f"{ratio(H):.2f} / {ratio(S):.2f} / {ratio(O):.2f}"),
+        ("S output-only / P $ per catch", "2.65x / 1.26x / 1.55x",
+         f"{oob[H]['ratio']:.3f} / {oob[S]['ratio']:.3f} / {oob[O]['ratio']:.3f}"),
         ("haiku off-family FA mf", "0.285 vs 0.054, +0.232 [+0.181, +0.283]",
          f"{fa_h['fa_hi']:.3f} vs {fa_h['fa_lo']:.3f}, {fa_h['delta']:+.3f} "
          f"[{fa_h['ci95'][0]:+.3f}, {fa_h['ci95'][1]:+.3f}]"),
@@ -206,7 +221,7 @@ def main(argv: list[str] | None = None) -> int:
     w = max(len(r[0]) for r in rows)
     for name, exp, got in rows:
         print(f"  {name:<{w}}  expected {exp}\n  {'':<{w}}  got      {got}")
-    bad = [r for r in report if r[1] != "IDENTICAL"]
+    bad = [r for r in report if r[1] not in ("IDENTICAL", "MATCHES")]
     print("\nRESULT:", "every product reproduces its artifact of record" if not bad
           else f"{len(bad)} product(s) differ")
     return 1 if bad else 0

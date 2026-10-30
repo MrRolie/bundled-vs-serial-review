@@ -29,7 +29,8 @@ the dollars of the bundled arm, so even at the upper end of each serialized-minu
 bundled catch interval (95 %, with the bundled arm at its observed rate) bundling
 stays cheaper per true catch, by at least 1.8× (at sonnet). And with every
 serialized input token priced at zero (output tokens only), bundling still wins
-2.65× / 1.26× / 1.55×.
+2.65× / 1.26× / 1.55× (`analysis/costs.py --bounds-out`, checked by
+`analysis/reproduce.py`).
 
 The extra catches are few in distinct defects. The bundled arm's 3–4
 repetitions per item already found 48 of 60, 35 of 36 and 30 of 36 distinct
@@ -59,7 +60,7 @@ tier interaction (gap shrinking as models get stronger) is not supported:
 0.20 at opus r = 4 was ≈ 0.59, so this null does not rule out an interaction of
 that size.
 
-**The registered primary is real on the registered instrument and fragile.**
+**The registered primary fires on the registered instrument and is fragile.**
 At haiku, serialized minus bundled catch rate is **+0.083, 95 % CI [+0.017,
 +0.150], one-sided p 0.0111**, which survives Holm correction (adjusted 0.0444)
 on the registered bootstrap (10,000 draws, seed 1512). But:
@@ -244,9 +245,14 @@ the first (superseded) results table, decision ledgers, build logs, workflow
 journals and agent transcripts.
 
 **About the items.** All 80 are synthetic code written by a model; none comes
-from a real codebase. Some are finance-flavored because the authoring model chose
-those domains (one item models tax lots per security; others cache FX rates,
-amortize a loan, price invoices). A search for finance words therefore finds
+from a real codebase. Some are finance-flavored (one item models tax lots per
+security; others cache FX rates, amortize a loan, price invoices). Those four
+are pilot items, whose prompt left the domain open; the pilot was written on
+2026-07-18 on the subscription-authenticated setup, which still passed the
+CLI's scaffolding and the account email to the model
+([Appendix B §2](methods/HARNESS-STERILITY.md)). A few main-cohort items also
+bill or convert currency inside their assigned areas (subscription invoicing,
+membership renewals, auction bids). A search for finance words therefore finds
 hits, in the items and in the responses that discuss them; that vocabulary is
 the stimulus, not data about anyone.
 
@@ -284,6 +290,11 @@ the stimulus, not data about anyone.
   that reached the adjudication route. The adjudicator was claude-opus-5
   throughout. Arm-blinding was partial: labels were scrubbed, response shape
   was not.
+- **The adjudicator was also a subject.** claude-opus-5 is one of the three
+  tiers under test; 203 of the 1,805 routed rows are sonnet or opus answers
+  (201 sonnet, 2 opus; one opus row had no answer, so 202 got a verdict).
+  Exposure is limited: it ruled only FLAG / NONE / NEITHER, and whether a FLAG
+  is a catch stays the mechanical key match.
 - **The registration's ~18K-token scaffolding sentence is contradicted by the
   records** (Appendix B); the public copy carries an editor's note.
 - Findings are about this bank, these three models, this CLI version and this
@@ -345,7 +356,9 @@ present. Details:
 - **Materials, data and text** (`materials/`, `data/`, `recount/*.json*`,
   `appendix/`, `registration/`, `results/`, `methods/`, this README): Creative
   Commons Attribution 4.0 International, see
-  [`LICENSE-CC-BY-4.0.txt`](LICENSE-CC-BY-4.0.txt).
+  [`LICENSE-CC-BY-4.0.txt`](LICENSE-CC-BY-4.0.txt), offered to the extent
+  copyright subsists. Model-written items, answers and verdicts may carry no
+  copyright; where none subsists, treat them as public domain.
 - **Proposed repository name:** `bundled-vs-serial-review`.
 
 Built with Claude Code under my direction (Mikael Hillman-Pépin).

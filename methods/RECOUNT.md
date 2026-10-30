@@ -1,10 +1,14 @@
 # The independent recount — methods note
 
-Every number in `results/RESULTS.md` was re-derived by an independent recount
+Every computed number in `results/RESULTS.md` was re-derived by an independent recount
 before it was cited: an AI agent separate from the one that ran the analysis,
 writing fresh code from the registration text and the dated rules alone, on the
-raw trial records. This note says what was recounted, how, what it found, and
-what can be checked from this repository.
+raw trial records. Two exceptions: the lane and checker instrument costs
+($5.79 / $6.20 / $0.95) are analyst-counted, as the results header says; and
+the output-only cost bound (2.65× / 1.26× / 1.55×) was added when this public
+copy was built, so `analysis/costs.py` computes it and `analysis/reproduce.py`
+checks it, but the recount did not re-derive it. This note says what was
+recounted, how, what it found, and what can be checked from this repository.
 
 ## Protocol
 
