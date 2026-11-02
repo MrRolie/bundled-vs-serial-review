@@ -350,12 +350,25 @@ maximum of 4,635 (4,936 for any bundled dispatch), so that scaffolding was not
 present. Details:
 [`methods/HARNESS-STERILITY.md`](methods/HARNESS-STERILITY.md).
 
+## Replication on the 5.5 generation
+
+A pre-registered, descriptive replication ran the bundled and serialized
+shapes on Claude Haiku 5.5, Sonnet 5.5 and Opus 5.5 (same bank, same prompts,
+same scoring rules and judge, raw Messages API at effort `high`), with a plain
+single-pass review added. Bundling stayed cheaper per true catch at every tier:
+serialized cost 2.43× / 3.57× / 3.00× per true catch, every 95 % CI above 1.
+Ratios compare arms within a tier; that the Sonnet and Opus ratios exceed the
+original's is not a claimed trend, since the harness changed. The summary, tables,
+registration and independent recount are in
+[`replication-5.5/`](replication-5.5/README.md).
+
 ## Licences, name, attribution
 
 - **Code** (`analysis/`, `recount/code/`, `recount/check_agreement.py`, `tests/`):
   MIT, see [`LICENSE`](LICENSE).
 - **Materials, data and text** (`materials/`, `data/`, `recount/*.json*`,
-  `appendix/`, `registration/`, `results/`, `methods/`, this README): Creative
+  `appendix/`, `registration/`, `results/`, `methods/`, `replication-5.5/`, this
+  README): Creative
   Commons Attribution 4.0 International, see
   [`LICENSE-CC-BY-4.0.txt`](LICENSE-CC-BY-4.0.txt), offered to the extent
   copyright subsists. Model-written items, answers and verdicts may carry no
