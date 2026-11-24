@@ -4,15 +4,26 @@ When AI agents review code, does asking a reviewer **one family of defects per
 dispatch** (serialized) catch more defects than asking **all five families in one
 bundled prompt**, and does the answer change with the model tier?
 
-This repository is the public extract of a pre-registered study that measured it
-on Claude Haiku 4.5, Claude Sonnet 5 and Claude Opus 5: the registration, the
-80-item code-review bank, the exact prompts (rebuilt byte for byte from the
-frozen materials and checked against every recorded hash), every model response
-that was scored, the scored table, the analysis code, an independent recount,
-and the results. The analysis chain reproduces every number it computes from the
-files here (see [Re-running it](#re-running-it)).
-
 Built with Claude Code under my direction (Mikael Hillman-Pépin).
+
+**Terms used below.**
+
+- **Bundled:** one prompt that asks the reviewer about all five families of defects at once.
+- **Serialized:** five separate prompts, each asking about one family only, each in a fresh context.
+- **Family:** one of five kinds of code defect: boundary, comparison, exception, sign, units.
+- **True catch:** the reviewer flags a real defect of the family it was asked about (scoring is described under [Design](#design)).
+- **Tier:** a model size. The study used Claude Haiku 4.5, Sonnet 5 and Opus 5.
+
+## Short answer
+
+- Bundling was cheaper per true catch at every tier: serializing cost about 3.0× more at haiku, 2.1× at sonnet and 2.2× at opus.
+- At sonnet and opus the catch rates showed no clear difference between the two shapes.
+- Only at haiku was serializing's edge in catch rate statistically clear (+0.083), and that edge is fragile: it does not hold under either of the two alternative ways of reading the answers (see The result).
+- Serialized haiku reviewers raised about 5× more off-target false alarms.
+
+![Bar chart of dollars per true catch for bundled and serialized review at haiku, sonnet and opus. Bundled costs $0.107, $0.061 and $0.150; serialized costs $0.317, $0.130 and $0.336.](docs/cost-per-true-catch.png)
+
+*Dollars per true catch, from `data/cost-per-arm.csv` (the same figures as the [Costs](#costs) table).*
 
 ## The result
 
@@ -88,6 +99,16 @@ bracket; it carries no weight.
 
 Full results with every stamp, co-read and disclosure:
 [`results/RESULTS.md`](results/RESULTS.md).
+
+## About this repository
+
+This repository is the public extract of a pre-registered study that measured it
+on Claude Haiku 4.5, Claude Sonnet 5 and Claude Opus 5: the registration, the
+80-item code-review bank, the exact prompts (rebuilt byte for byte from the
+frozen materials and checked against every recorded hash), every model response
+that was scored, the scored table, the analysis code, an independent recount,
+and the results. The analysis chain reproduces every number it computes from the
+files here (see [Re-running it](#re-running-it)).
 
 ## Design
 
